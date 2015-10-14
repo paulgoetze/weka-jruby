@@ -1,0 +1,13 @@
+---
+version: 0.13.0
+groups:
+  default:
+    dependencies:
+    - net.sf.squirrel-sql.thirdparty-non-maven:java-cup:jar:0.11a
+    - nz.ac.waikato.cms.weka:weka-stable:jar:3.6.13
+    artifacts:
+    - jar:nz.ac.waikato.cms.weka:weka-stable:jar:3.6.13:
+        transitive:
+          net.sf.squirrel-sql.thirdparty-non-maven:java-cup:jar:0.11a: {}
+remote_repositories:
+- http://repo1.maven.org/maven2/
