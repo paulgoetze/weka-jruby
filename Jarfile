@@ -1,1 +1,1 @@
-jar 'nz.ac.waikato.cms.weka:weka-stable:jar:3.6.13'
+jar 'nz.ac.waikato.cms.weka:weka-dev:jar:3.7.13'
