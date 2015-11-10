@@ -5,3 +5,5 @@ require 'weka/version'
 module Weka
   include Jars
 end
+
+require 'weka/core'

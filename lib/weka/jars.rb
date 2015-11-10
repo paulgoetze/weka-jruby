@@ -11,6 +11,7 @@ module Weka
       lockfile = File.join(lib_path, 'Jarfile.lock')
       jars_dir = File.join(lib_path, 'jars')
 
+      LockJar.install(lockfile, local_repo: jars_dir)
       LockJar.load(lockfile, local_repo: jars_dir)
     end
 
