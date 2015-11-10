@@ -1,8 +1,15 @@
+sudo: false
 language: ruby
+
 rvm:
   - jruby-9000
+
+cache:
+  - bundler
 
 before_install:
   - gem install bundler -v 1.10.6
   - rvm get head
   - rvm use jruby-9.0.1.0 --install
+
+script: bundle exec rake spec
