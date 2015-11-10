@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "weka"
   spec.version       = Weka::VERSION
   spec.authors       = ["Paul Götze"]
-  spec.email         = ["p.christoph.goetze@gmail.com"]
+  spec.email         = ["paul.christoph.goetze@gmail.com"]
 
   spec.summary       = %q{Machine Learning & Data Mining with JRuby.}
   spec.description   = %q{A wrapper for the Weka library (http://www.cs.waikato.ac.nz/ml/weka/)}
