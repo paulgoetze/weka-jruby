@@ -1,0 +1,207 @@
+{
+	"header" : {
+		"relation" : "weather",
+		"attributes" : [
+			{
+				"name" : "outlook",
+				"type" : "nominal",
+				"class" : false,
+				"weight" : 1.0,
+				"labels" : [
+					"sunny",
+					"overcast",
+					"rainy"
+				]
+			},
+			{
+				"name" : "temperature",
+				"type" : "numeric",
+				"class" : false,
+				"weight" : 1.0
+			},
+			{
+				"name" : "humidity",
+				"type" : "numeric",
+				"class" : false,
+				"weight" : 1.0
+			},
+			{
+				"name" : "windy",
+				"type" : "nominal",
+				"class" : false,
+				"weight" : 1.0,
+				"labels" : [
+					"TRUE",
+					"FALSE"
+				]
+			},
+			{
+				"name" : "play",
+				"type" : "nominal",
+				"class" : false,
+				"weight" : 1.0,
+				"labels" : [
+					"yes",
+					"no"
+				]
+			}
+		]
+	},
+	"data" : [
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"sunny",
+				"85",
+				"85",
+				"FALSE",
+				"no"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"sunny",
+				"80",
+				"90",
+				"TRUE",
+				"no"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"overcast",
+				"83",
+				"86",
+				"FALSE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"rainy",
+				"70",
+				"96",
+				"FALSE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"rainy",
+				"68",
+				"80",
+				"FALSE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"rainy",
+				"65",
+				"70",
+				"TRUE",
+				"no"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"overcast",
+				"64",
+				"65",
+				"TRUE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"sunny",
+				"72",
+				"95",
+				"FALSE",
+				"no"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"sunny",
+				"69",
+				"70",
+				"FALSE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"rainy",
+				"75",
+				"80",
+				"FALSE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"sunny",
+				"75",
+				"70",
+				"TRUE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"overcast",
+				"72",
+				"90",
+				"TRUE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"overcast",
+				"81",
+				"75",
+				"FALSE",
+				"yes"
+			]
+		},
+		{
+			"sparse" : false,
+			"weight" : 1.0,
+			"values" : [
+				"rainy",
+				"71",
+				"91",
+				"TRUE",
+				"no"
+			]
+		}
+	]
+}
+
