@@ -1,30 +1,28 @@
+require 'weka/core/converters'
+
 module Weka
   module Core
-    java_import 'weka.core.converters.CSVLoader'
-    java_import 'weka.core.converters.ArffLoader'
-    java_import 'weka.core.converters.JSONLoader'
-
     class Parser
       java_import 'java.io.File'
 
       class << self
-        def parse_arff(file_name)
-          parse_data_set_with(ArffLoader, file_name)
+        def parse_arff(file)
+          parse_data_set_with(Converters::ArffLoader, file: file)
         end
 
-        def parse_csv(file_name)
-          parse_data_set_with(CSVLoader, file_name)
+        def parse_csv(file)
+          parse_data_set_with(Converters::CSVLoader, file: file)
         end
 
-        def parse_json(file_name)
-          parse_data_set_with(JSONLoader, file_name)
+        def parse_json(file)
+          parse_data_set_with(Converters::JSONLoader, file: file)
         end
 
         private
 
-        def parse_data_set_with(loader_class, file_name)
-          loader = loader_class.new
-          loader.source = File.new(file_name)
+        def parse_data_set_with(loader_class, file:)
+          loader        = loader_class.new
+          loader.source = File.new(file)
           loader.data_set
         end
       end
