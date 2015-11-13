@@ -10,17 +10,15 @@ describe Weka::Core::Parser do
     end
   end
 
-  describe '#parse_arff' do
-    it 'returns an Instances object for a given ARFF file' do
-      file = File.expand_path('../../support/resources/weather.arff', __FILE__)
-      expect(Weka::Core::Parser.parse_arff(file)).to be_kind_of Weka::Core::Instances
+  [:arff, :csv, :json].each do |type|
+    describe "#parse_#{type}" do
+      let(:file) { File.expand_path("../../support/resources/weather.#{type}", __FILE__) }
+
+      it "returns an Instances object for a given #{type.upcase} file" do
+        instances = Weka::Core::Parser.send("parse_#{type}", file)
+        expect(instances).to be_kind_of Weka::Core::Instances
+      end
     end
   end
 
-  describe '#parse_csv' do
-    it 'returns an Instances object for a given CSV file' do
-      file = File.expand_path('../../support/resources/weather.csv', __FILE__)
-      expect(Weka::Core::Parser.parse_csv(file)).to be_kind_of Weka::Core::Instances
-    end
-  end
 end
