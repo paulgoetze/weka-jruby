@@ -9,14 +9,25 @@ module Weka
 
     class Instances
 
+      attr_reader :attributes
+
+      def self.new_with_attributes(&block)
+        Instances.new('Instances', FastVector.new, 0).add_attributes(&block)
+      end
+
       def initialize
+        initialize_attributes
+        super('Instances', FastVector.new, 0)
+      end
+
+      def add_attributes(&block)
+        initialize_attributes
         attributes = FastVector.new
-        @positions = []
 
-        yield if block_given?
+        self.instance_eval(&block) if block
 
-        @positions.each { |value| attributes.add_element(value) }
-        super('Instances', attributes, 0)
+        @attributes.each { |value| attributes.add_element(value) }
+        self
       end
 
       def each
@@ -47,7 +58,31 @@ module Weka
         save_data_set_with(Converters::JSONSaver, file: file)
       end
 
+      def numeric(name)
+        attribute = Attribute.new(name.to_java(:string))
+        add_attribute(attribute)
+      end
+
+      def nominal(name, *options)
+        attribute = Attribute.new(name.to_java(:string), *options)
+        add_attribute(attribute)
+      end
+
+      def string(name)
+        attribute = Attribute.new(name.to_java(:string))
+        add_attribute(attribute)
+      end
+
+      def date(name, format = nil)
+        attribute = Attribute.new(name.to_java(:string), format || '')
+        add_attribute(attribute)
+      end
+
       private
+
+      def initialize_attributes
+        @attributes = []
+      end
 
       def save_data_set_with(saver_const, file:)
         saver           = saver_const.new
@@ -55,6 +90,10 @@ module Weka
         saver.file      = File.new(file)
 
         saver.write_batch
+      end
+
+      def add_attribute(attribute)
+        @attributes << attribute
       end
     end
 
