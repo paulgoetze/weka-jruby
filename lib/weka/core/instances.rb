@@ -78,6 +78,11 @@ module Weka
         add_attribute(attribute)
       end
 
+      alias :add_numeric_attribute :numeric
+      alias :add_string_attribute  :string
+      alias :add_nominal_attribute :nominal
+      alias :add_date_attribute    :date
+
       private
 
       def initialize_attributes

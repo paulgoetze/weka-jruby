@@ -20,6 +20,21 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :string }
   it { is_expected.to respond_to :date }
 
+  describe 'aliases' do
+    let (:instances) { described_class.new }
+
+    {
+      numeric: :add_numeric_attribute,
+      string:  :add_string_attribute,
+      nominal: :add_nominal_attribute,
+      date:    :add_date_attribute
+     }.each do |method, alias_method|
+      it "defines the alias ##{alias_method} for ##{method}" do
+        expect(instances.method(method)).to eq instances.method(alias_method)
+      end
+     end
+  end
+
   describe 'converter' do
     before(:all) { @tmp_dir = File.expand_path('../../tmp/', __FILE__) }
 
