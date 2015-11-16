@@ -74,7 +74,7 @@ describe Weka::Core::Instances do
 
     describe '#nominal' do
       it 'can be used to add a nominal attribute' do
-        instances.nominal('attribute_name', ['yes'])
+        instances.nominal('attribute_name', ['yes', 'no'])
         expect(instances.attributes.first).to be_nominal
       end
     end
@@ -94,7 +94,7 @@ describe Weka::Core::Instances do
       expect {
         instances.add_attributes do
           numeric 'attribute'
-          nominal 'class'
+          nominal 'class', ['YES', 'NO']
         end
       }.to change { instances.attributes.count }.from(0).to(2)
     end
@@ -104,10 +104,21 @@ describe Weka::Core::Instances do
 
       instances.add_attributes do
         numeric 'attribute'
-        nominal 'class'
+        nominal 'class', ['YES', 'NO']
       end
 
       expect(instances.attributes.map(&:name)).to eq ['attribute', 'class']
+    end
+  end
+
+  describe '#initialize' do
+    it 'should take an optional block' do
+      expect {
+        Weka::Core::Instances.new_with_attributes do
+          numeric 'attribute 1'
+          nominal 'class', 'YES'
+        end
+      }.not_to raise_error
     end
   end
 

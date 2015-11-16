@@ -9,24 +9,20 @@ module Weka
 
     class Instances
 
-      attr_reader :attributes
-
       def self.new_with_attributes(&block)
-        Instances.new('Instances', FastVector.new, 0).add_attributes(&block)
+        self.new.add_attributes(&block)
       end
 
       def initialize
-        initialize_attributes
         super('Instances', FastVector.new, 0)
       end
 
+      def attributes
+        enumerate_attributes.to_a
+      end
+
       def add_attributes(&block)
-        initialize_attributes
-        attributes = FastVector.new
-
         self.instance_eval(&block) if block
-
-        @attributes.each { |value| attributes.add_element(value) }
         self
       end
 
@@ -59,22 +55,22 @@ module Weka
       end
 
       def numeric(name)
-        attribute = Attribute.new(name.to_java(:string))
+        attribute = Attribute.new(name)
         add_attribute(attribute)
       end
 
-      def nominal(name, *options)
-        attribute = Attribute.new(name.to_java(:string), *options)
+      def nominal(name, values)
+        attribute = Attribute.new(name, values)
         add_attribute(attribute)
       end
 
       def string(name)
-        attribute = Attribute.new(name.to_java(:string))
+        attribute = Attribute.new(name, [])
         add_attribute(attribute)
       end
 
       def date(name, format = nil)
-        attribute = Attribute.new(name.to_java(:string), format || '')
+        attribute = Attribute.new(name, format || '')
         add_attribute(attribute)
       end
 
@@ -85,10 +81,6 @@ module Weka
 
       private
 
-      def initialize_attributes
-        @attributes = []
-      end
-
       def save_data_set_with(saver_const, file:)
         saver           = saver_const.new
         saver.instances = self
@@ -98,7 +90,7 @@ module Weka
       end
 
       def add_attribute(attribute)
-        @attributes << attribute
+        insert_attribute_at(attribute, attributes.count)
       end
     end
 
