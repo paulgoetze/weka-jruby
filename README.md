@@ -27,6 +27,69 @@ Start using Weka's Machine Learning and Data Mining algorithms by requiring the 
 require 'weka'
 ```
 
+### Instances
+
+Instances objects hold the data set that is used to train a classifier or that
+should be classified based on training data.
+
+Instances can be loaded from files and saved to files.
+Supported formats are ARFF, CSV, and JSON.
+
+#### Loading Instances from a file
+
+Instances can be loaded from ARFF, CSV, and JSON files:
+
+```ruby
+instances = Weka::Core::Parser.parse_arff('weather.arff')
+instances = Weka::Core::Parser.parse_csv('weather.csv')
+instances = Weka::Core::Parser.parse_json('weather.json')
+```
+
+#### Creating Instances and saving them as files
+
+Attributes of an Instances object can be defined in a block using the `with_attributes` method:
+
+```ruby
+# create instances with relation name 'weather' and attributes
+instances = Weka::Core::Instances.new('weather').with_attributes do
+  nominal :outlook, ['sunny', 'overcast', 'rainy']
+  numeric :temperature
+  numeric :humidity
+  nominal :windy, ['true', 'false']
+  nominal :play, ['yes', 'no']
+end
+
+# save as ARFF, CSV, or JSON file
+instances.to_arff('weather.arff')
+instances.to_csv('weather.csv')
+instances.to_json('weather.json')
+```
+
+You can also add attributes later on:
+
+```ruby
+instances.add_numeric_attribute(:pressure)
+instances.add_nominal_attribute(:grandma_says, [:hm, :bad, :terrible])
+```
+
+#### Alias methods
+
+`Weka::Core::Instances` has following alias methods:
+
+| method            | alias                   |
+|-------------------|-------------------------|
+| `numeric`         | `add_numeric_attribute` |
+| `nominal`         | `add_nominal_attribute` |
+| `date`            | `add_date_attribute`    |
+| `string`          | `add_string_attribute`  |
+| `with_attributes` | `add_attributes`        |
+
+The shorter methods on the left side are meant to be used when defining
+attributes in a block when using `#with_attributes` (or `#add_attributes`).
+
+The longer, more descriptive methods are meant to be used for explicitly adding
+attributes to an Instances object later on.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
