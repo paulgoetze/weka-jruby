@@ -20,16 +20,17 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :string }
   it { is_expected.to respond_to :date }
 
-  describe 'aliases' do
+  describe 'aliases:' do
     let (:instances) { described_class.new }
 
     {
-      numeric: :add_numeric_attribute,
-      string:  :add_string_attribute,
-      nominal: :add_nominal_attribute,
-      date:    :add_date_attribute
+      numeric:        :add_numeric_attribute,
+      string:         :add_string_attribute,
+      nominal:        :add_nominal_attribute,
+      date:           :add_date_attribute,
+      add_attributes: :with_attributes,
      }.each do |method, alias_method|
-      it "defines the alias ##{alias_method} for ##{method}" do
+      it "should define the alias ##{alias_method} for ##{method}" do
         expect(instances.method(method)).to eq instances.method(alias_method)
       end
      end
@@ -85,6 +86,46 @@ describe Weka::Core::Instances do
         expect(instances.attributes.first).to be_date
       end
     end
+
+    context 'called with symbols' do
+      describe '#numeric' do
+        it 'can be used to add a numeric attribute' do
+          instances.numeric(:attribute_name)
+          expect(instances.attributes.first).to be_numeric
+        end
+      end
+
+      describe '#string' do
+        it 'can be used to add a string attribute' do
+          instances.string(:attribute_name)
+          expect(instances.attributes.first).to be_string
+        end
+      end
+
+      describe '#nominal' do
+        it 'can be used to add a nominal attribute' do
+          instances.nominal(:attribute_name, [:yes, :no])
+          expect(instances.attributes.first).to be_nominal
+        end
+
+        it 'should convert a single option into an Array' do
+          instances.nominal(:attribute_name, 'yes')
+          expect(instances.attributes.first.values).to eq ['yes']
+        end
+
+        it 'should convert the options into strings' do
+          instances.nominal(:attribute_name, [true, false])
+          expect(instances.attributes.first.values).to eq ['true', 'false']
+        end
+      end
+
+      describe '#date' do
+        it 'can be used to add a date attribute' do
+          instances.date(:attribute_name)
+          expect(instances.attributes.first).to be_date
+        end
+      end
+    end
   end
 
   describe '#add_attributes' do
@@ -114,9 +155,9 @@ describe Weka::Core::Instances do
   describe '#initialize' do
     it 'should take an optional block' do
       expect {
-        Weka::Core::Instances.new_with_attributes do
+        Weka::Core::Instances.new.with_attributes do
           numeric 'attribute 1'
-          nominal 'class', 'YES'
+          nominal 'class', ['YES', 'NO']
         end
       }.not_to raise_error
     end

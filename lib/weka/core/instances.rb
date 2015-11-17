@@ -9,12 +9,13 @@ module Weka
 
     class Instances
 
-      def self.new_with_attributes(&block)
-        self.new.add_attributes(&block)
-      end
+      DEFAULT_RELATION_NAME = 'Instances'
 
-      def initialize
-        super('Instances', FastVector.new, 0)
+      attr_reader :relation_name
+
+      def initialize(relation_name = DEFAULT_RELATION_NAME)
+        @relation_name = relation_name.to_s
+        super(@relation_name, FastVector.new, 0)
       end
 
       def attributes
@@ -25,6 +26,8 @@ module Weka
         self.instance_eval(&block) if block
         self
       end
+
+      alias :with_attributes :add_attributes
 
       def each
         enumerate_instances.each { |instance| yield(instance) }
@@ -55,22 +58,22 @@ module Weka
       end
 
       def numeric(name)
-        attribute = Attribute.new(name)
+        attribute = Attribute.new(name.to_s)
         add_attribute(attribute)
       end
 
       def nominal(name, values)
-        attribute = Attribute.new(name, values)
+        attribute = Attribute.new(name.to_s, Array(values).map(&:to_s))
         add_attribute(attribute)
       end
 
       def string(name)
-        attribute = Attribute.new(name, [])
+        attribute = Attribute.new(name.to_s, [])
         add_attribute(attribute)
       end
 
       def date(name, format = nil)
-        attribute = Attribute.new(name, format || '')
+        attribute = Attribute.new(name.to_s, format || '')
         add_attribute(attribute)
       end
 
