@@ -163,4 +163,48 @@ describe Weka::Core::Instances do
     end
   end
 
+  describe 'enumerator' do
+    before { @result = nil }
+
+    describe '#each' do
+      it 'should run a block on each instance' do
+        subject.each do |instance|
+          @result = instance.value(0) unless @result
+        end
+
+        expect(@result).to eq 0.0 # index of nominal value
+      end
+    end
+
+    describe '#each_with_index' do
+      it 'should run a block on each instance' do
+        subject.each_with_index do |instance, index|
+          @result = "#{instance.value(0)}, #{index}" if index == 0
+        end
+
+        expect(@result).to eq '0.0, 0' # 0.0 => index of nominal value
+      end
+    end
+
+    describe '#each_attribute' do
+      it 'should run a block on each attribute' do
+        subject.each_attribute do |attribute|
+          @result = attribute.name unless @result
+        end
+
+        expect(@result).to eq 'outlook'
+      end
+    end
+
+    describe '#each_attribute_with_index' do
+      it 'should run a block on each attribute' do
+        subject.each_attribute_with_index do |attribute, index|
+          @result = "#{attribute.name}, #{index}" if index == 0
+        end
+
+        expect(@result).to eq 'outlook, 0'
+      end
+    end
+  end
+
 end
