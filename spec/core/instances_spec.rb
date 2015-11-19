@@ -66,7 +66,7 @@ describe Weka::Core::Instances do
       end
     end
 
-    describe '#string' do
+    xdescribe '#string' do
       it 'can be used to add a string attribute' do
         instances.string('attribute_name')
         expect(instances.attributes.first).to be_string
@@ -95,7 +95,7 @@ describe Weka::Core::Instances do
         end
       end
 
-      describe '#string' do
+      xdescribe '#string' do
         it 'can be used to add a string attribute' do
           instances.string(:attribute_name)
           expect(instances.attributes.first).to be_string
