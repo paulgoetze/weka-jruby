@@ -32,7 +32,9 @@ module Weka
         self
       end
 
-      alias :with_attributes :add_attributes
+      alias :with_attributes  :add_attributes
+      alias :instances_count  :num_instances
+      alias :attributes_count :num_attributes
 
       def each
         enumerate_instances.each { |instance| yield(instance) }
