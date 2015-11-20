@@ -20,6 +20,11 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :string }
   it { is_expected.to respond_to :date }
 
+  it { is_expected.to respond_to :attributes }
+  it { is_expected.to respond_to :instances }
+
+  it { is_expected.to respond_to :add_instance }
+
   describe 'aliases:' do
     let (:instances) { described_class.new }
 
@@ -54,6 +59,32 @@ describe Weka::Core::Instances do
       end
     end
 
+  end
+
+  describe '#instances' do
+    it 'should return an Array of DenseInstance objects' do
+      objects = subject.instances
+      expect(objects).to be_an Array
+
+      all_kind_of_instance = objects.reduce(true) do |result, object|
+        result &&= object.kind_of?(Java::WekaCore::DenseInstance)
+      end
+
+      expect(all_kind_of_instance).to be true
+    end
+  end
+
+  describe '#attributes' do
+    it 'should return an Array of Attribute objects' do
+      objects = subject.attributes
+      expect(objects).to be_an Array
+
+      all_kind_of_attribute = objects.reduce(true) do |result, object|
+        result &&= object.kind_of?(Java::WekaCore::Attribute)
+      end
+
+      expect(all_kind_of_attribute).to be true
+    end
   end
 
   describe 'attribute definers:' do
@@ -204,6 +235,14 @@ describe Weka::Core::Instances do
 
         expect(@result).to eq 'outlook, 0'
       end
+    end
+  end
+
+  describe '#add_instance' do
+    it 'should add an instance to the Instances object' do
+      data = [:sunny, 70, 80, 'TRUE', :yes]
+      subject.add_instance(data)
+      expect(subject.instances.last.to_s).to eq data.join(',')
     end
   end
 

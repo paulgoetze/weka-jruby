@@ -1,4 +1,5 @@
 require 'weka/core/converters'
+require 'weka/core/dense_instance'
 
 module Weka
   module Core
@@ -16,6 +17,10 @@ module Weka
       def initialize(relation_name = DEFAULT_RELATION_NAME)
         @relation_name = relation_name.to_s
         super(@relation_name, FastVector.new, 0)
+      end
+
+      def instances
+        enumerate_instances.to_a
       end
 
       def attributes
@@ -82,6 +87,13 @@ module Weka
       alias :add_nominal_attribute :nominal
       alias :add_date_attribute    :date
 
+      def add_instance(values, weight: 1.0)
+        data     = internal_values_of(values)
+        instance = DenseInstance.new(weight, data.to_java(:double))
+
+        add(instance)
+      end
+
       private
 
       def save_data_set_with(saver_const, file:)
@@ -95,7 +107,14 @@ module Weka
       def add_attribute(attribute)
         insert_attribute_at(attribute, attributes.count)
       end
+
+      def internal_values_of(values)
+        values.each_with_index.map do |value, index|
+          attribute(index).internal_value_of(value)
+        end
+      end
     end
 
+    Java::WekaCore::Instances.__persistent__ = true
   end
 end
