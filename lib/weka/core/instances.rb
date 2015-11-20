@@ -78,7 +78,7 @@ module Weka
       end
 
       def date(name, format = nil)
-        attribute = Attribute.new(name.to_s, format || '')
+        attribute = Attribute.new(name.to_s, format || 'yyyy-MM-dd HH:mm')
         add_attribute(attribute)
       end
 
