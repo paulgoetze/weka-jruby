@@ -7,3 +7,4 @@ module Weka
 end
 
 require 'weka/core'
+require 'weka/classifiers'
