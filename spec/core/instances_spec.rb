@@ -36,11 +36,11 @@ describe Weka::Core::Instances do
       add_attributes:   :with_attributes,
       instances_count:  :num_instances,
       attributes_count: :num_attributes
-     }.each do |method, alias_method|
+    }.each do |method, alias_method|
       it "should define the alias ##{alias_method} for ##{method}" do
         expect(instances.method(method)).to eq instances.method(alias_method)
       end
-     end
+    end
   end
 
   describe 'converter' do
