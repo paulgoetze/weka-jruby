@@ -3,6 +3,8 @@
 [![Gem Version](https://badge.fury.io/rb/weka.svg)](http://badge.fury.io/rb/weka)
 [![Travis Build](https://travis-ci.org/paulgoetze/weka-jruby.svg)](https://travis-ci.org/paulgoetze/weka-jruby)
 
+Machine Learning & Data Mining with JRuby based on the [Weka](http://www.cs.waikato.ac.nz/~ml/weka/index.html) Java library.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -29,11 +31,11 @@ require 'weka'
 
 ### Instances
 
-Instances objects hold the data set that is used to train a classifier or that
+Instances objects hold the dataset that is used to train a classifier or that
 should be classified based on training data.
 
 Instances can be loaded from files and saved to files.
-Supported formats are ARFF, CSV, and JSON.
+Supported formats are *ARFF*, *CSV*, and *JSON*.
 
 #### Loading Instances from a file
 
@@ -55,8 +57,9 @@ instances = Weka::Core::Instances.new('weather').with_attributes do
   nominal :outlook, ['sunny', 'overcast', 'rainy']
   numeric :temperature
   numeric :humidity
-  nominal :windy, ['true', 'false']
-  nominal :play, ['yes', 'no']
+  nominal :windy, [true, false]
+  date    :last_storm, 'yyyy-MM-dd'
+  nominal :play, [:yes, :no]
 end
 
 # save as ARFF, CSV, or JSON file
@@ -65,11 +68,28 @@ instances.to_csv('weather.csv')
 instances.to_json('weather.json')
 ```
 
-You can also add attributes later on:
+#### Adding additional attributes
+
+You can add additional attributes to the Instances after its initialization.
+All records that are already in the dataset will get an unknown value (`?`) for
+the new attribute.
 
 ```ruby
 instances.add_numeric_attribute(:pressure)
 instances.add_nominal_attribute(:grandma_says, [:hm, :bad, :terrible])
+instances.add_date_attribute(:last_rain, 'yyyy-MM-dd HH:mm')
+```
+
+#### Adding a data instance
+
+You can add a data instance to the Instances by using the `add_instance` method:
+
+```ruby
+data = [:sunny, 70, 80, true, '2015-12-06', :yes, 1.1, :hm, '2015-12-24 20:00']
+instances.add_instance(data)
+
+# with custom weight:
+instances.add_instance(data, weight: 2.0)
 ```
 
 #### Alias methods
