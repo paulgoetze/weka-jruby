@@ -12,11 +12,11 @@ module Weka
       # a numeric.
       def internal_value_of(value)
         if date?
-          parse_date(value)
+          parse_date(value.to_s)
         elsif numeric?
-          value
+          value.to_f
         elsif nominal?
-          index_of_value(value)
+          index_of_value(value.to_s)
         end
       end
     end
