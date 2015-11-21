@@ -6,6 +6,10 @@ module Weka
       java_import "java.util.Date"
       java_import "java.text.SimpleDateFormat"
 
+      def initialize(data, weight: 1.0)
+        super(weight, data.to_java(:double))
+      end
+
       def attributes
         enumerate_attributes.to_a
       end

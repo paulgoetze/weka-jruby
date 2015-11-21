@@ -91,7 +91,7 @@ module Weka
 
       def add_instance(values, weight: 1.0)
         data     = internal_values_of(values)
-        instance = DenseInstance.new(weight, data.to_java(:double))
+        instance = DenseInstance.new(data, weight: weight)
 
         add(instance)
       end
