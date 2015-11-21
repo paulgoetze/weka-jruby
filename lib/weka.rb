@@ -13,3 +13,4 @@ end
 
 require 'weka/core'
 require 'weka/classifiers'
+require 'weka/filters'
