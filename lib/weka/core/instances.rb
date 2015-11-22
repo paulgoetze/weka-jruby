@@ -100,6 +100,10 @@ module Weka
         add(instance)
       end
 
+      def apply_filter(filter)
+        filter.filter(self)
+      end
+
       private
 
       def save_data_set_with(saver_const, file:)

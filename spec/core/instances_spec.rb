@@ -25,6 +25,7 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :attribute_names }
 
   it { is_expected.to respond_to :add_instance }
+  it { is_expected.to respond_to :apply_filter }
 
 
   describe 'aliases:' do
@@ -253,6 +254,16 @@ describe Weka::Core::Instances do
       data = [:sunny, 70, 80, 'TRUE', :yes]
       subject.add_instance(data)
       expect(subject.instances.last.to_s).to eq data.join(',')
+    end
+  end
+
+  describe '#apply_filter' do
+    let(:filter) { double('filter') }
+    before { allow(filter).to receive(:filter).and_return(subject) }
+
+    it 'should call the given filters #filter method' do
+      expect(filter).to receive(:filter).once.with(subject)
+      subject.apply_filter(filter)
     end
   end
 
