@@ -19,9 +19,15 @@ module Weka
         private
 
         def java_class_path(class_name)
-          including_module = self.name.demodulize.downcase
-          super_modules    = self.name.deconstantize.downcase.split('::')
           [*super_modules, including_module, class_name].join('.')
+        end
+
+        def including_module
+          self.name.demodulize.downcase
+        end
+
+        def super_modules
+          self.name.deconstantize.downcase.split('::')
         end
       end
     end
