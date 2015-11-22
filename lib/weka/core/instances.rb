@@ -1,4 +1,5 @@
 require 'weka/core/converters'
+require 'weka/core/parser'
 require 'weka/core/dense_instance'
 
 module Weka
@@ -13,6 +14,20 @@ module Weka
       DEFAULT_RELATION_NAME = 'Instances'
 
       attr_reader :relation_name
+
+      class << self
+        def from_arff(file)
+          Parser.parse_arff(file)
+        end
+
+        def from_csv(file)
+          Parser.parse_csv(file)
+        end
+
+        def from_json(file)
+          Parser.parse_json(file)
+        end
+      end
 
       def initialize(relation_name = DEFAULT_RELATION_NAME)
         @relation_name = relation_name.to_s

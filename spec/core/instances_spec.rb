@@ -65,6 +65,24 @@ describe Weka::Core::Instances do
     end
   end
 
+  describe 'loader' do
+    [:arff, :csv, :json].each do |type|
+      before do
+        allow(Weka::Core::Parser).to receive(:"parse_#{type}").and_return('')
+      end
+
+      describe ".from_#{type}" do
+        it "should call the Weka::Core::Parser#parse_#{type}" do
+          expect(Weka::Core::Parser)
+            .to receive(:"parse_#{type}").once
+            .with("test.#{type}")
+
+          described_class.send("from_#{type}", "test.#{type}")
+        end
+      end
+    end
+  end
+
   describe '#instances' do
     it 'should return an Array of DenseInstance objects' do
       objects = subject.instances
