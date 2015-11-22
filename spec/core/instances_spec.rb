@@ -22,8 +22,10 @@ describe Weka::Core::Instances do
 
   it { is_expected.to respond_to :attributes }
   it { is_expected.to respond_to :instances }
+  it { is_expected.to respond_to :attribute_names }
 
   it { is_expected.to respond_to :add_instance }
+
 
   describe 'aliases:' do
     let (:instances) { described_class.new }
@@ -60,7 +62,6 @@ describe Weka::Core::Instances do
         end
       end
     end
-
   end
 
   describe '#instances' do
@@ -86,6 +87,13 @@ describe Weka::Core::Instances do
       end
 
       expect(all_kind_of_attribute).to be true
+    end
+  end
+
+  describe '#attribute_names' do
+    it 'should return an Array of the attribute names' do
+      names = %w{ outlook temperature humidity windy play }
+      expect(subject.attribute_names).to eq names
     end
   end
 

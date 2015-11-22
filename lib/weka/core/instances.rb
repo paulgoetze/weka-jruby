@@ -27,6 +27,10 @@ module Weka
         enumerate_attributes.to_a
       end
 
+      def attribute_names
+        attributes.map(&:name)
+      end
+
       def add_attributes(&block)
         self.instance_eval(&block) if block
         self
