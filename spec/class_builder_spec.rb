@@ -5,8 +5,10 @@ describe Weka::ClassBuilder do
   subject do
     module Some
       module Weka
-        module Module
-          include ::Weka::ClassBuilder
+        module Custom
+          module Module
+            include ::Weka::ClassBuilder
+          end
         end
       end
     end
@@ -18,15 +20,63 @@ describe Weka::ClassBuilder do
     end
   end
 
-  before { allow(subject).to receive(:java_import) { '' } }
+  before { allow(subject).to receive(:java_import).and_return('') }
 
   describe '.build_class' do
+    let(:class_name){ :SomeClass }
+
     it 'should run java_import with the right resolved class path' do
-      class_name = :SomeClass
-      class_path = "some.weka.module.#{class_name}"
+      class_path = "some.weka.custom.module.#{class_name}"
 
       expect(subject).to receive(:java_import).once.with(class_path)
       subject.build_class(class_name)
+    end
+
+    context 'with defined Utils' do
+      before do
+        module Some
+          module Weka
+            module Utils
+              def shared_method
+              end
+            end
+          end
+        end
+      end
+
+      it 'should include them in the defined class' do
+        subject.build_class(class_name)
+        built_class = "#{subject}::#{class_name}".constantize
+
+        expect(built_class.public_method_defined?(:shared_method)).to be true
+      end
+    end
+
+    context 'without defined Utils' do
+      let(:subject) do
+        module Some
+          module Other
+            module Custom
+              module Module
+                include ::Weka::ClassBuilder
+              end
+            end
+          end
+        end
+      end
+
+      before do
+        allow(subject)
+          .to receive(:java_import)
+          .and_return(subject.module_eval("class #{class_name}; end"))
+      end
+
+      it 'should not include extra methods in the defined class' do
+        subject.build_class(class_name)
+        built_class = "#{subject}::#{class_name}".constantize
+
+        expect(built_class.public_method_defined?(:shared_method)).to be false
+      end
     end
   end
 
