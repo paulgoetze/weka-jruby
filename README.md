@@ -42,9 +42,9 @@ Supported formats are *ARFF*, *CSV*, and *JSON*.
 Instances can be loaded from ARFF, CSV, and JSON files:
 
 ```ruby
-instances = Weka::Core::Loader.load_arff('weather.arff')
-instances = Weka::Core::Loader.load_csv('weather.csv')
-instances = Weka::Core::Loader.load_json('weather.json')
+instances = Weka::Core::Instances.from_arff('weather.arff')
+instances = Weka::Core::Instances.from_csv('weather.csv')
+instances = Weka::Core::Instances.from_json('weather.json')
 ```
 
 #### Creating Instances and saving them as files
