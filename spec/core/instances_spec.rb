@@ -46,25 +46,6 @@ describe Weka::Core::Instances do
     end
   end
 
-  describe 'converter' do
-    before(:all) { @tmp_dir = File.expand_path('../../tmp/', __FILE__) }
-
-    after :all do
-      FileUtils.remove_dir(@tmp_dir, true)
-    end
-
-    [:arff, :csv, :json].each do |type|
-      describe "#to_#{type}" do
-        it "should save a test.#{type} file" do
-          test_file = "#{@tmp_dir}/test.#{type}"
-          expect(File.exists?(test_file)).to be false
-          subject.send("to_#{type}", test_file)
-          expect(File.exists?(test_file)).to be true
-        end
-      end
-    end
-  end
-
   describe 'loader' do
     [:arff, :csv, :json].each do |type|
       before do
@@ -78,6 +59,24 @@ describe Weka::Core::Instances do
             .with("test.#{type}")
 
           described_class.send("from_#{type}", "test.#{type}")
+        end
+      end
+    end
+  end
+
+  describe 'saver' do
+    [:arff, :csv, :json].each do |type|
+      before do
+        allow(Weka::Core::Saver).to receive(:"save_#{type}").and_return('')
+      end
+
+      describe "#to_#{type}" do
+        it "should call the Weka::Core::Saver#save_#{type}" do
+          expect(Weka::Core::Saver)
+            .to receive(:"save_#{type}").once
+            .with(file: "test.#{type}", instances: subject)
+
+          subject.send("to_#{type}", "test.#{type}")
         end
       end
     end

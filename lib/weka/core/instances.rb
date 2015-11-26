@@ -1,11 +1,10 @@
 require 'weka/core/converters'
 require 'weka/core/loader'
+require 'weka/core/saver'
 require 'weka/core/dense_instance'
 
 module Weka
   module Core
-    java_import 'java.io.File'
-    java_import "weka.core.SerializationHelper"
     java_import "weka.core.Instances"
     java_import "weka.core.FastVector"
 
@@ -72,15 +71,15 @@ module Weka
       end
 
       def to_arff(file)
-        save_data_set_with(Converters::ArffSaver, file: file)
+        Saver.save_arff(file: file, instances: self)
       end
 
       def to_csv(file)
-        save_data_set_with(Converters::CSVSaver, file: file)
+        Saver.save_csv(file: file, instances: self)
       end
 
       def to_json(file)
-        save_data_set_with(Converters::JSONSaver, file: file)
+        Saver.save_json(file: file, instances: self)
       end
 
       def numeric(name)
@@ -120,14 +119,6 @@ module Weka
       end
 
       private
-
-      def save_data_set_with(saver_const, file:)
-        saver           = saver_const.new
-        saver.instances = self
-        saver.file      = File.new(file)
-
-        saver.write_batch
-      end
 
       def add_attribute(attribute)
         insert_attribute_at(attribute, attributes.count)

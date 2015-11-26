@@ -1,5 +1,6 @@
 require 'weka/core/converters'
 require 'weka/core/loader'
+require 'weka/core/saver'
 require 'weka/core/attribute'
 require 'weka/core/dense_instance'
 require 'weka/core/instances'
