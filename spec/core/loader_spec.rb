@@ -1,21 +1,23 @@
 require 'spec_helper'
 
-describe Weka::Core::Parser do
+describe Weka::Core::Loader do
 
-  CLASS_METHODS = %i{ parse_arff parse_csv parse_json }
+  CLASS_METHODS = %i{ load_arff load_csv load_json }
 
   CLASS_METHODS.each do |method|
-    it "responds to ::#{method}" do
-      expect(Weka::Core::Parser).to respond_to method
+    it "responds to .#{method}" do
+      expect(described_class).to respond_to method
     end
   end
 
   [:arff, :csv, :json].each do |type|
-    describe "#parse_#{type}" do
+    method = "load_#{type}"
+
+    describe "##{method}" do
       let(:file) { File.expand_path("../../support/resources/weather.#{type}", __FILE__) }
 
       it "returns an Instances object for a given #{type.upcase} file" do
-        instances = Weka::Core::Parser.send("parse_#{type}", file)
+        instances = described_class.send(method, file)
         expect(instances).to be_kind_of Weka::Core::Instances
       end
     end

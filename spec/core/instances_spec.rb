@@ -4,7 +4,7 @@ require 'fileutils'
 describe Weka::Core::Instances do
 
   let(:file) { File.expand_path('../../support/resources/weather.arff', __FILE__) }
-  subject { Weka::Core::Parser.parse_arff(file) }
+  subject { Weka::Core::Loader.load_arff(file) }
 
   it { is_expected.to respond_to :each }
   it { is_expected.to respond_to :each_with_index }
@@ -68,13 +68,13 @@ describe Weka::Core::Instances do
   describe 'loader' do
     [:arff, :csv, :json].each do |type|
       before do
-        allow(Weka::Core::Parser).to receive(:"parse_#{type}").and_return('')
+        allow(Weka::Core::Loader).to receive(:"load_#{type}").and_return('')
       end
 
       describe ".from_#{type}" do
-        it "should call the Weka::Core::Parser#parse_#{type}" do
-          expect(Weka::Core::Parser)
-            .to receive(:"parse_#{type}").once
+        it "should call the Weka::Core::Loader#load_#{type}" do
+          expect(Weka::Core::Loader)
+            .to receive(:"load_#{type}").once
             .with("test.#{type}")
 
           described_class.send("from_#{type}", "test.#{type}")

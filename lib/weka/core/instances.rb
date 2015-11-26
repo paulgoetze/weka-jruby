@@ -1,5 +1,5 @@
 require 'weka/core/converters'
-require 'weka/core/parser'
+require 'weka/core/loader'
 require 'weka/core/dense_instance'
 
 module Weka
@@ -17,15 +17,15 @@ module Weka
 
       class << self
         def from_arff(file)
-          Parser.parse_arff(file)
+          Loader.load_arff(file)
         end
 
         def from_csv(file)
-          Parser.parse_csv(file)
+          Loader.load_csv(file)
         end
 
         def from_json(file)
-          Parser.parse_json(file)
+          Loader.load_json(file)
         end
       end
 
