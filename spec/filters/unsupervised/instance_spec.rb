@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Weka::Filters::Unsupervised::Instance do
 
+  it_behaves_like 'class builder'
+
   [
     :NonSparseToSparse,
     :Randomize,
@@ -17,7 +19,7 @@ describe Weka::Filters::Unsupervised::Instance do
     :SparseToNonSparse,
     :SubsetByExpression
   ].each do |class_name|
-    it "defines a class #{class_name}" do
+    it "should define a class #{class_name}" do
       expect(described_class.const_defined?(class_name)).to be true
     end
   end
