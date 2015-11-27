@@ -14,3 +14,4 @@ end
 require 'weka/core'
 require 'weka/classifiers'
 require 'weka/filters'
+require 'weka/clusterers'
