@@ -5,7 +5,7 @@ describe Weka::ClassBuilder do
   subject do
     module Some
       module Weka
-        module Custom
+        module CustomCamelCased
           module Module
             include ::Weka::ClassBuilder
           end
@@ -26,7 +26,7 @@ describe Weka::ClassBuilder do
     let(:class_name){ :SomeClass }
 
     it 'should run java_import with the right resolved class path' do
-      class_path = "some.weka.custom.module.#{class_name}"
+      class_path = "some.weka.customCamelCased.module.#{class_name}"
 
       expect(subject).to receive(:java_import).once.with(class_path)
       subject.build_class(class_name)

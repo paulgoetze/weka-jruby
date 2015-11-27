@@ -24,7 +24,9 @@ module Weka
       end
 
       def java_super_modules
-        super_modules.downcase.split('::')
+        super_modules.split('::').map do |name|
+          downcase_first_char(name)
+        end
       end
 
       def super_modules
@@ -32,7 +34,7 @@ module Weka
       end
 
       def java_including_module
-        including_module.downcase
+        downcase_first_char(including_module)
       end
 
       def including_module
@@ -59,6 +61,10 @@ module Weka
 
       def utils_super_modules
         super_modules.split('::')[0...2].join('::')
+      end
+
+      def downcase_first_char(string)
+        string[0].downcase + string[1..-1]
       end
     end
 
