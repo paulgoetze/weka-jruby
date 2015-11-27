@@ -110,6 +110,64 @@ attributes in a block when using `#with_attributes` (or `#add_attributes`).
 The longer, more descriptive methods are meant to be used for explicitly adding
 attributes to an Instances object later on.
 
+## Filters
+
+Filters are used to preprocess datasets.
+
+There are two categories of filters which are also reflected by the namespaces:
+
+* supervised – The filter requires a class atribute to be set
+* unsupervised – A class attribute is not required to be present
+
+In each category there are two sub-categories:
+
+* attribute-based – Attributes (columns) are processed
+* instance-based – Instances (rows) are processed
+
+Thus, Filter classes are organized in the following four namespaces:
+
+```ruby
+Weka::Filters::Supervised::Attribute
+Weka::Filters::Supervised::Instance
+
+Weka::Filters::Unsupervised::Attribute
+Weka::Filters::Unsupervised::Instance
+```
+
+Filters can be used directly to filter instances:
+
+```ruby
+# create filter
+filter = Weka::Filters::Unsupervised::Attribute::Normalize.new
+
+# filter instances
+filtered_data = filter.filter(instances)
+```
+
+You can also apply a Filter on an Instances object:
+
+```ruby
+# create filter
+filter = Weka::Filters::Unsupervised::Attribute::Normalize.new
+
+# apply filter on instances
+filtered_data = instances.apply_filter(filter)
+```
+
+With this approach, it is possible to chain multiple filters on a dataset:
+
+```ruby
+# create filters
+include Weka::Filters::Unsupervised::Attribute
+
+normalize  = Normalize.new
+discretize = Discretize.new
+
+# chain filters
+filtered_data = instances.apply_filter(normalize)
+                         .apply_filter(discretize)
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
