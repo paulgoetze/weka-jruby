@@ -4,10 +4,11 @@ module Weka
   module Clusterers
     include ClassBuilder
 
-    build_classes :SimpleKMeans,
-                  :FarthestFirst,
+    build_classes :Canopy,
+                  :Cobweb,
                   :EM,
+                  :FarthestFirst,
                   :HierarchicalClusterer,
-                  :Cobweb
+                  :SimpleKMeans
   end
 end
