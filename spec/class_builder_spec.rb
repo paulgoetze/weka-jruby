@@ -32,6 +32,14 @@ describe Weka::ClassBuilder do
       subject.build_class(class_name)
     end
 
+    it 'should include Describable functionality into the built class' do
+      built_class = subject.build_class(class_name)
+
+      Weka::Describable::ClassMethods.instance_methods.each do |method|
+        expect(built_class).to respond_to method
+      end
+    end
+
     context 'with defined Utils' do
       before do
         module Some

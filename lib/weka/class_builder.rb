@@ -1,6 +1,7 @@
 require 'active_support/concern'
 require 'active_support/core_ext/string'
 require 'active_support/core_ext/module'
+require 'weka/describable'
 
 module Weka
   module ClassBuilder
@@ -10,7 +11,7 @@ module Weka
 
       def build_class(class_name)
         java_import java_class_path(class_name)
-        include_utils_in(class_name)
+        define_class(class_name)
       end
 
       def build_classes(*class_names)
@@ -41,14 +42,18 @@ module Weka
         self.name.demodulize
       end
 
-      def include_utils_in(class_name)
-        return unless utils_defined?
-
+      def define_class(class_name)
         module_eval <<-CLASS_DEFINITION, __FILE__, __LINE__ + 1
-        class #{class_name}
-          include #{utils}
-        end
+          class #{class_name}
+            include Describable
+            #{include_utils}
+          end
         CLASS_DEFINITION
+      end
+
+      def include_utils
+        return unless utils_defined?
+        "include #{utils}"
       end
 
       def utils_defined?
