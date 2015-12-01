@@ -29,6 +29,20 @@ Start using Weka's Machine Learning and Data Mining algorithms by requiring the 
 require 'weka'
 ```
 
+The weka gem tries to carry over the namespaces defined in Weka and enhances some interfaces in order to allow a more Ruby-ish programming style when using the Weka library.
+
+The idea behind keeping the namespaces is, that you can also use the [Weka documentation](http://weka.sourceforge.net/doc.dev/) for looking up functionality and classes.
+
+Analog to the Weka doc you can find the following namespaces:
+
+| Namespace                  | Description                                                      |
+|----------------------------|------------------------------------------------------------------|
+| `Weka::Core`               | defines base classes for loading, saving, creating, and editing a dataset |
+| `Weka::Classifiers`        | defines classifier classes in different sub-modules (`Bayes`, `Functions`, `Lazy`, `Meta`, `Rules`, and `Trees`  ) |
+| `Weka::Filters`            | defines filter classes for processing datasets in the `Supervised` or `Unsupervised`, and `Attribute` or `Instance` sub-modules                 |
+| `Weka::Clusterers`         | defines clusterer classes                                        |
+| `Weka::AttributeSelection` | defines classes for selecting attributes from a dataset          |
+
 ### Instances
 
 Instances objects hold the dataset that is used to train a classifier or that
@@ -49,17 +63,17 @@ instances = Weka::Core::Instances.from_json('weather.json')
 
 #### Creating Instances and saving them as files
 
-Attributes of an Instances object can be defined in a block using the `with_attributes` method:
+Attributes of an Instances object can be defined in a block using the `with_attributes` method. The class attribute can be set by the `class_attribute: true` option on the fly with defining an attribute.
 
 ```ruby
 # create instances with relation name 'weather' and attributes
 instances = Weka::Core::Instances.new('weather').with_attributes do
-  nominal :outlook, ['sunny', 'overcast', 'rainy']
+  nominal :outlook, values: ['sunny', 'overcast', 'rainy']
   numeric :temperature
   numeric :humidity
-  nominal :windy, [true, false]
+  nominal :windy, values: [true, false]
   date    :last_storm, 'yyyy-MM-dd'
-  nominal :play, [:yes, :no]
+  nominal :play, values: [:yes, :no], class_attribute: true
 end
 
 # save as ARFF, CSV, or JSON file
@@ -76,7 +90,7 @@ the new attribute.
 
 ```ruby
 instances.add_numeric_attribute(:pressure)
-instances.add_nominal_attribute(:grandma_says, [:hm, :bad, :terrible])
+instances.add_nominal_attribute(:grandma_says, values: [:hm, :bad, :terrible])
 instances.add_date_attribute(:last_rain, 'yyyy-MM-dd HH:mm')
 ```
 
@@ -92,23 +106,44 @@ instances.add_instance(data)
 instances.add_instance(data, weight: 2.0)
 ```
 
+#### Setting a class attribute
+
+You can set an earlier defined attribute as the class attribute of the dataset.
+This allows classifiers to use the class for building a classification model while training.
+
+```ruby
+instances.add_nominal_attribute(:size, values: ['L', 'XL'], class_attribute: true
+instances.class_attribute = :size
+```
+
+The added attribute can also be directly set as the class attribute:
+
+```ruby
+instances.add_nominal_attribute(:size, values: ['L', 'XL'], class_attribute: true)
+```
+
+Keep in mind that you can only assign existing attributes to be the class attribute.
+The class attribute will not appear in the `instances.attributes` anymore and can be accessed with the `class_attribute` method.
+
+
 #### Alias methods
 
 `Weka::Core::Instances` has following alias methods:
 
-| method            | alias                   |
-|-------------------|-------------------------|
-| `numeric`         | `add_numeric_attribute` |
-| `nominal`         | `add_nominal_attribute` |
-| `date`            | `add_date_attribute`    |
-| `string`          | `add_string_attribute`  |
-| `with_attributes` | `add_attributes`        |
+| method                | alias                   |
+|-----------------------|-------------------------|
+| `numeric`             | `add_numeric_attribute` |
+| `nominal`             | `add_nominal_attribute` |
+| `date`                | `add_date_attribute`    |
+| `string`              | `add_string_attribute`  |
+| `set_class_attribute` | `class_attribute=`      |
+| `with_attributes`     | `add_attributes`        |
 
-The shorter methods on the left side are meant to be used when defining
+The methods on the left side are meant to be used when defining
 attributes in a block when using `#with_attributes` (or `#add_attributes`).
 
-The longer, more descriptive methods are meant to be used for explicitly adding
-attributes to an Instances object later on.
+The alias methods are meant to be used for explicitly adding
+attributes to an Instances object or defining its class attribute later on.
 
 ## Filters
 
@@ -116,13 +151,13 @@ Filters are used to preprocess datasets.
 
 There are two categories of filters which are also reflected by the namespaces:
 
-* supervised – The filter requires a class atribute to be set
-* unsupervised – A class attribute is not required to be present
+* *supervised* – The filter requires a class atribute to be set
+* *unsupervised* – A class attribute is not required to be present
 
 In each category there are two sub-categories:
 
-* attribute-based – Attributes (columns) are processed
-* instance-based – Instances (rows) are processed
+* *attribute-based* – Attributes (columns) are processed
+* *instance-based* – Instances (rows) are processed
 
 Thus, Filter classes are organized in the following four namespaces:
 
@@ -164,9 +199,12 @@ normalize  = Normalize.new
 discretize = Discretize.new
 
 # chain filters
-filtered_data = instances.apply_filter(normalize)
-                         .apply_filter(discretize)
+filtered_data = instances.apply_filter(normalize).apply_filter(discretize)
 ```
+
+## Classifiers
+
+## Clusterers
 
 ## Development
 
