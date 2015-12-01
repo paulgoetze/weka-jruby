@@ -27,18 +27,20 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :add_instance }
   it { is_expected.to respond_to :apply_filter }
 
+  it { is_expected.to respond_to :set_class_attribute }
 
   describe 'aliases:' do
     let (:instances) { described_class.new }
 
     {
-      numeric:          :add_numeric_attribute,
-      string:           :add_string_attribute,
-      nominal:          :add_nominal_attribute,
-      date:             :add_date_attribute,
-      add_attributes:   :with_attributes,
-      instances_count:  :num_instances,
-      attributes_count: :num_attributes
+      numeric:             :add_numeric_attribute,
+      string:              :add_string_attribute,
+      nominal:             :add_nominal_attribute,
+      date:                :add_date_attribute,
+      add_attributes:      :with_attributes,
+      instances_count:     :num_instances,
+      attributes_count:    :num_attributes,
+      set_class_attribute: :class_attribute=,
     }.each do |method, alias_method|
       it "should define the alias ##{alias_method} for ##{method}" do
         expect(instances.method(method)).to eq instances.method(alias_method)
@@ -117,32 +119,54 @@ describe Weka::Core::Instances do
 
   describe 'attribute definers:' do
     let(:instances) { described_class.new }
+    let(:name)      { 'attribute_name' }
 
     describe '#numeric' do
       it 'can be used to add a numeric attribute' do
-        instances.numeric('attribute_name')
+        instances.numeric(name)
         expect(instances.attributes.first).to be_numeric
+      end
+
+      context 'with the class_attribute option' do
+        it 'should define the attribute as class attribute' do
+          instances.numeric(name, class_attribute: true)
+          expect(instances.class_attribute.name).to eq name
+        end
       end
     end
 
     xdescribe '#string' do
       it 'can be used to add a string attribute' do
-        instances.string('attribute_name')
+        instances.string(name)
         expect(instances.attributes.first).to be_string
       end
     end
 
     describe '#nominal' do
       it 'can be used to add a nominal attribute' do
-        instances.nominal('attribute_name', ['yes', 'no'])
+        instances.nominal(name, values: ['yes', 'no'])
         expect(instances.attributes.first).to be_nominal
+      end
+
+      context 'with the class_attribute option' do
+        it 'should define the attribute as class attribute' do
+          instances.nominal(name, values: ['yes', 'no'], class_attribute: true)
+          expect(instances.class_attribute.name).to eq name
+        end
       end
     end
 
     describe '#date' do
       it 'can be used to add a date attribute' do
-        instances.date('attribute_name')
+        instances.date(name)
         expect(instances.attributes.first).to be_date
+      end
+
+      context 'with the class_attribute option' do
+        it 'should define the attribute as class attribute' do
+          instances.date(name, class_attribute: true)
+          expect(instances.class_attribute.name).to eq name
+        end
       end
     end
 
@@ -163,17 +187,17 @@ describe Weka::Core::Instances do
 
       describe '#nominal' do
         it 'can be used to add a nominal attribute' do
-          instances.nominal(:attribute_name, [:yes, :no])
+          instances.nominal(:attribute_name, values: [:yes, :no])
           expect(instances.attributes.first).to be_nominal
         end
 
         it 'should convert a single option into an Array' do
-          instances.nominal(:attribute_name, 'yes')
+          instances.nominal(:attribute_name, values: 'yes')
           expect(instances.attributes.first.values).to eq ['yes']
         end
 
         it 'should convert the options into strings' do
-          instances.nominal(:attribute_name, [true, false])
+          instances.nominal(:attribute_name, values: [true, false])
           expect(instances.attributes.first.values).to eq ['true', 'false']
         end
       end
@@ -187,6 +211,18 @@ describe Weka::Core::Instances do
     end
   end
 
+  describe '#set_class_attribute' do
+    it 'can be used to define the class attribute' do
+      subject.set_class_attribute(:play)
+      expect(subject.class_attribute.name).to eq 'play'
+    end
+
+    it 'should raise an ArgumentError if the given attribute is not defined' do
+      expect { subject.set_class_attribute(:not_existing_attribute) }
+        .to raise_error(ArgumentError)
+    end
+  end
+
   describe '#add_attributes' do
     it 'should add the numbers of attributes given in the block' do
       instances = Weka::Core::Instances.new
@@ -194,7 +230,7 @@ describe Weka::Core::Instances do
       expect {
         instances.add_attributes do
           numeric 'attribute'
-          nominal 'class', ['YES', 'NO']
+          nominal 'class', values: ['YES', 'NO']
         end
       }.to change { instances.attributes.count }.from(0).to(2)
     end
@@ -204,7 +240,7 @@ describe Weka::Core::Instances do
 
       instances.add_attributes do
         numeric 'attribute'
-        nominal 'class', ['YES', 'NO']
+        nominal 'class', values: ['YES', 'NO']
       end
 
       expect(instances.attributes.map(&:name)).to eq ['attribute', 'class']
@@ -216,7 +252,7 @@ describe Weka::Core::Instances do
       expect {
         Weka::Core::Instances.new.with_attributes do
           numeric 'attribute 1'
-          nominal 'class', ['YES', 'NO']
+          nominal 'class', values: ['YES', 'NO']
         end
       }.not_to raise_error
     end

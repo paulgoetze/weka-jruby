@@ -28,7 +28,7 @@ module Weka
         end
       end
 
-      def initialize(relation_name = DEFAULT_RELATION_NAME)
+      def initialize(relation_name = DEFAULT_RELATION_NAME, &block)
         @relation_name = relation_name.to_s
         super(@relation_name, FastVector.new, 0)
       end
@@ -82,30 +82,40 @@ module Weka
         Saver.save_json(file: file, instances: self)
       end
 
-      def numeric(name)
+      def numeric(name, class_attribute: false)
         attribute = Attribute.new(name.to_s)
         add_attribute(attribute)
+        set_class_attribute(name) if class_attribute
       end
 
-      def nominal(name, values)
+      def nominal(name, values:, class_attribute: false)
         attribute = Attribute.new(name.to_s, Array(values).map(&:to_s))
         add_attribute(attribute)
+        set_class_attribute(name) if class_attribute
       end
 
-      def string(name)
+      def string(name, class_attribute: false)
         attribute = Attribute.new(name.to_s, [])
         add_attribute(attribute)
+        set_class_attribute(name) if class_attribute
       end
 
-      def date(name, format = nil)
-        attribute = Attribute.new(name.to_s, format || 'yyyy-MM-dd HH:mm')
+      def date(name, format: 'yyyy-MM-dd HH:mm', class_attribute: false)
+        attribute = Attribute.new(name.to_s, format)
         add_attribute(attribute)
+        set_class_attribute(name) if class_attribute
+      end
+
+      def set_class_attribute(name)
+        ensure_attribute_defined!(name)
+        setClass(attribute_with_name(name))
       end
 
       alias :add_numeric_attribute :numeric
       alias :add_string_attribute  :string
       alias :add_nominal_attribute :nominal
       alias :add_date_attribute    :date
+      alias :class_attribute=      :set_class_attribute
 
       def add_instance(values, weight: 1.0)
         data     = internal_values_of(values)
@@ -122,6 +132,20 @@ module Weka
 
       def add_attribute(attribute)
         insert_attribute_at(attribute, attributes.count)
+      end
+
+      def ensure_attribute_defined!(name)
+        unless attribute_names.include?(name.to_s)
+          error   = "\"#{name}\" is not defined."
+          hint    = "Only defined attributes can be used as class attribute!"
+          message = "#{error} #{hint}"
+
+          raise ArgumentError, message
+        end
+      end
+
+      def attribute_with_name(name)
+        attributes.select { |attribute| attribute.name == name.to_s }.first
       end
 
       def internal_values_of(values)
