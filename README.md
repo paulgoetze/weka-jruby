@@ -228,6 +228,10 @@ Here's how to contribute:
 
 Please try to add RSpec tests along with your new features. This will ensure that your code does not break existing functionality and that your feature is working as expected.
 
+## Acknowledgement
+
+The original ideas for wrapping Weka in JRuby come from [@arrigonialberto86](https://github.com/arrigonialberto86) and his [ruby-band](https://github.com/arrigonialberto86/ruby-band) gem. Great thanks!
+
 ## License
 
 The gem is available as open source under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl-3.0.en.html).
