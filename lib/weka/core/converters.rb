@@ -5,8 +5,6 @@ module Weka
     module Converters
       include ClassBuilder
 
-      java_import 'java.io.File'
-
       build_classes :ArffLoader,
                     :ArffSaver,
                     :CSVLoader,
