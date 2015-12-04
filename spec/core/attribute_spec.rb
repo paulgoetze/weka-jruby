@@ -45,10 +45,19 @@ describe Weka::Core::Attribute do
     end
 
     context 'a data attribute' do
-      let(:attribute) { Weka::Core::Attribute.new('date', 'yyyy-MM-dd HH:mm') }
+      let(:attribute)      { Weka::Core::Attribute.new('date', 'yyyy-MM-dd HH:mm') }
+      let(:datetime)       { '2015-12-24 11:11' }
+      let(:unix_timestamp) { 1450955460000.0 }
+
+      before do
+        allow(attribute)
+          .to receive(:parse_date)
+          .with(datetime)
+          .and_return(unix_timestamp)
+      end
 
       it 'should return the right date timestamp value' do
-        expect(attribute.internal_value_of('2015-12-24 11:11')).to eq 1450951860000.0
+        expect(attribute.internal_value_of(datetime)).to eq unix_timestamp
       end
     end
   end
