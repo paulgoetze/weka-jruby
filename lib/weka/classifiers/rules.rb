@@ -6,13 +6,10 @@ module Weka
       include ClassBuilder
 
       build_classes :DecisionTable,
-                    :DecisionTableHashKey,
                     :JRip,
                     :M5Rules,
                     :OneR,
                     :PART,
-                    :Rule,
-                    :RuleStats,
                     :ZeroR
     end
   end

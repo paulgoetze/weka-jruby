@@ -6,13 +6,10 @@ describe Weka::Classifiers::Rules do
 
   [
     :DecisionTable,
-    :DecisionTableHashKey,
     :JRip,
     :M5Rules,
     :OneR,
     :PART,
-    :Rule,
-    :RuleStats,
     :ZeroR
   ].each do |class_name|
     it "should define a class #{class_name}" do
