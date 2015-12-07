@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Machine Learning & Data Mining with JRuby.}
   spec.description   = %q{A wrapper for the Weka library (http://www.cs.waikato.ac.nz/ml/weka/)}
   spec.homepage      = 'https://github.com/paulgoetze/weka-jruby'
-  spec.license       = 'GPLv3'
+  spec.license       = 'MIT'
 
   spec.platform               = 'java'
   spec.required_ruby_version  = '~> 2.0'

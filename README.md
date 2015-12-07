@@ -236,4 +236,4 @@ The original ideas for wrapping Weka in JRuby come from [@arrigonialberto86](htt
 
 ## License
 
-The gem is available as open source under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl-3.0.en.html).
+The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
