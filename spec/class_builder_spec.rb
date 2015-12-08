@@ -40,6 +40,17 @@ describe Weka::ClassBuilder do
       end
     end
 
+    it 'should include Optionizable functionality into the built class' do
+      built_class = subject.build_class(class_name)
+
+      [
+        :use_options,
+        :options
+      ].each do |method|
+        expect(built_class.new).to respond_to method
+      end
+    end
+
     context 'with defined Utils' do
       before do
         module Some
