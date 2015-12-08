@@ -40,6 +40,14 @@ describe Weka::ClassBuilder do
       end
     end
 
+    it 'should include Buildable functionality into the built class' do
+      built_class = subject.build_class(class_name)
+
+      Weka::Buildable::ClassMethods.instance_methods.each do |method|
+        expect(built_class).to respond_to method
+      end
+    end
+
     it 'should include Optionizable functionality into the built class' do
       built_class = subject.build_class(class_name)
 

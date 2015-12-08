@@ -6,12 +6,6 @@ module Weka
       extend ActiveSupport::Concern
 
       included do
-        def self.build(&block)
-          instance = new
-          instance.instance_eval(&block) if block_given?
-          instance
-        end
-
         if instance_methods.include?(:build_classifier)
           alias :train_with_instances :build_classifier
         end

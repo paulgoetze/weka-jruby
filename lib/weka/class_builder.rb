@@ -3,6 +3,7 @@ require 'active_support/core_ext/string'
 require 'active_support/core_ext/module'
 require 'weka/describable'
 require 'weka/optionizable'
+require 'weka/buildable'
 
 module Weka
   module ClassBuilder
@@ -48,6 +49,7 @@ module Weka
           class #{class_name}
             include Describable
             include Optionizable
+            include Buildable
             #{include_utils}
           end
         CLASS_DEFINITION
