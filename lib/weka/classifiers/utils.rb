@@ -1,5 +1,4 @@
 require 'active_support/concern'
-require 'weka/core/dense_instance'
 
 module Weka
   module Classifiers
