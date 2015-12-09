@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Weka::Buildable do
+describe Weka::Concerns::Buildable do
 
   subject do
-    Class.new { include Weka::Buildable }
+    Class.new { include Weka::Concerns::Buildable }
   end
 
   it 'should respond to .build' do

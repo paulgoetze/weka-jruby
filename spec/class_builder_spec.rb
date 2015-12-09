@@ -32,30 +32,40 @@ describe Weka::ClassBuilder do
       subject.build_class(class_name)
     end
 
-    it 'should include Describable functionality into the built class' do
-      built_class = subject.build_class(class_name)
+    describe 'concerns' do
+      describe 'built class including Describable functionality' do
+        let(:built_class) { subject.build_class(class_name) }
 
-      Weka::Describable::ClassMethods.instance_methods.each do |method|
-        expect(built_class).to respond_to method
+        Weka::Concerns::Describable::ClassMethods.instance_methods.each do |method|
+          it "should respond to .#{method}" do
+            expect(built_class).to respond_to method
+          end
+        end
       end
-    end
 
-    it 'should include Buildable functionality into the built class' do
-      built_class = subject.build_class(class_name)
+      describe 'built class including Buildable functionality' do
+        let(:built_class) { subject.build_class(class_name) }
 
-      Weka::Buildable::ClassMethods.instance_methods.each do |method|
-        expect(built_class).to respond_to method
+        Weka::Concerns::Buildable::ClassMethods.instance_methods.each do |method|
+          it "should respond to .#{method}" do
+            expect(built_class).to respond_to method
+          end
+        end
       end
-    end
 
-    it 'should include Optionizable functionality into the built class' do
-      built_class = subject.build_class(class_name)
+      describe 'built class including Optionizable functionality' do
+        let(:built_class)          { subject.build_class(class_name) }
+        let(:built_class_instance) { built_class.new }
 
-      [
-        :use_options,
-        :options
-      ].each do |method|
-        expect(built_class.new).to respond_to method
+        it 'should respond to .default_options' do
+          expect(built_class).to respond_to :default_options
+        end
+
+        [:use_options, :options].each do |method|
+          it "should respond to ##{method}" do
+            expect(built_class_instance).to respond_to method
+          end
+        end
       end
     end
 

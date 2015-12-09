@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Weka::Optionizable do
+describe Weka::Concerns::Optionizable do
 
   subject do
-    Class.new { include Weka::Optionizable }.new
+    Class.new { include Weka::Concerns::Optionizable }.new
   end
 
   it { is_expected.to respond_to :use_options }

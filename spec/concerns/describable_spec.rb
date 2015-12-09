@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Weka::Describable do
+describe Weka::Concerns::Describable do
 
   subject do
-    Class.new { include Weka::Describable }
+    Class.new { include Weka::Concerns::Describable }
   end
 
   it { is_expected.to respond_to :description }

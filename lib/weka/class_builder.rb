@@ -1,9 +1,7 @@
 require 'active_support/concern'
 require 'active_support/core_ext/string'
 require 'active_support/core_ext/module'
-require 'weka/describable'
-require 'weka/optionizable'
-require 'weka/buildable'
+require 'weka/concerns'
 
 module Weka
   module ClassBuilder
@@ -47,9 +45,7 @@ module Weka
       def define_class(class_name)
         module_eval <<-CLASS_DEFINITION, __FILE__, __LINE__ + 1
           class #{class_name}
-            include Describable
-            include Optionizable
-            include Buildable
+            include Concerns
             #{include_utils}
           end
         CLASS_DEFINITION
