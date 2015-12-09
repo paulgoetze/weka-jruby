@@ -169,7 +169,9 @@ Weka::Filters::Unsupervised::Attribute
 Weka::Filters::Unsupervised::Instance
 ```
 
-Filters can be used directly to filter instances:
+#### Filtering Instances
+
+Filters can be used directly to filter Instances:
 
 ```ruby
 # create filter
@@ -198,8 +200,45 @@ include Weka::Filters::Unsupervised::Attribute
 normalize  = Normalize.new
 discretize = Discretize.new
 
-# chain filters
+# apply a filter chain on instances
 filtered_data = instances.apply_filter(normalize).apply_filter(discretize)
+```
+
+#### Setting Filter options
+
+Any Filter has several options. You can list a description of all options of a filter:
+
+```ruby
+puts Weka::Filters::Unsupervised::Attribute::Normalize.options
+# -S <num> The scaling factor for the output range.
+#   (default: 1.0)
+# -T <num>  The translation of the output range.
+#   (default: 0.0)
+# -unset-class-temporarily  Unsets the class index temporarily before the filter is
+#   applied to the data.
+#   (default: no)
+```
+
+To get the default option set of a Filter you can run `.default_options`:
+
+```ruby
+Weka::Filters::Unsupervised::Attribute::Normalize.default_options
+# => '-S 1.0 -T 0.0'
+```
+
+Options can be set while building a Filter:
+
+```ruby
+filter = Weka::Filters::Unsupervised::Attribute::Normalize.build do
+  use_options '-S 0.5'
+end
+```
+
+Or they can be set or changed after you created the Filter:
+
+```ruby
+filter = Weka::Filters::Unsupervised::Attribute::Normalize.new
+filter.use_options('-S 0.5')
 ```
 
 ## Attribute selection
