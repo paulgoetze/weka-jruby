@@ -22,6 +22,8 @@ module Weka
           end
 
           def cross_validate(folds: 3)
+            ensure_trained_with_instances!
+
             evaluation = Evaluation.new(self.training_instances)
 
             evaluation.cross_validate_model(
@@ -53,6 +55,16 @@ module Weka
           message = "#{error} #{hint}"
 
           raise UnassignedClassError, message
+        end
+
+        def ensure_trained_with_instances!
+          return unless self.training_instances.nil?
+
+          error   = 'Classifier is not trained with Instances.'
+          hint    = 'You can set the training instances with #train_with_instances.'
+          message = "#{error} #{hint}"
+
+          raise UnassignedTrainingInstancesError, message
         end
       end
 

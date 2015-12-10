@@ -90,6 +90,18 @@ describe Weka::Classifiers::Utils do
 
       subject.cross_validate(folds: folds)
     end
+
+    context 'without a training instances' do
+      before do
+        allow(subject).to receive(:training_instances).and_return(nil)
+      end
+
+      it 'should raise an UnassignedTrainingInstancesError' do
+        expect {
+          subject.cross_validate(folds: folds)
+        }.to raise_error Weka::UnassignedTrainingInstancesError
+      end
+    end
   end
 
 end
