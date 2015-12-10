@@ -28,6 +28,7 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :apply_filter }
 
   it { is_expected.to respond_to :set_class_attribute }
+  it { is_expected.to respond_to :class_attribute }
 
   describe 'aliases:' do
     let (:instances) { described_class.new }
@@ -220,6 +221,28 @@ describe Weka::Core::Instances do
     it 'should raise an ArgumentError if the given attribute is not defined' do
       expect { subject.set_class_attribute(:not_existing_attribute) }
         .to raise_error(ArgumentError)
+    end
+  end
+
+  describe '#class_attribute' do
+    context 'if class attribute is set' do
+      before { subject.class_attribute = :play }
+
+      it 'should return the Attribute' do
+        expect(subject.class_attribute).to be_kind_of Weka::Core::Attribute
+        expect(subject.class_attribute.name).to eq 'play'
+      end
+    end
+
+    context 'if class attribute is not set' do
+      it 'should not raise a Java::WekaCore::UnassignedClassException' do
+        expect { subject.class_attribute }
+          .not_to raise_error Java::WekaCore::UnassignedClassException
+      end
+
+      it 'should return nil' do
+        expect(subject.class_attribute).to be_nil
+      end
     end
   end
 

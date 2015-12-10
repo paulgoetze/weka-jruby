@@ -117,6 +117,10 @@ module Weka
       alias :add_date_attribute    :date
       alias :class_attribute=      :set_class_attribute
 
+      def class_attribute
+        classAttribute unless class_index < 0
+      end
+
       def add_instance(values, weight: 1.0)
         data     = internal_values_of(values)
         instance = DenseInstance.new(data, weight: weight)
