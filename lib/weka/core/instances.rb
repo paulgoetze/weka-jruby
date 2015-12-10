@@ -143,13 +143,13 @@ module Weka
       end
 
       def ensure_attribute_defined!(name)
-        unless attribute_names.include?(name.to_s)
-          error   = "\"#{name}\" is not defined."
-          hint    = "Only defined attributes can be used as class attribute!"
-          message = "#{error} #{hint}"
+        return if attribute_names.include?(name.to_s)
 
-          raise ArgumentError, message
-        end
+        error   = "\"#{name}\" is not defined."
+        hint    = "Only defined attributes can be used as class attribute!"
+        message = "#{error} #{hint}"
+
+        raise ArgumentError, message
       end
 
       def attribute_with_name(name)

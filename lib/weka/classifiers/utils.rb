@@ -13,6 +13,8 @@ module Weka
           attr_reader :training_instances
 
           def train_with_instances(instances)
+            ensure_class_attribute_assigned!(instances)
+
             @training_instances = instances
             build_classifier(instances)
 
@@ -39,6 +41,18 @@ module Weka
 
         if self.respond_to?(:__persistent__=)
           self.__persistent__ = true
+        end
+
+        private
+
+        def ensure_class_attribute_assigned!(instances)
+          return if instances.class_attribute_defined?
+
+          error   = 'Class attribute is not assigned for Instances.'
+          hint    = 'You can assign a class attribute with #class_attribute=.'
+          message = "#{error} #{hint}"
+
+          raise UnassignedClassError, message
         end
       end
 

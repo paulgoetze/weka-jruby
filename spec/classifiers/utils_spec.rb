@@ -57,6 +57,17 @@ describe Weka::Classifiers::Utils do
     it 'should return itself' do
       expect(subject.train_with_instances(instances)).to be subject
     end
+
+    context 'without an assigned class attribute on instances' do
+      it 'should raise an UnassignedClassError' do
+        file      = File.expand_path('./../../support/resources/weather.arff', __FILE__)
+        instances = Weka::Core::Instances.from_arff(file)
+
+        expect {
+          including_class.new.train_with_instances(instances)
+        }.to raise_error Weka::UnassignedClassError
+      end
+    end
   end
 
   describe '#cross_validate' do
