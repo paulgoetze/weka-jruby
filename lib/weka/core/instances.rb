@@ -118,7 +118,11 @@ module Weka
       alias :class_attribute=      :set_class_attribute
 
       def class_attribute
-        classAttribute unless class_index < 0
+        classAttribute if class_attribute_defined?
+      end
+
+      def class_attribute_defined?
+        class_index >= 0
       end
 
       def add_instance(values, weight: 1.0)

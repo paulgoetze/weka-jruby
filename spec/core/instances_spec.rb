@@ -246,6 +246,22 @@ describe Weka::Core::Instances do
     end
   end
 
+  describe '#class_attribute_defined?' do
+    context 'if class_attribute is set' do
+      before { subject.class_attribute = :outlook }
+
+      it 'should return true' do
+        expect(subject.class_attribute_defined?).to be true
+      end
+    end
+
+    context 'if class_attribute is not set' do
+      it 'should return false' do
+        expect(subject.class_attribute_defined?).to be false
+      end
+    end
+  end
+
   describe '#add_attributes' do
     it 'should add the numbers of attributes given in the block' do
       instances = Weka::Core::Instances.new
