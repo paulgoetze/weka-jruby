@@ -132,6 +132,12 @@ module Weka
         add(instance)
       end
 
+      def internal_values_of(values)
+        values.each_with_index.map do |value, index|
+          attribute(index).internal_value_of(value)
+        end
+      end
+
       def apply_filter(filter)
         filter.filter(self)
       end
@@ -154,12 +160,6 @@ module Weka
 
       def attribute_with_name(name)
         attributes.select { |attribute| attribute.name == name.to_s }.first
-      end
-
-      def internal_values_of(values)
-        values.each_with_index.map do |value, index|
-          attribute(index).internal_value_of(value)
-        end
       end
     end
 

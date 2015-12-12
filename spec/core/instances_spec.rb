@@ -349,6 +349,15 @@ describe Weka::Core::Instances do
     end
   end
 
+  describe '#internal_values_of' do
+    it 'should return the internal values of the given values' do
+      values          = [:sunny, 85, 85, :FALSE, :no]
+      internal_values = [0, 85.0, 85.0, 1, 1]
+
+      expect(subject.internal_values_of(values)).to eq internal_values
+    end
+  end
+
   describe '#apply_filter' do
     let(:filter) { double('filter') }
     before { allow(filter).to receive(:filter).and_return(subject) }
