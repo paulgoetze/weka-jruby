@@ -21,18 +21,14 @@ module Weka
             self
           end
 
-          def cross_validate(folds: 3)
+          def cross_validate(test_instances: nil, folds: 3)
             ensure_trained_with_instances!
 
-            evaluation = Evaluation.new(self.training_instances)
+            evaluation  = Evaluation.new(self.training_instances)
+            instances   = test_instances || self.training_instances
+            random      = Java::JavaUtil::Random.new(1)
 
-            evaluation.cross_validate_model(
-              self,
-              self.training_instances,
-              folds.to_i.to_java(:int),
-              Java::JavaUtil::Random.new(1)
-            )
-
+            evaluation.cross_validate_model(self, instances, folds.to_i, random)
             evaluation
           end
         end

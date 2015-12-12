@@ -31,5 +31,7 @@ module Weka
       alias :cumulative_margin_distribution :to_cumulative_margin_distribution_string
     end
 
+    Java::WekaClassifiers::Evaluation.__persistent__ = true
+
   end
 end

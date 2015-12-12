@@ -116,7 +116,7 @@ describe Weka::Classifiers::Utils do
   end
 
   describe '#cross_validate' do
-    let(:folds) { 2 }
+    let(:default_folds) { 3 }
 
     before do
       allow(subject).to receive(:training_instances).and_return(instances)
@@ -125,7 +125,7 @@ describe Weka::Classifiers::Utils do
     end
 
     it 'should return a Weka::Classifiers::Evaluation' do
-      return_value = subject.cross_validate(folds: folds)
+      return_value = subject.cross_validate
       expect(return_value).to be_kind_of Weka::Classifiers::Evaluation
     end
 
@@ -133,18 +133,75 @@ describe Weka::Classifiers::Utils do
       expect_any_instance_of(Weka::Classifiers::Evaluation)
         .to receive(:cross_validate_model).once
 
-      subject.cross_validate(folds: folds)
+      subject.cross_validate
     end
 
-    context 'without a training instances' do
-      before do
-        allow(subject).to receive(:training_instances).and_return(nil)
+    it 'should use 3 folds and the training instances as default test instances' do
+      expect_any_instance_of(Weka::Classifiers::Evaluation)
+        .to receive(:cross_validate_model).once
+        .with(
+          subject,
+          subject.training_instances,
+          default_folds,
+          an_instance_of(Java::JavaUtil::Random)
+        )
+
+      subject.cross_validate
+    end
+
+    context 'with given folds' do
+      let(:folds) { default_folds + 1 }
+
+      it 'should use the given number of folds' do
+        expect_any_instance_of(Weka::Classifiers::Evaluation)
+          .to receive(:cross_validate_model).once
+          .with(
+            subject,
+            subject.training_instances,
+            folds,
+            an_instance_of(Java::JavaUtil::Random)
+          )
+
+        subject.cross_validate(folds: folds)
       end
 
+      it 'should use the folds as an integer value' do
+        expect_any_instance_of(Weka::Classifiers::Evaluation)
+          .to receive(:cross_validate_model).once
+          .with(
+            subject,
+            subject.training_instances,
+            2,
+            an_instance_of(Java::JavaUtil::Random)
+          )
+
+        subject.cross_validate(folds: 2.75)
+      end
+    end
+
+    context 'with given test_instances' do
+      let(:test_instances) { double('test instances') }
+
+      it 'should use the given instances as test instances' do
+        expect_any_instance_of(Weka::Classifiers::Evaluation)
+          .to receive(:cross_validate_model).once
+          .with(
+            subject,
+            test_instances,
+            default_folds,
+            an_instance_of(Java::JavaUtil::Random)
+          )
+
+        subject.cross_validate(test_instances: test_instances)
+      end
+    end
+
+    context 'without training instances' do
+      before { allow(subject).to receive(:training_instances).and_return(nil) }
+
       it 'should raise an UnassignedTrainingInstancesError' do
-        expect {
-          subject.cross_validate(folds: folds)
-        }.to raise_error Weka::UnassignedTrainingInstancesError
+        expect { subject.cross_validate }
+          .to raise_error Weka::UnassignedTrainingInstancesError
       end
     end
   end
