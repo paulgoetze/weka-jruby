@@ -106,6 +106,20 @@ instances.add_instance(data)
 instances.add_instance(data, weight: 2.0)
 ```
 
+Multiple instances can be added with the `add_instances` method:
+
+```ruby
+data = [
+  [:sunny, 70, 80, true, '2015-12-06', :yes, 1.1, :hm, '2015-12-24 20:00'],
+  [:overcast, 80, 85, false, '2015-11-11', :no, 0.9, :bad, '2015-12-25 18:13']
+]
+
+instances.add_instances(data, weight: 2.0)
+```
+
+If the `weight` argument is not given, then a default weight of 1.0 is used.
+The weight in `add_instances` is used for all the added instances.
+
 #### Setting a class attribute
 
 You can set an earlier defined attribute as the class attribute of the dataset.

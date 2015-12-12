@@ -349,6 +349,23 @@ describe Weka::Core::Instances do
     end
   end
 
+  describe '#add_instances' do
+    let(:data) do
+      [[:sunny, 70, 80, :TRUE, :yes], [:overcast, 80, 85, :FALSE, :yes]]
+    end
+
+    it 'should add the data to the Instances object' do
+      expect { subject.add_instances(data) }
+        .to change { subject.instances_count }
+        .by(data.count)
+    end
+
+    it 'should call #add_instance internally' do
+      expect(subject).to receive(:add_instance).exactly(data.count).times
+      subject.add_instances(data)
+    end
+  end
+
   describe '#internal_values_of' do
     it 'should return the internal values of the given values' do
       values          = [:sunny, 85, 85, :FALSE, :no]

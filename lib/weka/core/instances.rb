@@ -132,6 +132,10 @@ module Weka
         add(instance)
       end
 
+      def add_instances(data, weight: 1.0)
+        data.each { |values| add_instance(values, weight: weight) }
+      end
+
       def internal_values_of(values)
         values.each_with_index.map do |value, index|
           attribute(index).internal_value_of(value)
