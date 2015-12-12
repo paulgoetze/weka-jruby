@@ -38,7 +38,18 @@ module Weka
         end
 
         if instance_methods.include?(:update_classifier)
-          alias :add_training_instance :update_classifier
+          def add_training_instance(instance)
+            self.training_instances.add(instance)
+            update_classifier(instance)
+
+            self
+          end
+
+          def add_training_data(data)
+            values   = self.training_instances.internal_values_of(data)
+            instance = Weka::Core::DenseInstance.new(values)
+            add_training_instance(instance)
+          end
         end
 
         if self.respond_to?(:__persistent__=)

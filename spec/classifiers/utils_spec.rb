@@ -70,6 +70,51 @@ describe Weka::Classifiers::Utils do
     end
   end
 
+  describe '#add_training_instance' do
+    let(:instance) { Weka::Core::DenseInstance.new([0, 85.0, 85.0, 1, 1]) }
+
+    before do
+      allow(subject).to receive(:update_classifier)
+      subject.train_with_instances(instances)
+    end
+
+    it 'should call Java‘s #update_classifier' do
+      expect(subject).to receive(:update_classifier).once.with(instance)
+      subject.add_training_instance(instance)
+    end
+
+    it 'should add the instance to training_instances' do
+      expect { subject.add_training_instance(instance) }
+        .to change { subject.training_instances.count }
+        .by(1)
+    end
+
+    it 'should return itself' do
+      expect(subject.add_training_instance(instance)).to be_kind_of subject.class
+    end
+  end
+
+  describe '#add_training_data' do
+    let(:values) { [:sunny, 85, 85, :FALSE, :no] }
+
+    before do
+      allow(subject).to receive(:update_classifier)
+      subject.train_with_instances(instances)
+    end
+
+    it 'should call #add_training_instance' do
+      expect(subject)
+        .to receive(:add_training_instance).once
+        .with(an_instance_of(Weka::Core::DenseInstance))
+
+      subject.add_training_data(values)
+    end
+
+    it 'should return itself' do
+      expect(subject.add_training_data(values)).to be_kind_of subject.class
+    end
+  end
+
   describe '#cross_validate' do
     let(:folds) { 2 }
 
