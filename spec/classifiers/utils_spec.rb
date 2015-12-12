@@ -17,9 +17,7 @@ describe Weka::Classifiers::Utils do
   subject { including_class.new.train_with_instances(instances) }
 
   let(:instances) do
-    file      = File.expand_path('./../../support/resources/weather.arff', __FILE__)
-    instances = Weka::Core::Instances.from_arff(file)
-
+    instances = load_instances('weather.arff')
     instances.class_attribute = :play
     instances
   end
@@ -60,12 +58,10 @@ describe Weka::Classifiers::Utils do
 
     context 'without an assigned class attribute on instances' do
       it 'should raise an UnassignedClassError' do
-        file      = File.expand_path('./../../support/resources/weather.arff', __FILE__)
-        instances = Weka::Core::Instances.from_arff(file)
+        instances = load_instances('weather.arff')
 
-        expect {
-          including_class.new.train_with_instances(instances)
-        }.to raise_error Weka::UnassignedClassError
+        expect { including_class.new.train_with_instances(instances) }
+          .to raise_error Weka::UnassignedClassError
       end
     end
   end

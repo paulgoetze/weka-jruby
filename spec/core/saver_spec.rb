@@ -2,10 +2,7 @@ require 'spec_helper'
 
 describe Weka::Core::Saver do
 
-  let(:instances) do
-    file = File.expand_path('../../support/resources/weather.arff', __FILE__)
-    Weka::Core::Loader.load_arff(file)
-  end
+  let(:instances) { load_instances('weather.arff') }
 
   before(:all) { @tmp_dir = File.expand_path('../../tmp/', __FILE__) }
   after(:all)  { FileUtils.remove_dir(@tmp_dir, true) }

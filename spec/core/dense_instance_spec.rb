@@ -2,10 +2,8 @@ require 'spec_helper'
 
 describe Weka::Core::DenseInstance do
 
-  let(:file) { File.expand_path('../../support/resources/weather.arff', __FILE__) }
-
   subject do
-    instances = Weka::Core::Loader.load_arff(file)
+    instances = load_instances('weather.arff')
     instances.add_date_attribute('recorded_at')
     instances.add_instance(['rainy',50, 50,'TRUE','no','2015-12-24 11:11'])
     instances.instances.last

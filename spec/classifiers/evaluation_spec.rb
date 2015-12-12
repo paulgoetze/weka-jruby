@@ -3,9 +3,7 @@ require 'spec_helper'
 describe Weka::Classifiers::Evaluation do
 
   subject do
-    file      = File.expand_path('./../../support/resources/weather.arff', __FILE__)
-    instances = Weka::Core::Instances.from_arff(file)
-
+    instances = load_instances('weather.arff')
     instances.class_attribute = :play
     Weka::Classifiers::Evaluation.new(instances)
   end

@@ -3,8 +3,7 @@ require 'fileutils'
 
 describe Weka::Core::Instances do
 
-  let(:file) { File.expand_path('../../support/resources/weather.arff', __FILE__) }
-  subject { Weka::Core::Loader.load_arff(file) }
+  subject { load_instances('weather.arff') }
 
   it { is_expected.to respond_to :each }
   it { is_expected.to respond_to :each_with_index }
