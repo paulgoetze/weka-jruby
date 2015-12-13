@@ -61,13 +61,13 @@ instances = Weka::Core::Instances.from_csv('weather.csv')
 instances = Weka::Core::Instances.from_json('weather.json')
 ```
 
-#### Creating Instances and saving them as files
+#### Creating Instances
 
 Attributes of an Instances object can be defined in a block using the `with_attributes` method. The class attribute can be set by the `class_attribute: true` option on the fly with defining an attribute.
 
 ```ruby
 # create instances with relation name 'weather' and attributes
-instances = Weka::Core::Instances.new('weather').with_attributes do
+instances = Weka::Core::Instances.new(relation_name: 'weather').with_attributes do
   nominal :outlook, values: ['sunny', 'overcast', 'rainy']
   numeric :temperature
   numeric :humidity
@@ -75,8 +75,25 @@ instances = Weka::Core::Instances.new('weather').with_attributes do
   date    :last_storm, 'yyyy-MM-dd'
   nominal :play, values: [:yes, :no], class_attribute: true
 end
+```
 
-# save as ARFF, CSV, or JSON file
+You can also pass an array of Attributes on instantiating new Instances:
+This is useful, if you want to create a new empty Instances object with the same
+attributes as an already existing one:
+
+```ruby
+# Take attributes from existing instances
+attributes = instances.attributes
+
+# create an empty Instances object with the given attributes
+test_instances = Weka::Core::Instances.new(attributes: attributes)
+```
+
+#### Saving Instances as files
+
+You can save Instances as ARFF, CSV, or JSON file.
+
+```ruby
 instances.to_arff('weather.arff')
 instances.to_csv('weather.csv')
 instances.to_json('weather.json')

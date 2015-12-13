@@ -286,13 +286,22 @@ describe Weka::Core::Instances do
   end
 
   describe '#initialize' do
-    it 'should take an optional block' do
-      expect {
-        Weka::Core::Instances.new.with_attributes do
-          numeric 'attribute 1'
-          nominal 'class', values: ['YES', 'NO']
-        end
-      }.not_to raise_error
+    it 'should take a relation_name as argument' do
+      name = 'name'
+      instances = Weka::Core::Instances.new(relation_name: name)
+
+      expect(instances.relation_name).to eq name
+    end
+
+    it 'should have a default relation_name of "Instances"' do
+      expect(Weka::Core::Instances.new.relation_name).to eq 'Instances'
+    end
+
+    it 'should take attributes as argument' do
+      attributes = subject.attributes
+      instances  = Weka::Core::Instances.new(attributes: attributes)
+
+      expect(instances.attributes.count).to eq attributes.count
     end
   end
 

@@ -12,8 +12,6 @@ module Weka
 
       DEFAULT_RELATION_NAME = 'Instances'
 
-      attr_reader :relation_name
-
       class << self
         def from_arff(file)
           Loader.load_arff(file)
@@ -28,9 +26,11 @@ module Weka
         end
       end
 
-      def initialize(relation_name = DEFAULT_RELATION_NAME, &block)
-        @relation_name = relation_name.to_s
-        super(@relation_name, FastVector.new, 0)
+      def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [], &block)
+        attribute_list = FastVector.new
+        attributes.each { |attribute| attribute_list.add_element(attribute) }
+
+        super(relation_name.to_s, attribute_list, 0)
       end
 
       def instances
