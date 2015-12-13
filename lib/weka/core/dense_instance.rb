@@ -30,7 +30,7 @@ module Weka
 
       def to_a
         to_double_array.each_with_index.map do |value, index|
-          attribute = attributes[index]
+          attribute = attribute_at(index)
 
           if attribute.date?
             format_date(value, attribute.date_format)
@@ -46,6 +46,18 @@ module Weka
       alias :values_count :num_values
 
       private
+
+      def attribute_at(index)
+        return attributes[index] unless dataset.class_attribute_defined?
+
+        if dataset.class_index == index
+          class_attribute
+        elsif index > dataset.class_index
+          attributes[index - 1]
+        else
+          attributes[index]
+        end
+      end
 
       def format_date(value, format)
         formatter = SimpleDateFormat.new(format)

@@ -26,9 +26,24 @@ describe Weka::Core::DenseInstance do
   end
 
   describe '#to_a' do
+    let(:values) { ['rainy',50.0, 50.0,'TRUE','no','2015-12-24 11:11'] }
+
     it 'should return an Array with the values of the instance' do
-      values = ['rainy',50.0, 50.0,'TRUE','no','2015-12-24 11:11']
       expect(subject.to_a).to eq values
+    end
+
+    context 'with a set class attribute' do
+      subject do
+        instances = load_instances('weather.arff')
+        instances.add_date_attribute('recorded_at')
+        instances.add_instance(values)
+        instances.class_attribute = :play
+        instances.instances.last
+      end
+
+      it 'should return an Array with the values of the instance' do
+        expect(subject.to_a).to eq values
+      end
     end
   end
 
