@@ -378,6 +378,25 @@ puts evaluation.summary
 The evaluation holds detailed information about a number of different meassures of interest,
 like the [precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall), the FP/FN/TP/TN-rates, [F-Measure](https://en.wikipedia.org/wiki/F1_score) and the areas under PRC and [ROC](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) curve.
 
+#### Classifying new data
+
+Most classifiers comes with a `classify` method which takes a Weka::Core::DenseInstance
+or an Array of values and returns the predicted class value:
+
+```ruby
+instances = Weka::Core::Instances.from_arff('unclassified_data.arff')
+
+# with an instance as argument
+instances.map do |instance|
+  classifier.classify(instance)
+end
+# => ['no', 'yes', 'yes', ...]
+
+# with an Array of values as argument
+classifier.classify [:sunny, 80, 80, :FALSE, '?']
+# => 'yes'
+```
+
 ## Clusterers
 
 ## Development

@@ -1,5 +1,6 @@
 require 'active_support/concern'
 require 'weka/classifiers/evaluation'
+require 'weka/core/instances'
 
 module Weka
   module Classifiers
@@ -24,18 +25,29 @@ module Weka
           def cross_validate(test_instances: nil, folds: 3)
             ensure_trained_with_instances!
 
-            evaluation  = Evaluation.new(self.training_instances)
-            instances   = test_instances || self.training_instances
-            random      = Java::JavaUtil::Random.new(1)
+            evaluation = Evaluation.new(training_instances)
+            instances  = test_instances || training_instances
+            random     = Java::JavaUtil::Random.new(1)
 
             evaluation.cross_validate_model(self, instances, folds.to_i, random)
             evaluation
           end
         end
 
+        if instance_methods.include?(:classify_instance)
+          def classify(instance_or_values)
+            ensure_trained_with_instances!
+
+            instance = classifiable_instance_from(instance_or_values)
+            index    = classify_instance(instance)
+
+            class_value_of_index(index)
+          end
+        end
+
         if instance_methods.include?(:update_classifier)
           def add_training_instance(instance)
-            self.training_instances.add(instance)
+            training_instances.add(instance)
             update_classifier(instance)
 
             self
@@ -65,13 +77,33 @@ module Weka
         end
 
         def ensure_trained_with_instances!
-          return unless self.training_instances.nil?
+          return unless training_instances.nil?
 
           error   = 'Classifier is not trained with Instances.'
           hint    = 'You can set the training instances with #train_with_instances.'
           message = "#{error} #{hint}"
 
           raise UnassignedTrainingInstancesError, message
+        end
+
+        def classifiable_instance_from(instance_or_values)
+          attributes = training_instances.attributes
+          instances  = Weka::Core::Instances.new(attributes: attributes)
+
+          class_attribute = training_instances.class_attribute
+          class_index     = training_instances.class_index
+          instances.insert_attribute_at(class_attribute, class_index)
+
+          instances.class_index = training_instances.class_index
+          instances.add_instance(instance_or_values)
+
+          instance = instances.first
+          instance.set_class_missing
+          instance
+        end
+
+        def class_value_of_index(index)
+          training_instances.class_attribute.value(index)
         end
       end
 

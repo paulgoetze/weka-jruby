@@ -10,11 +10,12 @@ describe Weka::Classifiers::Utils do
       def update_classifier(instance)
       end
 
+      def classify_instance
+      end
+
       include Weka::Classifiers::Utils
     end
   end
-
-  subject { including_class.new.train_with_instances(instances) }
 
   let(:instances) do
     instances = load_instances('weather.arff')
@@ -22,10 +23,13 @@ describe Weka::Classifiers::Utils do
     instances
   end
 
+  subject { including_class.new.train_with_instances(instances) }
+
   it { is_expected.to respond_to :train_with_instances }
   it { is_expected.to respond_to :training_instances }
   it { is_expected.to respond_to :add_training_instance }
   it { is_expected.to respond_to :cross_validate }
+  it { is_expected.to respond_to :classify }
 
   describe 'if included' do
     subject { Class.new }
@@ -197,6 +201,54 @@ describe Weka::Classifiers::Utils do
 
       it 'should raise an UnassignedTrainingInstancesError' do
         expect { subject.cross_validate }
+          .to raise_error Weka::UnassignedTrainingInstancesError
+      end
+    end
+  end
+
+  describe '#classify' do
+    let(:instance)    { instances.first }
+    let(:values)      { [:overcast, 83, 86, :FALSE, '?'] }
+    let(:class_value) { 'no' }
+    let(:class_index) { 1.0 }
+
+    before do
+      allow(subject).to receive(:classify_instance).and_return(class_index)
+    end
+
+    context 'with a given instance' do
+      it 'should call Java‘s #classify_instance' do
+        expect(subject)
+          .to receive(:classify_instance).once
+          .with(an_instance_of(instance.class))
+
+        subject.classify(instance)
+      end
+
+      it 'should return the predicted class value of the instance' do
+        expect(subject.classify(instance)).to eq class_value
+      end
+    end
+
+    context 'with a given array of values' do
+      it 'should call Java‘s #classify_instance' do
+        expect(subject)
+          .to receive(:classify_instance).once
+          .with(an_instance_of(Weka::Core::DenseInstance))
+
+        subject.classify(values)
+      end
+
+      it 'should return the predicted class value of the instance' do
+        expect(subject.classify(values)).to eq class_value
+      end
+    end
+
+    context 'without training instances' do
+      before { allow(subject).to receive(:training_instances).and_return(nil) }
+
+      it 'should raise an UnassignedTrainingInstancesError' do
+        expect { subject.classify(instance) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
     end
