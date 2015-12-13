@@ -259,6 +259,108 @@ filter.use_options('-S 0.5')
 
 ## Classifiers
 
+Weka‘s classification and regression algorithms can be found in the `Weka::Classifiers`
+namespace.
+
+The classifier classes are organised in the following submodules:
+
+```ruby
+Weka::Classifiers::Bayes
+Weka::Classifiers::Functions
+Weka::Classifiers::Lazy
+Weka::Classifiers::Meta
+Weka::Classifiers::Rules
+Weka::Classifiers::Trees
+```
+
+#### Getting information about a classifier
+
+To get a description about the classifier class and its available options
+you can use the class methods `.description` and `.options` on each classifier:
+
+```ruby
+puts Weka::Classifiers::Trees::RandomForest.description
+# Class for constructing a forest of random trees.
+# For more information see:
+# Leo Breiman (2001). Random Forests. Machine Learning. 45(1):5-32.
+
+puts Weka::Classifiers::Trees::RandomForest.options
+# -I <number of trees>  Number of trees to build.
+#   (default 100)
+# -K <number of features> Number of features to consider (<1=int(log_2(#predictors)+1)).
+#   (default 0)
+# ...
+
+```
+
+The default options that are used for a classifier can be displayed with:
+
+```ruby
+Weka::Classifiers::Trees::RandomForest.default_options
+# => "-I 100 -K 0 -S 1 -num-slots 1"
+```
+
+#### Creating a new classifier
+
+For building a new classifiers model based on training instances you can use
+the following syntax:
+
+```ruby
+instances = Weka::Core::Instances.from_arff('weather.arff')
+instances.class_attribute = :play
+
+classifier = Weka::Classifiers::Trees::RandomForest.new
+classifier.use_options('-I 200 -K 5')
+classifier.train_with_instances(instances)
+```
+You can also build a classifier by using the block syntax:
+
+```ruby
+classifier = Weka::Classifiers::Trees::RandomForest.build do
+  use_options '-I 200 -K 5'
+  train_with_instances instances
+end
+
+```
+
+#### Evaluating a classifier model
+
+You can evaluate the trained classifier using [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_(statistics)):
+
+```ruby
+# default number of folds is 3
+evaluation = classifier.cross_validate
+
+# with a custom number of folds
+evaluation = classifier.cross_validate(folds: 10)
+
+# validate the model on a set of test instances
+test_instances = Weka::Core::Instances.from_arff('test_data.arff')
+evaluation = classifier.cross_validate(test_instances: test_instances, folds: 10)
+```
+
+If no test instances are given, the cross validation uses the training instances as test data.
+
+The cross-validation returns a `Weka::Classifiers::Evaluation` object which can be used to get details about the accuracy of the trained classification model:
+
+```ruby
+puts evaluation.summary
+#
+# Correctly Classified Instances          10               71.4286 %
+# Incorrectly Classified Instances         4               28.5714 %
+# Kappa statistic                          0.3778
+# Mean absolute error                      0.4098
+# Root mean squared error                  0.4657
+# Relative absolute error                 87.4588 %
+# Root relative squared error             96.2945 %
+# Coverage of cases (0.95 level)         100      %
+# Mean rel. region size (0.95 level)      96.4286 %
+# Total Number of Instances               14
+```
+
+The evaluation holds detailed information about a number of different meassures of interest,
+like the [precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall), the FP/FN/TP/TN-rates, [F-Measure](https://en.wikipedia.org/wiki/F1_score) and the areas under PRC and [ROC](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) curve.
+
 ## Clusterers
 
 ## Development
