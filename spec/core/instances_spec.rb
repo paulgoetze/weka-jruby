@@ -378,10 +378,18 @@ describe Weka::Core::Instances do
   end
 
   describe '#add_instance' do
-    it 'should add an instance to the Instances object' do
+    it 'should add an instance from given values to the Instances object' do
       data = [:sunny, 70, 80, 'TRUE', :yes]
       subject.add_instance(data)
+
       expect(subject.instances.last.to_s).to eq data.join(',')
+    end
+
+    it 'should add a given instance to the Instances object' do
+      data = subject.first
+      subject.add_instance(data)
+
+      expect(subject.instances.last.to_s).to eq data.to_s
     end
   end
 

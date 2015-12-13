@@ -137,10 +137,8 @@ module Weka
         class_index >= 0
       end
 
-      def add_instance(values, weight: 1.0)
-        data     = internal_values_of(values)
-        instance = DenseInstance.new(data, weight: weight)
-
+      def add_instance(instance_or_values, weight: 1.0)
+        instance = instance_from(instance_or_values, weight: weight)
         add(instance)
       end
 
@@ -176,6 +174,16 @@ module Weka
 
       def attribute_with_name(name)
         attributes.select { |attribute| attribute.name == name.to_s }.first
+      end
+
+      def instance_from(instance_or_values, weight:)
+        if instance_or_values.kind_of?(Java::WekaCore::Instance)
+          instance_or_values.weight = weight
+          instance_or_values
+        else
+          data = internal_values_of(instance_or_values)
+          DenseInstance.new(data, weight: weight)
+        end
       end
     end
 
