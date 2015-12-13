@@ -56,6 +56,13 @@ describe Weka::Core::DenseInstance do
 
         expect(@result).to eq 'outlook'
       end
+
+      context 'without a given block' do
+        it 'should return a WekaEnumerator' do
+          expect(subject.each_attribute)
+            .to be_kind_of(Java::WekaCore::WekaEnumeration)
+        end
+      end
     end
 
     describe '#each_attribute_with_index' do
@@ -65,6 +72,13 @@ describe Weka::Core::DenseInstance do
         end
 
         expect(@result).to eq 'outlook, 0'
+      end
+
+      context 'without a given block' do
+        it 'should return a WekaEnumerator' do
+          expect(subject.each_attribute_with_index)
+            .to be_kind_of(Java::WekaCore::WekaEnumeration)
+        end
       end
     end
   end

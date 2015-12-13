@@ -55,19 +55,31 @@ module Weka
       alias :attributes_count :num_attributes
 
       def each
-        enumerate_instances.each { |instance| yield(instance) }
+        if block_given?
+          enumerate_instances.each { |instance| yield(instance) }
+        else
+          enumerate_instances
+        end
       end
 
       def each_with_index
-        enumerate_instances.each_with_index { |instance, index| yield(instance, index) }
+        enumerate_instances.each_with_index do |instance, index|
+          yield(instance, index) if block_given?
+        end
       end
 
       def each_attribute
-        enumerate_attributes.each { |attribute| yield(attribute) }
+        if block_given?
+          enumerate_attributes.each { |attribute| yield(attribute) }
+        else
+          enumerate_attributes
+        end
       end
 
       def each_attribute_with_index
-        enumerate_attributes.each_with_index { |attribute, index| yield(attribute, index) }
+        enumerate_attributes.each_with_index do |attribute, index|
+          yield(attribute, index) if block_given?
+        end
       end
 
       def to_arff(file)

@@ -14,13 +14,17 @@ module Weka
         enumerate_attributes.to_a
       end
 
-      def each_attribute(&block)
-        enumerate_attributes.each { |attribute| yield(attribute) }
+      def each_attribute
+        if block_given?
+          enumerate_attributes.each { |attribute| yield(attribute) }
+        else
+          enumerate_attributes
+        end
       end
 
-      def each_attribute_with_index(&block)
+      def each_attribute_with_index
         enumerate_attributes.each_with_index do |attribute, index|
-          yield(attribute, index)
+          yield(attribute, index) if block_given?
         end
       end
 
