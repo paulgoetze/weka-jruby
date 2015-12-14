@@ -179,23 +179,6 @@ describe Weka::Classifiers::Utils do
       end
     end
 
-    context 'with given test_instances' do
-      let(:test_instances) { double('test instances') }
-
-      it 'should use the given instances as test instances' do
-        expect_any_instance_of(Weka::Classifiers::Evaluation)
-          .to receive(:cross_validate_model).once
-          .with(
-            subject,
-            test_instances,
-            default_folds,
-            an_instance_of(Java::JavaUtil::Random)
-          )
-
-        subject.cross_validate(test_instances: test_instances)
-      end
-    end
-
     context 'without training instances' do
       before { allow(subject).to receive(:training_instances).and_return(nil) }
 

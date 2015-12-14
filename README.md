@@ -350,13 +350,7 @@ evaluation = classifier.cross_validate
 
 # with a custom number of folds
 evaluation = classifier.cross_validate(folds: 10)
-
-# validate the model on a set of test instances
-test_instances = Weka::Core::Instances.from_arff('test_data.arff')
-evaluation = classifier.cross_validate(test_instances: test_instances, folds: 10)
 ```
-
-If no test instances are given, the cross validation uses the training instances as test data.
 
 The cross-validation returns a `Weka::Classifiers::Evaluation` object which can be used to get details about the accuracy of the trained classification model:
 
