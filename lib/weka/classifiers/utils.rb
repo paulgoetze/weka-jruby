@@ -31,6 +31,15 @@ module Weka
             evaluation.cross_validate_model(self, training_instances, folds.to_i, random)
             evaluation
           end
+
+          def evaluate(test_instances)
+            ensure_trained_with_instances!
+            ensure_class_attribute_assigned!(test_instances)
+
+            evaluation = Evaluation.new(training_instances)
+            evaluation.evaluate_model(self, test_instances)
+            evaluation
+          end
         end
 
         if instance_methods.include?(:classify_instance)

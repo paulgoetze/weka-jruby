@@ -372,6 +372,16 @@ puts evaluation.summary
 The evaluation holds detailed information about a number of different meassures of interest,
 like the [precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall), the FP/FN/TP/TN-rates, [F-Measure](https://en.wikipedia.org/wiki/F1_score) and the areas under PRC and [ROC](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) curve.
 
+If your trained classifier should be evaluated against a set of *test instances*,
+you can use `evaluate`:
+
+```ruby
+test_instances = Weka::Core::Instances.from_arff('test_data.arff')
+test_instances.class_attribute = :play
+
+evaluation = classifier.evaluate(test_instances)
+```
+
 #### Classifying new data
 
 Most classifiers comes with a `classify` method which takes a Weka::Core::DenseInstance

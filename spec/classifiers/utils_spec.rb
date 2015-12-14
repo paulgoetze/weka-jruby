@@ -29,6 +29,7 @@ describe Weka::Classifiers::Utils do
   it { is_expected.to respond_to :training_instances }
   it { is_expected.to respond_to :add_training_instance }
   it { is_expected.to respond_to :cross_validate }
+  it { is_expected.to respond_to :evaluate }
   it { is_expected.to respond_to :classify }
 
   describe 'if included' do
@@ -42,10 +43,7 @@ describe Weka::Classifiers::Utils do
 
   describe '#train_with_instances' do
     it 'should call Java‘s #build_classifier' do
-      expect(subject)
-        .to receive(:build_classifier).once
-        .with(instances)
-
+      expect(subject).to receive(:build_classifier).once.with(instances)
       subject.train_with_instances(instances)
     end
 
@@ -184,6 +182,44 @@ describe Weka::Classifiers::Utils do
 
       it 'should raise an UnassignedTrainingInstancesError' do
         expect { subject.cross_validate }
+          .to raise_error Weka::UnassignedTrainingInstancesError
+      end
+    end
+  end
+
+  describe '#evaluate' do
+    before do
+      allow(subject).to receive(:training_instances).and_return(instances)
+      allow_any_instance_of(Weka::Classifiers::Evaluation).to receive(:evaluate_model)
+    end
+
+    it 'should return a Weka::Classifiers::Evaluation' do
+      return_value = subject.evaluate(instances)
+      expect(return_value).to be_kind_of Weka::Classifiers::Evaluation
+    end
+
+    it 'should run Java‘s #evaluate_model on an Evaluation' do
+      expect_any_instance_of(Weka::Classifiers::Evaluation)
+        .to receive(:evaluate_model).once
+        .with(subject, instances)
+
+      subject.evaluate(instances)
+    end
+
+    context 'without an assigned class attribute on test instances' do
+      it 'should raise an UnassignedClassError' do
+        instances = load_instances('weather.arff')
+
+        expect { subject.evaluate(instances) }
+          .to raise_error Weka::UnassignedClassError
+      end
+    end
+
+    context 'without training instances' do
+      before { allow(subject).to receive(:training_instances).and_return(nil) }
+
+      it 'should raise an UnassignedTrainingInstancesError' do
+        expect { subject.evaluate(instances) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
     end
