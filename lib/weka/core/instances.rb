@@ -97,40 +97,47 @@ module Weka
       def numeric(name, class_attribute: false)
         attribute = Attribute.new(name.to_s)
         add_attribute(attribute)
-        set_class_attribute(name) if class_attribute
+        self.class_attribute = name if class_attribute
       end
 
       def nominal(name, values:, class_attribute: false)
         attribute = Attribute.new(name.to_s, Array(values).map(&:to_s))
         add_attribute(attribute)
-        set_class_attribute(name) if class_attribute
+        self.class_attribute = name if class_attribute
       end
 
       def string(name, class_attribute: false)
         attribute = Attribute.new(name.to_s, [])
         add_attribute(attribute)
-        set_class_attribute(name) if class_attribute
+        self.class_attribute = name if class_attribute
       end
 
       def date(name, format: 'yyyy-MM-dd HH:mm', class_attribute: false)
         attribute = Attribute.new(name.to_s, format)
         add_attribute(attribute)
-        set_class_attribute(name) if class_attribute
+        self.class_attribute = name if class_attribute
       end
 
-      def set_class_attribute(name)
-        ensure_attribute_defined!(name)
-        setClass(attribute_with_name(name))
+      def class_attribute=(name)
+        if name.nil?
+          reset_class_attribute
+        else
+          ensure_attribute_defined!(name)
+          setClass(attribute_with_name(name))
+        end
       end
 
       alias :add_numeric_attribute :numeric
       alias :add_string_attribute  :string
       alias :add_nominal_attribute :nominal
       alias :add_date_attribute    :date
-      alias :class_attribute=      :set_class_attribute
 
       def class_attribute
         classAttribute if class_attribute_defined?
+      end
+
+      def reset_class_attribute
+        set_class_index(-1)
       end
 
       def class_attribute_defined?

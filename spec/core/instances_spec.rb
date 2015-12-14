@@ -26,8 +26,9 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :add_instance }
   it { is_expected.to respond_to :apply_filter }
 
-  it { is_expected.to respond_to :set_class_attribute }
+  it { is_expected.to respond_to :class_attribute= }
   it { is_expected.to respond_to :class_attribute }
+  it { is_expected.to respond_to :reset_class_attribute }
 
   describe 'aliases:' do
     let (:instances) { described_class.new }
@@ -39,8 +40,7 @@ describe Weka::Core::Instances do
       date:                :add_date_attribute,
       add_attributes:      :with_attributes,
       instances_count:     :num_instances,
-      attributes_count:    :num_attributes,
-      set_class_attribute: :class_attribute=,
+      attributes_count:    :num_attributes
     }.each do |method, alias_method|
       it "should define the alias ##{alias_method} for ##{method}" do
         expect(instances.method(method)).to eq instances.method(alias_method)
@@ -211,14 +211,23 @@ describe Weka::Core::Instances do
     end
   end
 
-  describe '#set_class_attribute' do
+  describe '#class_attribute=' do
     it 'can be used to define the class attribute' do
-      subject.set_class_attribute(:play)
+      subject.class_attribute = :play
       expect(subject.class_attribute.name).to eq 'play'
     end
 
+    it 'should reset the class attribute if it assigns nil' do
+      subject.class_attribute = :play
+
+      expect { subject.class_attribute = nil }
+        .to change { subject.class_attribute }
+        .from(an_instance_of(Weka::Core::Attribute))
+        .to(nil)
+    end
+
     it 'should raise an ArgumentError if the given attribute is not defined' do
-      expect { subject.set_class_attribute(:not_existing_attribute) }
+      expect { subject.class_attribute = :not_existing_attribute }
         .to raise_error(ArgumentError)
     end
   end
@@ -258,6 +267,15 @@ describe Weka::Core::Instances do
       it 'should return false' do
         expect(subject.class_attribute_defined?).to be false
       end
+    end
+  end
+
+  describe '#reset_class_attribute' do
+    before { subject.class_attribute = :play }
+
+    it 'should reset the class attribute' do
+      expect { subject.reset_class_attribute }
+        .to change { subject.class_attribute }.to(nil)
     end
   end
 
