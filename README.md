@@ -274,6 +274,63 @@ filter.use_options('-S 0.5')
 
 ## Attribute selection
 
+Selecting attributes (features) from a set of instances is important
+for getting the best result out of a classification or clustering.
+Attribute selection reduces the number of attributes and thereby can speed up
+the runtime of the algorithms.
+It also avoids processing too many attributes when only a certain subset is essential
+for building a good model.
+
+For attribute selection you need to apply a search and an evaluation method on a dataset.
+
+Search methods are defined in the `Weka::AttributeSelection::Search` module.
+There are search methods for subset search and individual attribute search.
+
+Evaluators are defined in the `Weka::AttributeSelection::Evaluator` module.
+Corresponding to search method types there are two evalutor types for subset search and individual search.
+
+The search methods and evaluators from each category can be combined to perform an attribute selection.
+
+**Classes for attribute *subset* selection:**
+
+| Search                        | Evaluators                   |
+|-------------------------------|------------------------------|
+| `BestFirst`, `GreedyStepwise` | `CfsSubset`, `WrapperSubset` |
+
+**Classes for *individual* attribute selection:**
+
+| Search   | Evaluators |
+|----------|------------|
+| `Ranker` | `CorrelationAttribute`, `GainRatioAttribute`, `InfoGainAttribute`, `OneRAttribute`, `ReliefFAttribute`, `SymmetricalUncertAttribute` |
+
+An attribute selection can either be performed with the `Weka::AttributeSelection::AttributeSelection` class:
+
+```ruby
+instances = Weka::Core::Instances.from_arff('weather.arff')
+
+selection           = Weka::AttributeSelection::AttributeSelection.new
+selection.search    = Weka::AttributeSelection::Search::Ranker.new
+selection.evaluator = Weka::AttributeSelection::Evaluator::PricipalComponents.new
+
+selection.select_attribute(instances)
+puts selection.to_result_string
+```
+
+Or you can use the supervised `AttributeSelection` filter to directly filter instances:
+
+```ruby
+instances = Weka::Core::Instances.from_arff('weather.arff')
+search    = Weka::AttributeSelection::Search::Ranker.new
+evaluator = Weka::AttributeSelection::Evaluator::PricipalComponents.new
+
+filter = Weka::Filters::Supervised::Attribute::AttributeSelection.build do
+  use_search    search
+  use_evaluator evaluator
+end
+
+filtered_instances = instances.apply_filter(filter)
+```
+
 ## Classifiers
 
 Weka‘s classification and regression algorithms can be found in the `Weka::Classifiers`
