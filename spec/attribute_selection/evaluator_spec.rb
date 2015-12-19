@@ -27,4 +27,8 @@ describe Weka::AttributeSelection::Evaluator do
       expect(evaluator_class.new).to be_kind_of super_class
     end
   end
+
+  it "should define a class PrincipalComponents" do
+      expect(subject.const_defined?(:PrincipalComponents)).to be true
+    end
 end

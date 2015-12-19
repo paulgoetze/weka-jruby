@@ -10,6 +10,7 @@ module Weka
                     :GainRatioAttributeEval,
                     :InfoGainAttributeEval,
                     :OneRAttributeEval,
+                    :PrincipalComponents,
                     :ReliefFAttributeEval,
                     :SymmetricalUncertAttributeEval,
                     :WrapperSubsetEval,
