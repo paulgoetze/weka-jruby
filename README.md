@@ -313,7 +313,7 @@ selection.search    = Weka::AttributeSelection::Search::Ranker.new
 selection.evaluator = Weka::AttributeSelection::Evaluator::PricipalComponents.new
 
 selection.select_attribute(instances)
-puts selection.to_result_string
+puts selection.summary
 ```
 
 Or you can use the supervised `AttributeSelection` filter to directly filter instances:
