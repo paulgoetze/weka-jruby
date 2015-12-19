@@ -108,14 +108,36 @@ describe Weka::ClassBuilder do
         expect(built_class.public_method_defined?(:shared_method)).to be false
       end
     end
+
+    context 'with a defined Weka module' do
+      let(:weka_module) { 'explicitly.defined.module' }
+
+      it 'should import the given classes from the defined module' do
+        class_path = "#{weka_module}.#{class_name}"
+
+        expect(subject).to receive(:java_import).once.with(class_path)
+        subject.build_class(class_name, weka_module: weka_module)
+      end
+    end
   end
 
   describe '.build_classes' do
-    it 'should run .build_class for each of the given classes' do
-      class_names = %i{ SomeClass SomeOtherClass }
+    context 'without a given weka_module' do
+      it 'should run .build_class for each of the given classes' do
+        class_names = %i{ SomeClass SomeOtherClass }
 
-      expect(subject).to receive(:build_class).exactly(class_names.count).times
-      subject.build_classes(*class_names)
+        expect(subject).to receive(:build_class).exactly(class_names.count).times
+        subject.build_classes(*class_names)
+      end
+    end
+
+    context 'with a given weka_module' do
+      it 'should run .build_class for each of the given classes' do
+        class_names = %i{ SomeClass SomeOtherClass }
+
+        expect(subject).to receive(:build_class).exactly(class_names.count).times
+        subject.build_classes(*class_names, weka_module: 'weka.module')
+      end
     end
   end
 end

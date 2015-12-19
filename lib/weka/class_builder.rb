@@ -9,19 +9,23 @@ module Weka
 
     module ClassMethods
 
-      def build_class(class_name)
-        java_import java_class_path(class_name)
+      def build_class(class_name, weka_module: nil)
+        java_import java_class_path(class_name, weka_module)
         define_class(class_name)
       end
 
-      def build_classes(*class_names)
-        class_names.each { |name| build_class(name) }
+      def build_classes(*class_names, weka_module: nil)
+        class_names.each { |name| build_class(name, weka_module: weka_module) }
       end
 
       private
 
-      def java_class_path(class_name)
-        [*java_super_modules, java_including_module, class_name].join('.')
+      def java_class_path(class_name, weka_module)
+        if weka_module
+          "#{weka_module}.#{class_name}"
+        else
+          [*java_super_modules, java_including_module, class_name].join('.')
+        end
       end
 
       def java_super_modules
