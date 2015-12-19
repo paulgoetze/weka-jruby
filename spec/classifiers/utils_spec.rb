@@ -32,15 +32,6 @@ describe Weka::Classifiers::Utils do
   it { is_expected.to respond_to :evaluate }
   it { is_expected.to respond_to :classify }
 
-  describe 'if included' do
-    subject { Class.new }
-
-    it 'should set __persistent__ to true' do
-      expect(subject).to receive(:__persistent__=).with(true).once
-      subject.include(Weka::Classifiers::Utils)
-    end
-  end
-
   describe '#train_with_instances' do
     it 'should call Java‘s #build_classifier' do
       expect(subject).to receive(:build_classifier).once.with(instances)

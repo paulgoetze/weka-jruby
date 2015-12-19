@@ -14,17 +14,17 @@ describe Weka::ClassBuilder do
     end
   end
 
+  let(:class_name){ :SomeClass }
+
+  before { allow(subject).to receive(:java_import).and_return('') }
+
   [:build_class, :build_classes].each do |method|
     it "should define .#{method} if included" do
       expect(subject).to respond_to method
     end
   end
 
-  before { allow(subject).to receive(:java_import).and_return('') }
-
   describe '.build_class' do
-    let(:class_name){ :SomeClass }
-
     it 'should run java_import with the right resolved class path' do
       class_path = "some.weka.customCamelCased.module.#{class_name}"
 
@@ -33,9 +33,9 @@ describe Weka::ClassBuilder do
     end
 
     describe 'concerns' do
-      describe 'built class including Describable functionality' do
-        let(:built_class) { subject.build_class(class_name) }
+      let(:built_class) { subject.build_class(class_name) }
 
+      describe 'built class including Describable functionality' do
         Weka::Concerns::Describable::ClassMethods.instance_methods.each do |method|
           it "should respond to .#{method}" do
             expect(built_class).to respond_to method
@@ -44,8 +44,6 @@ describe Weka::ClassBuilder do
       end
 
       describe 'built class including Buildable functionality' do
-        let(:built_class) { subject.build_class(class_name) }
-
         Weka::Concerns::Buildable::ClassMethods.instance_methods.each do |method|
           it "should respond to .#{method}" do
             expect(built_class).to respond_to method
@@ -54,7 +52,6 @@ describe Weka::ClassBuilder do
       end
 
       describe 'built class including Optionizable functionality' do
-        let(:built_class)          { subject.build_class(class_name) }
         let(:built_class_instance) { built_class.new }
 
         it 'should respond to .default_options' do
@@ -82,15 +79,13 @@ describe Weka::ClassBuilder do
       end
 
       it 'should include them in the defined class' do
-        subject.build_class(class_name)
-        built_class = "#{subject}::#{class_name}".constantize
-
+        built_class = subject.build_class(class_name)
         expect(built_class.public_method_defined?(:shared_method)).to be true
       end
     end
 
     context 'without defined Utils' do
-      let(:subject) do
+      subject do
         module Some
           module Other
             module Custom
@@ -109,9 +104,7 @@ describe Weka::ClassBuilder do
       end
 
       it 'should not include extra methods in the defined class' do
-        subject.build_class(class_name)
-        built_class = "#{subject}::#{class_name}".constantize
-
+        built_class = subject.build_class(class_name)
         expect(built_class.public_method_defined?(:shared_method)).to be false
       end
     end
