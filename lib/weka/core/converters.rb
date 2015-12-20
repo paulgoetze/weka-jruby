@@ -10,7 +10,8 @@ module Weka
                     :CSVLoader,
                     :CSVSaver,
                     :JSONLoader,
-                    :JSONSaver
+                    :JSONSaver,
+                    include_concerns: false
     end
   end
 end
