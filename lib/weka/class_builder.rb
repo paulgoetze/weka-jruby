@@ -9,13 +9,15 @@ module Weka
 
     module ClassMethods
 
-      def build_class(class_name, weka_module: nil)
+      def build_class(class_name, weka_module: nil, include_concerns: true)
         java_import java_class_path(class_name, weka_module)
-        define_class(class_name)
+        define_class(class_name, include_concerns: include_concerns)
       end
 
-      def build_classes(*class_names, weka_module: nil)
-        class_names.each { |name| build_class(name, weka_module: weka_module) }
+      def build_classes(*class_names, weka_module: nil, include_concerns: true)
+        class_names.each do |name|
+          build_class(name, weka_module: weka_module, include_concerns: include_concerns)
+        end
       end
 
       private
@@ -46,10 +48,10 @@ module Weka
         self.name.demodulize
       end
 
-      def define_class(class_name)
+      def define_class(class_name, include_concerns: true)
         module_eval <<-CLASS_DEFINITION, __FILE__, __LINE__ + 1
           class #{class_name}
-            include Concerns
+            #{'include Concerns' if include_concerns}
             #{include_utils}
           end
         CLASS_DEFINITION
