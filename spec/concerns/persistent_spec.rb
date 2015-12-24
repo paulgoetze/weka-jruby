@@ -7,7 +7,7 @@ describe Weka::Concerns::Persistent do
 
     it 'should set __persistent__ to true' do
       expect(subject).to receive(:__persistent__=).with(true).once
-      subject.include(Weka::Classifiers::Utils)
+      subject.include(Weka::Concerns::Persistent)
     end
   end
 end

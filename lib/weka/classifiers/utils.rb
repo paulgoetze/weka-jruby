@@ -68,10 +68,6 @@ module Weka
           end
         end
 
-        if self.respond_to?(:__persistent__=)
-          self.__persistent__ = true
-        end
-
         private
 
         def ensure_class_attribute_assigned!(instances)
