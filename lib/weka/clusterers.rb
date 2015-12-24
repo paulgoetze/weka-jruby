@@ -1,3 +1,5 @@
+Weka.require_all :clusterers
+
 require 'weka/class_builder'
 
 module Weka

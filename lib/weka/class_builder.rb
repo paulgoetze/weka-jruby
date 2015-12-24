@@ -26,7 +26,7 @@ module Weka
         if weka_module
           "#{weka_module}.#{class_name}"
         else
-          [*java_super_modules, java_including_module, class_name].join('.')
+          [*java_super_modules, java_including_module, class_name].compact.join('.')
         end
       end
 
@@ -37,7 +37,7 @@ module Weka
       end
 
       def super_modules
-        self.name.deconstantize
+        toplevel_module? ? self.name : self.name.deconstantize
       end
 
       def java_including_module
@@ -45,7 +45,11 @@ module Weka
       end
 
       def including_module
-        self.name.demodulize
+        self.name.demodulize unless toplevel_module?
+      end
+
+      def toplevel_module?
+        self.name.scan('::').count == 1
       end
 
       def define_class(class_name, include_concerns: true)
@@ -71,10 +75,11 @@ module Weka
       end
 
       def utils_super_modules
-        super_modules.split('::')[0...2].join('::')
+        super_modules.split('::')[0..1].join('::')
       end
 
       def downcase_first_char(string)
+        return if string.blank?
         string[0].downcase + string[1..-1]
       end
     end
