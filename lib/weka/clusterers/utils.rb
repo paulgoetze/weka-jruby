@@ -46,7 +46,7 @@ module Weka
             ensure_trained_with_instances!
 
             instance = clusterable_instance_from(instance_or_values)
-            index    = cluster_instance(instance)
+            cluster_instance(instance)
           end
         end
 
@@ -62,6 +62,15 @@ module Weka
             values   = self.training_instances.internal_values_of(data)
             instance = Weka::Core::DenseInstance.new(values)
             add_training_instance(instance)
+          end
+        end
+
+        if instance_methods.include?(:distribution_for_instance)
+          def distribution_for(instance_or_values)
+            ensure_trained_with_instances!
+
+            instance = clusterable_instance_from(instance_or_values)
+            distribution_for_instance(instance).to_a
           end
         end
 

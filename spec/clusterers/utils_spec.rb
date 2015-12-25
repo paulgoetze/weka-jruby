@@ -13,6 +13,9 @@ describe Weka::Clusterers::Utils do
       def cluster_instance
       end
 
+      def distribution_for_instance
+      end
+
       include Weka::Clusterers::Utils
     end
   end
@@ -235,6 +238,53 @@ describe Weka::Clusterers::Utils do
 
       it 'should raise an UnassignedTrainingInstancesError' do
         expect { subject.cluster(instance) }
+          .to raise_error Weka::UnassignedTrainingInstancesError
+      end
+    end
+  end
+
+  describe '#distribution_for' do
+    let(:instance)            { instances.first }
+    let(:values)              { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:distributions)       { [0.543684388757196, 0.4563156112428039] }
+
+    before do
+      allow(subject).to receive(:distribution_for_instance).and_return(distributions)
+    end
+
+    context 'with a given instance' do
+      it 'should call Java‘s #distribution_for_instance' do
+        expect(subject)
+          .to receive(:distribution_for_instance).once
+          .with(an_instance_of(instance.class))
+
+        subject.distribution_for(instance)
+      end
+
+      it 'should return the predicted cluster distributions of the instance' do
+        expect(subject.distribution_for(instance)).to eq distributions
+      end
+    end
+
+    context 'with a given array of values' do
+      it 'should call Java‘s #distribution_for_instance' do
+        expect(subject)
+          .to receive(:distribution_for_instance).once
+          .with(an_instance_of(Weka::Core::DenseInstance))
+
+        subject.distribution_for(values)
+      end
+
+      it 'should return the predicted cluster distributions of the instance' do
+        expect(subject.distribution_for(values)).to eq distributions
+      end
+    end
+
+    context 'without training instances' do
+      before { allow(subject).to receive(:training_instances).and_return(nil) }
+
+      it 'should raise an UnassignedTrainingInstancesError' do
+        expect { subject.distribution_for(instance) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
     end
