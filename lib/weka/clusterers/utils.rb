@@ -20,15 +20,17 @@ module Weka
             self
           end
 
-          def cross_validate(folds: 3)
-            ensure_trained_with_instances!
+          if ancestors.include?(Java::WekaClusterers::DensityBasedClusterer)
+            def cross_validate(folds: 3)
+              ensure_trained_with_instances!
 
-            ClusterEvaluation.cross_validate_model(
-              self,
-              training_instances,
-              folds.to_i,
-              Java::JavaUtil::Random.new(1)
-            )
+              ClusterEvaluation.cross_validate_model(
+                self,
+                training_instances,
+                folds.to_i,
+                Java::JavaUtil::Random.new(1)
+              )
+            end
           end
 
           def evaluate(test_instances)

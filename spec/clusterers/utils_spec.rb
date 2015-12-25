@@ -26,7 +26,6 @@ describe Weka::Clusterers::Utils do
 
   it { is_expected.to respond_to :train_with_instances }
   it { is_expected.to respond_to :training_instances }
-  it { is_expected.to respond_to :cross_validate }
   it { is_expected.to respond_to :evaluate }
 
   describe '#train_with_instances' do
@@ -97,72 +96,100 @@ describe Weka::Clusterers::Utils do
     let(:default_folds)           { 3 }
     let(:cross_validation_result) { -9.99 }
 
-    before do
-      allow(subject).to receive(:training_instances).and_return(instances)
-      allow(Weka::Clusterers::ClusterEvaluation)
-        .to receive(:cross_validate_model)
-        .and_return(cross_validation_result)
+    context 'if clusterer is not density-based' do
+      subject do
+        Class.new {
+          def build_clusterer(instances)
+          end
+
+          include Weka::Clusterers::Utils
+        }.new
+      end
+
+      it { is_expected.not_to respond_to :cross_validate }
     end
 
-    it 'should return a Weka::Clusterers::ClusterEvaluation' do
-      return_value = subject.cross_validate
-      expect(return_value).to eq cross_validation_result
-    end
+    context 'if clusterer is density-based' do
+      subject do
+        Class.new {
+          include Java::WekaClusterers::DensityBasedClusterer
 
-    it 'should run Java‘s #cross_validate_model on a ClusterEvaluation' do
-      expect(Weka::Clusterers::ClusterEvaluation).to receive(:cross_validate_model).once
-      subject.cross_validate
-    end
+          def build_clusterer(instances)
+          end
 
-    it 'should use 3 folds and the training instances as default test instances' do
-      expect(Weka::Clusterers::ClusterEvaluation)
-        .to receive(:cross_validate_model).once
-        .with(
-          subject,
-          subject.training_instances,
-          default_folds,
-          an_instance_of(Java::JavaUtil::Random)
-        )
+          include Weka::Clusterers::Utils
+        }.new
+      end
 
-      subject.cross_validate
-    end
+      before do
+        allow(subject).to receive(:training_instances).and_return(instances)
+        allow(Weka::Clusterers::ClusterEvaluation)
+          .to receive(:cross_validate_model)
+          .and_return(cross_validation_result)
+      end
 
-    context 'with given folds' do
-      let(:folds) { default_folds + 1 }
+      it { is_expected.to respond_to :cross_validate }
 
-      it 'should use the given number of folds' do
+      it 'should return a Weka::Clusterers::ClusterEvaluation' do
+        return_value = subject.cross_validate
+        expect(return_value).to eq cross_validation_result
+      end
+
+      it 'should run Java‘s #cross_validate_model on a ClusterEvaluation' do
+        expect(Weka::Clusterers::ClusterEvaluation).to receive(:cross_validate_model).once
+        subject.cross_validate
+      end
+
+      it 'should use 3 folds and the training instances as default test instances' do
         expect(Weka::Clusterers::ClusterEvaluation)
           .to receive(:cross_validate_model).once
           .with(
             subject,
             subject.training_instances,
-            folds,
+            default_folds,
             an_instance_of(Java::JavaUtil::Random)
           )
 
-        subject.cross_validate(folds: folds)
+        subject.cross_validate
       end
 
-      it 'should use the folds as an integer value' do
-        expect(Weka::Clusterers::ClusterEvaluation)
-          .to receive(:cross_validate_model).once
-          .with(
-            subject,
-            subject.training_instances,
-            2,
-            an_instance_of(Java::JavaUtil::Random)
-          )
+      context 'with given folds' do
+        let(:folds) { default_folds + 1 }
 
-        subject.cross_validate(folds: 2.75)
+        it 'should use the given number of folds' do
+          expect(Weka::Clusterers::ClusterEvaluation)
+            .to receive(:cross_validate_model).once
+            .with(
+              subject,
+              subject.training_instances,
+              folds,
+              an_instance_of(Java::JavaUtil::Random)
+            )
+
+          subject.cross_validate(folds: folds)
+        end
+
+        it 'should use the folds as an integer value' do
+          expect(Weka::Clusterers::ClusterEvaluation)
+            .to receive(:cross_validate_model).once
+            .with(
+              subject,
+              subject.training_instances,
+              2,
+              an_instance_of(Java::JavaUtil::Random)
+            )
+
+          subject.cross_validate(folds: 2.75)
+        end
       end
-    end
 
-    context 'without training instances' do
-      before { allow(subject).to receive(:training_instances).and_return(nil) }
+      context 'without training instances' do
+        before { allow(subject).to receive(:training_instances).and_return(nil) }
 
-      it 'should raise an UnassignedTrainingInstancesError' do
-        expect { subject.cross_validate }
-          .to raise_error Weka::UnassignedTrainingInstancesError
+        it 'should raise an UnassignedTrainingInstancesError' do
+          expect { subject.cross_validate }
+            .to raise_error Weka::UnassignedTrainingInstancesError
+        end
       end
     end
   end
