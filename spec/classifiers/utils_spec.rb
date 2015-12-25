@@ -13,6 +13,9 @@ describe Weka::Classifiers::Utils do
       def classify_instance
       end
 
+      def distribution_for_instance
+      end
+
       include Weka::Classifiers::Utils
     end
   end
@@ -259,6 +262,54 @@ describe Weka::Classifiers::Utils do
 
       it 'should raise an UnassignedTrainingInstancesError' do
         expect { subject.classify(instance) }
+          .to raise_error Weka::UnassignedTrainingInstancesError
+      end
+    end
+  end
+
+  describe '#distribution_for' do
+    let(:instance)            { instances.first }
+    let(:values)              { [:overcast, 83, 86, :FALSE, '?'] }
+    let(:distributions)       { [0.543684388757196, 0.4563156112428039] }
+    let(:class_distributions) { { 'yes' => distributions[0], 'no' => distributions[1] } }
+
+    before do
+      allow(subject).to receive(:distribution_for_instance).and_return(distributions)
+    end
+
+    context 'with a given instance' do
+      it 'should call Java‘s #distribution_for_instance' do
+        expect(subject)
+          .to receive(:distribution_for_instance).once
+          .with(an_instance_of(instance.class))
+
+        subject.distribution_for(instance)
+      end
+
+      it 'should return the predicted class distributions of the instance' do
+        expect(subject.distribution_for(instance)).to eq class_distributions
+      end
+    end
+
+    context 'with a given array of values' do
+      it 'should call Java‘s #distribution_for_instance' do
+        expect(subject)
+          .to receive(:distribution_for_instance).once
+          .with(an_instance_of(Weka::Core::DenseInstance))
+
+        subject.distribution_for(values)
+      end
+
+      it 'should return the predicted class distributions of the instance' do
+        expect(subject.distribution_for(values)).to eq class_distributions
+      end
+    end
+
+    context 'without training instances' do
+      before { allow(subject).to receive(:training_instances).and_return(nil) }
+
+      it 'should raise an UnassignedTrainingInstancesError' do
+        expect { subject.distribution_for(instance) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
     end

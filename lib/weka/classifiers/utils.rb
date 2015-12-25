@@ -1,4 +1,5 @@
 require 'active_support/concern'
+require 'active_support/core_ext/hash'
 require 'weka/classifiers/evaluation'
 require 'weka/core/instances'
 
@@ -68,6 +69,17 @@ module Weka
           end
         end
 
+        if instance_methods.include?(:distribution_for_instance)
+          def distribution_for(instance_or_values)
+            ensure_trained_with_instances!
+
+            instance      = classifiable_instance_from(instance_or_values)
+            distributions = distribution_for_instance(instance)
+
+            class_distributions_from(distributions).with_indifferent_access
+          end
+        end
+
         private
 
         def ensure_class_attribute_assigned!(instances)
@@ -108,6 +120,16 @@ module Weka
 
         def class_value_of_index(index)
           training_instances.class_attribute.value(index)
+        end
+
+        def class_distributions_from(distributions)
+          class_values = training_instances.class_attribute.values
+
+          distributions.each_with_index.reduce({}) do |result, (distribution, index)|
+            class_value = class_values[index].to_sym
+            result[class_value] = distribution
+            result
+          end
         end
       end
 
