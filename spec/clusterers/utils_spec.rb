@@ -7,18 +7,17 @@ describe Weka::Clusterers::Utils do
       def build_clusterer(instances)
       end
 
-      def classify_instance
+      def update_clusterer(instance)
+      end
+
+      def cluster_instance
       end
 
       include Weka::Clusterers::Utils
     end
   end
 
-  let(:instances) do
-    instances = load_instances('weather.arff')
-    instances.class_attribute = :play
-    instances
-  end
+  let(:instances) { load_instances('weather.arff') }
 
   subject { including_class.new.train_with_instances(instances) }
 
@@ -42,6 +41,52 @@ describe Weka::Clusterers::Utils do
 
     it 'should return itself' do
       expect(subject.train_with_instances(instances)).to be subject
+    end
+  end
+
+  describe '#add_training_instance' do
+    let(:instance) { Weka::Core::DenseInstance.new([0, 85.0, 85.0, 1, 1]) }
+
+    before do
+      allow(subject).to receive(:update_clusterer)
+      subject.train_with_instances(instances)
+    end
+
+    it 'should call Java‘s #update_classifier' do
+      expect(subject).to receive(:update_clusterer).once.with(instance)
+      subject.add_training_instance(instance)
+    end
+
+    it 'should add the instance to training_instances' do
+      expect { subject.add_training_instance(instance) }
+        .to change { subject.training_instances.count }
+        .by(1)
+    end
+
+    it 'should return itself' do
+      expect(subject.add_training_instance(instance)).to be_kind_of subject.class
+    end
+  end
+
+
+  describe '#add_training_data' do
+    let(:values) { [:sunny, 85, 85, :FALSE, :no] }
+
+    before do
+      allow(subject).to receive(:update_clusterer)
+      subject.train_with_instances(instances)
+    end
+
+    it 'should call #add_training_instance' do
+      expect(subject)
+        .to receive(:add_training_instance).once
+        .with(an_instance_of(Weka::Core::DenseInstance))
+
+      subject.add_training_data(values)
+    end
+
+    it 'should return itself' do
+      expect(subject.add_training_data(values)).to be_kind_of subject.class
     end
   end
 
@@ -143,6 +188,53 @@ describe Weka::Clusterers::Utils do
 
       it 'should raise an UnassignedTrainingInstancesError' do
         expect { subject.evaluate(instances) }
+          .to raise_error Weka::UnassignedTrainingInstancesError
+      end
+    end
+  end
+
+  describe '#cluster' do
+    let(:instance)  { instances.first }
+    let(:values)    { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:cluster)   { 1 }
+
+    before do
+      allow(subject).to receive(:cluster_instance).and_return(cluster)
+    end
+
+    context 'with a given instance' do
+      it 'should call Java‘s #cluster_instance' do
+        expect(subject)
+          .to receive(:cluster_instance).once
+          .with(an_instance_of(instance.class))
+
+        subject.cluster(instance)
+      end
+
+      it 'should return the predicted class value of the instance' do
+        expect(subject.cluster(instance)).to eq cluster
+      end
+    end
+
+    context 'with a given array of values' do
+      it 'should call Java‘s #cluster_instance' do
+        expect(subject)
+          .to receive(:cluster_instance).once
+          .with(an_instance_of(Weka::Core::DenseInstance))
+
+        subject.cluster(values)
+      end
+
+      it 'should return the predicted class value of the instance' do
+        expect(subject.cluster(values)).to eq cluster
+      end
+    end
+
+    context 'without training instances' do
+      before { allow(subject).to receive(:training_instances).and_return(nil) }
+
+      it 'should raise an UnassignedTrainingInstancesError' do
+        expect { subject.cluster(instance) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
     end

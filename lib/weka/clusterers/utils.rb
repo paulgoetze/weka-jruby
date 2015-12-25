@@ -41,6 +41,30 @@ module Weka
           end
         end
 
+        if instance_methods.include?(:cluster_instance)
+          def cluster(instance_or_values)
+            ensure_trained_with_instances!
+
+            instance = clusterable_instance_from(instance_or_values)
+            index    = cluster_instance(instance)
+          end
+        end
+
+        if instance_methods.include?(:update_clusterer)
+          def add_training_instance(instance)
+            training_instances.add(instance)
+            update_clusterer(instance)
+
+            self
+          end
+
+          def add_training_data(data)
+            values   = self.training_instances.internal_values_of(data)
+            instance = Weka::Core::DenseInstance.new(values)
+            add_training_instance(instance)
+          end
+        end
+
         private
 
         def ensure_trained_with_instances!
@@ -53,24 +77,12 @@ module Weka
           raise UnassignedTrainingInstancesError, message
         end
 
-        def classifiable_instance_from(instance_or_values)
+        def clusterable_instance_from(instance_or_values)
           attributes = training_instances.attributes
           instances  = Weka::Core::Instances.new(attributes: attributes)
 
-          class_attribute = training_instances.class_attribute
-          class_index     = training_instances.class_index
-          instances.insert_attribute_at(class_attribute, class_index)
-
-          instances.class_index = training_instances.class_index
           instances.add_instance(instance_or_values)
-
-          instance = instances.first
-          instance.set_class_missing
-          instance
-        end
-
-        def class_value_of_index(index)
-          training_instances.class_attribute.value(index)
+          instances.first
         end
       end
 
