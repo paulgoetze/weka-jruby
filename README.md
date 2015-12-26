@@ -376,7 +376,7 @@ Weka::Classifiers::Trees::RandomForest.default_options
 
 #### Creating a new classifier
 
-For building a new classifiers model based on training instances you can use
+To build a new classifiers model based on training instances you can use
 the following syntax:
 
 ```ruby
@@ -458,7 +458,170 @@ classifier.classify [:sunny, 80, 80, :FALSE, '?']
 # => 'yes'
 ```
 
-## Clusterers
+### Clusterers
+
+Clustering is an unsupervised machine learning technique which tries to find patterns in data and group sets of data. Clustering algorithms work without class attributes.
+
+Weka‘s clustering algorithms can be found in the `Weka::Clusterers` namespace.
+
+The following clusterer classes are available:
+
+```ruby
+Weka::Clusterers::Canopy
+Weka::Clusterers::Cobweb
+Weka::Clusterers::EM
+Weka::Clusterers::FarthestFirst
+Weka::Clusterers::HierarchicalClusterer
+Weka::Clusterers::SimpleKMeans
+```
+
+#### Getting information about a clusterer
+
+To get a description about the clusterer class and its available options
+you can use the class methods `.description` and `.options` on each clusterer:
+
+```ruby
+puts Weka::Clusterers::SimpleKMeans.description
+# Cluster data using the k means algorithm.
+# ...
+
+puts Weka::Clusterers::SimpleKMeans.options
+# -N <num>  Number of clusters.
+#   (default 2).
+# -init Initialization method to use.
+#   0 = random, 1 = k-means++, 2 = canopy, 3 = farthest first.
+#   (default = 0)
+# ...
+```
+
+The default options that are used for a clusterer can be displayed with:
+
+```ruby
+Weka::Clusterers::SimpleKMeans.default_options
+# => "-init 0 -max-candidates 100 -periodic-pruning 10000 -min-density 2.0 -t1 -1.25
+#     -t2 -1.0 -N 2 -A weka.core.EuclideanDistance -R first-last -I 500 -num-slots 1 -S 10"
+```
+
+#### Creating a new Clusterer
+
+To build a new clusterer model based on training instances you can use the following syntax:
+
+```ruby
+instances = Weka::Core::Instances.from_arff('weather.arff')
+
+clusterer = Weka::Clusterers::SimpleKMeans.new
+clusterer.use_options('-N 3 -I 600')
+clusterer.train_with_instances(instances)
+```
+
+You can also build a clusterer by using the block syntax:
+
+```ruby
+classifier = Weka::Clusterers::SimpleKMeans.build do
+  use_options '-N 5 -I 600'
+  train_with_instances instances
+end
+```
+
+#### Evaluating a clusterer model
+
+You can evaluate trained density-based clusterer using [cross-validation](https://en.wikipedia.org/wiki/Cross-validation_(statistics)) (The only density-based clusterer in the Weka lib is `EM` at the moment).
+
+The cross-validation returns the cross-validated log-likelihood:
+
+```ruby
+# default number of folds is 3
+log_likelihood = clusterer.cross_validate
+# => -10.556166997137497
+
+# with a custom number of folds
+log_likelihood = clusterer.cross_validate(folds: 10)
+# => -10.262696653333032
+```
+
+If your trained classifier should be evaluated against a set of *test instances*,
+you can use `evaluate`.
+The evaluation returns a `Weka::Clusterer::ClusterEvaluation` object which can be used to get details about the accuracy of the trained clusterer model:
+
+```ruby
+test_instances = Weka::Core::Instances.from_arff('test_data.arff')
+evaluation     = clusterer.evaluate(test_instances)
+
+puts evaluation.summary
+# EM
+# ==
+#
+# Number of clusters: 2
+# Number of iterations performed: 7
+#
+#             Cluster
+# Attribute           0       1
+#                (0.35)  (0.65)
+# ==============================
+# outlook
+#   sunny         3.8732  3.1268
+#   overcast      1.7746  4.2254
+#   rainy         2.1889  4.8111
+#   [total]       7.8368 12.1632
+# ...
+```
+
+#### Clustering new data
+
+Clusterers come with a `cluster` method which takes a Weka::Core::DenseInstance
+or an Array of values and returns the index of the predicted cluster:
+
+```ruby
+instances = Weka::Core::Instances.from_arff('unlabeled_data.arff')
+
+# with an instance as argument
+instances.map do |instance|
+  clusterer.cluster(instance)
+end
+# => [1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]
+
+# with an Array of values as argument
+clusterer.cluster [:sunny, 80, 80, :FALSE]
+# => 0
+```
+
+#### Adding a cluster attribute to a dataset
+
+After building and training a clusterer with training instances you can use the clusterer
+in the unsupervised attribute filter `AddCluster` to assign a cluster to each instance of a dataset:
+
+```ruby
+filter = Weka::Filter::Unsupervised::Attribute::AddCluster.new
+filter.clusterer = clusterer
+
+instances = Weka::Core::Instances.from_arff('unlabeled_data.arff')
+clustered_instances = instances.apply_filter(filter)
+
+puts clustered_instances.to_s
+```
+
+`clustered_instance` now has a nominal `cluster` attribute as the last attribute.
+The values of the cluster attribute are the *N* cluster names, e.g. with *N = 2* clusters, the ARFF representation looks like:
+
+```
+...
+@attribute outlook {sunny,overcast,rainy}
+@attribute temperature numeric
+@attribute humidity numeric
+@attribute windy {TRUE,FALSE}
+@attribute cluster {cluster1,cluster2}
+...
+```
+
+Each instance is now assigned to a cluster, e.g.:
+
+```
+...
+@data
+sunny,85,85,FALSE,cluster1
+sunny,80,90,TRUE,cluster1
+...
+```
 
 ## Development
 
