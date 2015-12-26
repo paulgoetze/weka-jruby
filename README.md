@@ -441,8 +441,9 @@ evaluation = classifier.evaluate(test_instances)
 
 #### Classifying new data
 
-Most classifiers comes with a `classify` method which takes a Weka::Core::DenseInstance
-or an Array of values and returns the predicted class value:
+Each classifier implements either a `classify` method or a `distibution_for` method, or both.
+
+The `classify` method takes a Weka::Core::DenseInstance or an Array of values as argument and returns the predicted class value:
 
 ```ruby
 instances = Weka::Core::Instances.from_arff('unclassified_data.arff')
@@ -456,6 +457,20 @@ end
 # with an Array of values as argument
 classifier.classify [:sunny, 80, 80, :FALSE, '?']
 # => 'yes'
+```
+
+The `distribution_for` method takes a Weka::Core::DenseInstance or an Array of values as argument as well and returns a hash with the distributions per class value:
+
+```ruby
+instances = Weka::Core::Instances.from_arff('unclassified_data.arff')
+
+# with an instance as argument
+classifier.distribution_for(instances.first)
+# => { "yes" => 0.26, "no" => 0.74 }
+
+# with an Array of values as argument
+classifier.distribution_for [:sunny, 80, 80, :FALSE, '?']
+# => { "yes" => 0.62, "no" => 0.38 }
 ```
 
 ### Clusterers
@@ -568,21 +583,38 @@ puts evaluation.summary
 
 #### Clustering new data
 
-Clusterers come with a `cluster` method which takes a Weka::Core::DenseInstance
-or an Array of values and returns the index of the predicted cluster:
+Similar to classifiers, clusterers come with a either a `cluster` method or a `distribution_for` method which both take a Weka::Core::DenseInstance or an Array of values as argument.
+
+The `classify` method returns the index of the predicted cluster:
 
 ```ruby
 instances = Weka::Core::Instances.from_arff('unlabeled_data.arff')
+
+clusterer = Weka::Clusterers::Canopy.build
+  train_with_instances instances
+end
 
 # with an instance as argument
 instances.map do |instance|
   clusterer.cluster(instance)
 end
-# => [1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1]
+# => [3, 3, 4, 0, 0, 1, 2, 3, 0, 0, 2, 2, 4, 1]
 
 # with an Array of values as argument
 clusterer.cluster [:sunny, 80, 80, :FALSE]
-# => 0
+# => 4
+```
+
+The `distribution_for` method returns an Array with the distributions at the cluster‘s index:
+
+```ruby
+# with an instance as argument
+clusterer.distribution_for(instances.first)
+# => [0.17229465277140552, 0.1675583309853506, 0.15089102301329346, 0.3274056122786787, 0.18185038095127165]
+
+# with an Array of values as argument
+classifier.distribution_for [:sunny, 80, 80, :FALSE]
+# => [0.21517055355632506, 0.16012256401406233, 0.17890840384466453, 0.2202344150907843, 0.2255640634941639]
 ```
 
 #### Adding a cluster attribute to a dataset
