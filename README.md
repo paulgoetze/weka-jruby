@@ -233,6 +233,9 @@ discretize = Discretize.new
 
 # apply a filter chain on instances
 filtered_data = instances.apply_filter(normalize).apply_filter(discretize)
+
+# or even shorter
+filtered_data = instances.apply_filters(normalize, discretize)
 ```
 
 #### Setting Filter options
