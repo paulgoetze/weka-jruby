@@ -163,6 +163,12 @@ module Weka
         filter.filter(self)
       end
 
+      def apply_filters(*filters)
+        filters.inject(self) do |filtered_instances, filter|
+          filter.filter(filtered_instances)
+        end
+      end
+
       private
 
       def add_attribute(attribute)
