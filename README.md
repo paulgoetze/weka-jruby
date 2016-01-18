@@ -23,6 +23,13 @@ Or install it yourself as:
 
 ## Usage
 
+* [Instances](#instances)
+* [Filters](#filters)
+* [Attribute selection](#attribute-selection)
+* [Classifiers](#classifiers)
+* [Clusterers](#clusterers)
+* [Serializing objects](#serializing-objects)
+
 Start using Weka's Machine Learning and Data Mining algorithms by requiring the gem:
 
 ```ruby
