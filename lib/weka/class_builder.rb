@@ -11,7 +11,7 @@ module Weka
 
       def build_class(class_name, weka_module: nil, include_concerns: true)
         java_import java_class_path(class_name, weka_module)
-        define_class(class_name, include_concerns: include_concerns)
+        define_class(class_name, weka_module, include_concerns: include_concerns)
       end
 
       def build_classes(*class_names, weka_module: nil, include_concerns: true)
@@ -52,13 +52,21 @@ module Weka
         self.name.scan('::').count == 1
       end
 
-      def define_class(class_name, include_concerns: true)
+      def define_class(class_name, weka_module, include_concerns: true)
         module_eval <<-CLASS_DEFINITION, __FILE__, __LINE__ + 1
           class #{class_name}
             #{'include Concerns' if include_concerns}
+            #{include_serializable_for(class_name, weka_module)}
             #{include_utils}
           end
         CLASS_DEFINITION
+      end
+
+      def include_serializable_for(class_name, weka_module)
+        class_path   = java_class_path(class_name, weka_module)
+        serializable = Weka::Core::SerializationHelper.serializable?(class_path)
+
+        "include Weka::Concerns::Serializable" if serializable
       end
 
       def include_utils
