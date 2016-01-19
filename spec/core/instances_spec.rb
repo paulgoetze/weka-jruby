@@ -31,6 +31,8 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :class_attribute }
   it { is_expected.to respond_to :reset_class_attribute }
 
+  it { is_expected.to respond_to :serialize }
+
   describe 'aliases:' do
     let (:instances) { described_class.new }
 

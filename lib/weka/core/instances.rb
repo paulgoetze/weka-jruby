@@ -2,6 +2,7 @@ require 'weka/core/converters'
 require 'weka/core/loader'
 require 'weka/core/saver'
 require 'weka/core/dense_instance'
+require 'weka/concerns/serializable'
 
 module Weka
   module Core
@@ -9,6 +10,7 @@ module Weka
     java_import "weka.core.FastVector"
 
     class Instances
+      include Weka::Concerns::Serializable
 
       DEFAULT_RELATION_NAME = 'Instances'
 
