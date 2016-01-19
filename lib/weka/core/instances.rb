@@ -2,6 +2,7 @@ require 'weka/core/converters'
 require 'weka/core/loader'
 require 'weka/core/saver'
 require 'weka/core/dense_instance'
+require 'weka/concerns/serializable'
 
 module Weka
   module Core
@@ -9,6 +10,7 @@ module Weka
     java_import "weka.core.FastVector"
 
     class Instances
+      include Weka::Concerns::Serializable
 
       DEFAULT_RELATION_NAME = 'Instances'
 
@@ -161,6 +163,12 @@ module Weka
 
       def apply_filter(filter)
         filter.filter(self)
+      end
+
+      def apply_filters(*filters)
+        filters.inject(self) do |filtered_instances, filter|
+          filter.filter(filtered_instances)
+        end
       end
 
       private

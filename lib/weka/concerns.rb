@@ -3,6 +3,7 @@ require 'weka/concerns/buildable'
 require 'weka/concerns/describable'
 require 'weka/concerns/optionizable'
 require 'weka/concerns/persistent'
+require 'weka/concerns/serializable'
 
 module Weka
   module Concerns

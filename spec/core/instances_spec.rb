@@ -25,10 +25,13 @@ describe Weka::Core::Instances do
 
   it { is_expected.to respond_to :add_instance }
   it { is_expected.to respond_to :apply_filter }
+  it { is_expected.to respond_to :apply_filters }
 
   it { is_expected.to respond_to :class_attribute= }
   it { is_expected.to respond_to :class_attribute }
   it { is_expected.to respond_to :reset_class_attribute }
+
+  it { is_expected.to respond_to :serialize }
 
   describe 'aliases:' do
     let (:instances) { described_class.new }
@@ -441,9 +444,19 @@ describe Weka::Core::Instances do
     let(:filter) { double('filter') }
     before { allow(filter).to receive(:filter).and_return(subject) }
 
-    it 'should call the given filters #filter method' do
+    it 'should call the given filter‘s #filter method' do
       expect(filter).to receive(:filter).once.with(subject)
       subject.apply_filter(filter)
+    end
+  end
+
+  describe '#apply_filters' do
+    let(:filter) { double('filter') }
+    before { allow(filter).to receive(:filter).and_return(subject) }
+
+    it 'should call the given filters‘ #filter methods' do
+      expect(filter).to receive(:filter).twice.with(subject)
+      subject.apply_filters(filter, filter)
     end
   end
 

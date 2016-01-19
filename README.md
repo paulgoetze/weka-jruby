@@ -23,6 +23,13 @@ Or install it yourself as:
 
 ## Usage
 
+* [Instances](#instances)
+* [Filters](#filters)
+* [Attribute selection](#attribute-selection)
+* [Classifiers](#classifiers)
+* [Clusterers](#clusterers)
+* [Serializing objects](#serializing-objects)
+
 Start using Weka's Machine Learning and Data Mining algorithms by requiring the gem:
 
 ```ruby
@@ -233,6 +240,9 @@ discretize = Discretize.new
 
 # apply a filter chain on instances
 filtered_data = instances.apply_filter(normalize).apply_filter(discretize)
+
+# or even shorter
+filtered_data = instances.apply_filters(normalize, discretize)
 ```
 
 #### Setting Filter options
@@ -653,6 +663,43 @@ Each instance is now assigned to a cluster, e.g.:
 sunny,85,85,FALSE,cluster1
 sunny,80,90,TRUE,cluster1
 ...
+```
+
+### Serializing Objects
+
+You can serialize objects with the `Weka::Core::SerializationHelper` class:
+
+```ruby
+# writing an Object to a file:
+Weka::Core::SerializationHelper.write('path/to/file.model', classifier)
+
+# load an Object from a serialized file:
+object = Weka::Core::SerializationHelper.read('path/to/file.model')
+```
+
+Instead of `.write` and `.read` you can also call the aliases `.serialize` and `.deserialize`.
+
+Serialization can be helpful if the training of e.g. a classifier model takes
+some minutes. Instead of running the whole training on instantiating a classifier you
+can speed up this process tremendously by serializing a classifier once it was trained and later load it from the file again.
+
+Classifiers, Clusterers, Instances and Filters also have a `#serialize` method
+which you can use to directly serialize an Instance of these, e.g. for a Classifier:
+
+```ruby
+instances  = Weka::Core::Instances.from_arff('weather.arff')
+instances.class_attribute = :play
+
+classifier = Weka::Core::Trees::RandomForest.build do
+  train_with_instances instances
+end
+
+# store trained model as binary file
+classifier.serialize('randomforest.model')
+
+# load Classifier from binary file
+loaded_classifier = Weka::Core::SerializationHelper.deserialize('randomforest.model')
+# => #<Java::WekaClassifiersTrees::RandomForest:0x197db331>
 ```
 
 ## Development
