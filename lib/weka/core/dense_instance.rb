@@ -10,7 +10,7 @@ module Weka
         if data.kind_of?(Integer)
           super(data)
         else
-          super(weight, data.to_java(:double))
+          super(weight, to_java_double(data))
         end
       end
 
@@ -42,6 +42,14 @@ module Weka
       alias :values_count :num_values
 
       private
+
+      def to_java_double(values)
+        data = values.map do |value|
+          ['?', nil].include?(value) ? Float::NAN : value
+        end
+
+        data.to_java(:double)
+      end
 
       def value_from(value, index)
         return '?'   if value.nan?
