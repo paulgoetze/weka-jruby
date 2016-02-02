@@ -7,7 +7,11 @@ module Weka
       java_import "java.text.SimpleDateFormat"
 
       def initialize(data, weight: 1.0)
-        super(weight, data.to_java(:double))
+        if data.kind_of?(Integer)
+          super(data)
+        else
+          super(weight, data.to_java(:double))
+        end
       end
 
       def attributes
@@ -30,15 +34,7 @@ module Weka
 
       def to_a
         to_double_array.each_with_index.map do |value, index|
-          attribute = attribute_at(index)
-
-          if attribute.date?
-            format_date(value, attribute.date_format)
-          elsif attribute.numeric?
-            value
-          elsif attribute.nominal?
-            attribute.value(value)
-          end
+          value_from(value, index)
         end
       end
 
@@ -46,6 +42,21 @@ module Weka
       alias :values_count :num_values
 
       private
+
+      def value_from(value, index)
+        return '?'   if value.nan?
+        return value if dataset.nil?
+
+        attribute = attribute_at(index)
+
+        if attribute.date?
+          format_date(value, attribute.date_format)
+        elsif attribute.numeric?
+          value
+        elsif attribute.nominal?
+          attribute.value(value)
+        end
+      end
 
       def attribute_at(index)
         return attributes[index] unless dataset.class_attribute_defined?
