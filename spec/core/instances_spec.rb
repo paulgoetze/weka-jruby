@@ -412,6 +412,19 @@ describe Weka::Core::Instances do
 
       expect(subject.instances.last.to_s).to eq data.to_s
     end
+
+    it 'should add a given instance with only missing values' do
+      data = Weka::Core::DenseInstance.new(subject.size)
+      subject.add_instance(data)
+      expect(subject.instances.last.to_s).to eq data.to_s
+    end
+
+    it 'should add a given instance with partly missing values' do
+      data = [:sunny, 70, nil, '?', Float::NAN]
+      subject.add_instance(data)
+
+      expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+    end
   end
 
   describe '#add_instances' do
