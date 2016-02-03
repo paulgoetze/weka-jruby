@@ -106,6 +106,23 @@ instances.to_csv('weather.csv')
 instances.to_json('weather.json')
 ```
 
+#### Merging Instances
+
+Instances with different attributes can be merged with the `merge` method:
+
+```ruby
+merged_instances = instances.merge(other_instances)
+```
+
+You can also merge multiple instances in one run:
+
+```
+merged_instances = instances.merge(other_instances, yet_another_instances)
+
+```
+
+All Instances objects that shall be merged must have the same size of instance sets (`#instances_count`) and must not have the same attributes.
+
 #### Adding additional attributes
 
 You can add additional attributes to the Instances after its initialization.
@@ -162,7 +179,6 @@ instances.add_nominal_attribute(:size, values: ['L', 'XL'], class_attribute: tru
 
 Keep in mind that you can only assign existing attributes to be the class attribute.
 The class attribute will not appear in the `instances.attributes` anymore and can be accessed with the `class_attribute` method.
-
 
 #### Alias methods
 
