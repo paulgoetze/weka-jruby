@@ -11,14 +11,14 @@ module Weka
       # The order of the if statements is important here, because a date is also
       # a numeric.
       def internal_value_of(value)
-        if date?
-          parse_date(value.to_s)
-        elsif numeric?
-          value.to_f
-        elsif nominal?
-          index_of_value(value.to_s)
-        end
+        return value                      if value === Float::NAN
+        return Float::NAN                 if [nil, '?'].include?(value)
+        return parse_date(value.to_s)     if date?
+        return value.to_f                 if numeric?
+        return index_of_value(value.to_s) if nominal?
       end
     end
+
+    Weka::Core::Attribute.__persistent__ = true
   end
 end
