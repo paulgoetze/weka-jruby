@@ -171,6 +171,12 @@ module Weka
         end
       end
 
+      def merge(*instances)
+        instances.inject(self) do |merged_instances, dataset|
+          self.class.merge_instances(merged_instances, dataset)
+        end
+      end
+
       private
 
       def add_attribute(attribute)
