@@ -26,6 +26,7 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :add_instance }
   it { is_expected.to respond_to :apply_filter }
   it { is_expected.to respond_to :apply_filters }
+  it { is_expected.to respond_to :merge }
 
   it { is_expected.to respond_to :class_attribute= }
   it { is_expected.to respond_to :class_attribute }
@@ -412,6 +413,19 @@ describe Weka::Core::Instances do
 
       expect(subject.instances.last.to_s).to eq data.to_s
     end
+
+    it 'should add a given instance with only missing values' do
+      data = Weka::Core::DenseInstance.new(subject.size)
+      subject.add_instance(data)
+      expect(subject.instances.last.to_s).to eq data.to_s
+    end
+
+    it 'should add a given instance with partly missing values' do
+      data = [:sunny, 70, nil, '?', Float::NAN]
+      subject.add_instance(data)
+
+      expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+    end
   end
 
   describe '#add_instances' do
@@ -457,6 +471,47 @@ describe Weka::Core::Instances do
     it 'should call the given filters‘ #filter methods' do
       expect(filter).to receive(:filter).twice.with(subject)
       subject.apply_filters(filter, filter)
+    end
+  end
+
+  describe '#merge' do
+    let(:attribute_a) { subject.attributes[0] }
+    let(:attribute_b) { subject.attributes[1] }
+    let(:attribute_c) { subject.attributes[2] }
+
+    let(:instances_a) { Weka::Core::Instances.new(attributes: [attribute_a]) }
+    let(:instances_b) { Weka::Core::Instances.new(attributes: [attribute_b]) }
+    let(:instances_c) { Weka::Core::Instances.new(attributes: [attribute_c]) }
+
+    context 'when merging one instances object' do
+      it 'should call .merge_instance of Weka::Core::Instances' do
+        expect(Weka::Core::Instances)
+          .to receive(:merge_instances)
+          .with(instances_a, instances_b)
+
+        instances_a.merge(instances_b)
+      end
+
+      it 'should return the result of .merge_instance' do
+        merged = double('instances')
+        allow(Weka::Core::Instances).to receive(:merge_instances).and_return(merged)
+
+        expect(instances_a.merge(instances_b)).to eq merged
+      end
+    end
+
+    context 'when merging multiple instances' do
+      it 'should call .merge_instances mutliple times' do
+        expect(Weka::Core::Instances).to receive(:merge_instances).twice
+        instances_a.merge(instances_b, instances_c)
+      end
+
+      it 'should return the merged instances' do
+        merged            = instances_a.merge(instances_b, instances_c)
+        merged_attributes = [attribute_a, attribute_b, attribute_c]
+
+        expect(merged.attributes).to match_array merged_attributes
+      end
     end
   end
 

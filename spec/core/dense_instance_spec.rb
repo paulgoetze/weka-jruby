@@ -25,6 +25,27 @@ describe Weka::Core::DenseInstance do
     end
   end
 
+  describe 'instantiation' do
+    describe 'with an Integer value' do
+      it 'should create a instance with only missing values' do
+        values = Weka::Core::DenseInstance.new(2).values
+        expect(values).to eq ['?', '?']
+      end
+    end
+
+    describe 'with an array' do
+      it 'should create an instance with the given values' do
+        values = Weka::Core::DenseInstance.new([1, 2, 3]).values
+        expect(values).to eq [1, 2, 3]
+      end
+
+      it 'should handle "?" values or nil values' do
+        values = Weka::Core::DenseInstance.new([1, '?', nil, 4]).values
+        expect(values).to eq [1, '?', '?', 4]
+      end
+    end
+  end
+
   describe '#to_a' do
     let(:values) { ['rainy',50.0, 50.0,'TRUE','no','2015-12-24 11:11'] }
 
