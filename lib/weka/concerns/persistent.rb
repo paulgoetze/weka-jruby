@@ -6,11 +6,8 @@ module Weka
       extend ActiveSupport::Concern
 
       included do
-        if self.respond_to?(:__persistent__=)
-          self.__persistent__ = true
-        end
+        self.__persistent__ = true if respond_to?(:__persistent__=)
       end
-
     end
   end
 end

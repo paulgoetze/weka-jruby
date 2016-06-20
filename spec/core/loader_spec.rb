@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 describe Weka::Core::Loader do
-
-  CLASS_METHODS = %i{ load_arff load_csv load_json }
+  CLASS_METHODS = %i(load_arff load_csv load_json).freeze
 
   CLASS_METHODS.each do |method|
     it "responds to .#{method}" do
@@ -14,7 +13,9 @@ describe Weka::Core::Loader do
     method = "load_#{type}"
 
     describe "##{method}" do
-      let(:file) { File.expand_path("../../support/resources/weather.#{type}", __FILE__) }
+      let(:file) do
+        File.expand_path("../../support/resources/weather.#{type}", __FILE__)
+      end
 
       it "returns an Instances object for a given #{type.upcase} file" do
         instances = described_class.send(method, file)
@@ -22,5 +23,4 @@ describe Weka::Core::Loader do
       end
     end
   end
-
 end

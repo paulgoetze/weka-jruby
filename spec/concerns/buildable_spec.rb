@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Concerns::Buildable do
-
   subject do
     Class.new { include Weka::Concerns::Buildable }
   end
@@ -21,7 +20,7 @@ describe Weka::Concerns::Buildable do
         subject.build { a_public_method }
       end
 
-      it "should return an instance of the including class" do
+      it 'should return an instance of the including class' do
         instance = subject.build { a_public_method }
         expect(instance).to be_kind_of subject
       end

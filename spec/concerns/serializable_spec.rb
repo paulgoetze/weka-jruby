@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Concerns::Serializable do
-
   subject do
     Class.new { include Weka::Concerns::Serializable }
   end

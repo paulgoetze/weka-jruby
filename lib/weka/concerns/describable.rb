@@ -6,7 +6,6 @@ module Weka
       extend ActiveSupport::Concern
 
       module ClassMethods
-
         def description
           new.global_info
         end

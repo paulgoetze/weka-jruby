@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Clusterers::Utils do
-
   let(:including_class) do
     Class.new do
       def build_clusterer(instances)
@@ -66,10 +65,9 @@ describe Weka::Clusterers::Utils do
     end
 
     it 'should return itself' do
-      expect(subject.add_training_instance(instance)).to be_kind_of subject.class
+      expect(subject.add_training_instance(instance)).to be_a subject.class
     end
   end
-
 
   describe '#add_training_data' do
     let(:values) { [:sunny, 85, 85, :FALSE, :no] }
@@ -88,7 +86,7 @@ describe Weka::Clusterers::Utils do
     end
 
     it 'should return itself' do
-      expect(subject.add_training_data(values)).to be_kind_of subject.class
+      expect(subject.add_training_data(values)).to be_a subject.class
     end
   end
 
@@ -136,7 +134,9 @@ describe Weka::Clusterers::Utils do
       end
 
       it 'should run Java‘s #cross_validate_model on a ClusterEvaluation' do
-        expect(Weka::Clusterers::ClusterEvaluation).to receive(:cross_validate_model).once
+        expect(Weka::Clusterers::ClusterEvaluation)
+          .to receive(:cross_validate_model).once
+
         subject.cross_validate
       end
 
@@ -184,7 +184,9 @@ describe Weka::Clusterers::Utils do
       end
 
       context 'without training instances' do
-        before { allow(subject).to receive(:training_instances).and_return(nil) }
+        before do
+          allow(subject).to receive(:training_instances).and_return(nil)
+        end
 
         it 'should raise an UnassignedTrainingInstancesError' do
           expect { subject.cross_validate }
@@ -197,7 +199,8 @@ describe Weka::Clusterers::Utils do
   describe '#evaluate' do
     before do
       allow(subject).to receive(:training_instances).and_return(instances)
-      allow_any_instance_of(Weka::Clusterers::ClusterEvaluation).to receive(:evaluate_clusterer)
+      allow_any_instance_of(Weka::Clusterers::ClusterEvaluation)
+        .to receive(:evaluate_clusterer)
     end
 
     it 'should return a Weka::Clusterers::ClusterEvaluation' do
@@ -224,9 +227,9 @@ describe Weka::Clusterers::Utils do
   end
 
   describe '#cluster' do
-    let(:instance)  { instances.first }
-    let(:values)    { [:overcast, 83, 86, :FALSE, :yes] }
-    let(:cluster)   { 1 }
+    let(:instance) { instances.first }
+    let(:values)   { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:cluster)  { 1 }
 
     before do
       allow(subject).to receive(:cluster_instance).and_return(cluster)
@@ -271,12 +274,14 @@ describe Weka::Clusterers::Utils do
   end
 
   describe '#distribution_for' do
-    let(:instance)            { instances.first }
-    let(:values)              { [:overcast, 83, 86, :FALSE, :yes] }
-    let(:distributions)       { [0.543684388757196, 0.4563156112428039] }
+    let(:instance)      { instances.first }
+    let(:values)        { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:distributions) { [0.543684388757196, 0.4563156112428039] }
 
     before do
-      allow(subject).to receive(:distribution_for_instance).and_return(distributions)
+      allow(subject)
+        .to receive(:distribution_for_instance)
+        .and_return(distributions)
     end
 
     context 'with a given instance' do
@@ -316,5 +321,4 @@ describe Weka::Clusterers::Utils do
       end
     end
   end
-
 end

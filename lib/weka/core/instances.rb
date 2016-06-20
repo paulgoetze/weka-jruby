@@ -6,13 +6,13 @@ require 'weka/concerns/serializable'
 
 module Weka
   module Core
-    java_import "weka.core.Instances"
-    java_import "weka.core.FastVector"
+    java_import 'weka.core.Instances'
+    java_import 'weka.core.FastVector'
 
     class Instances
       include Weka::Concerns::Serializable
 
-      DEFAULT_RELATION_NAME = 'Instances'
+      DEFAULT_RELATION_NAME = 'Instances'.freeze
 
       class << self
         def from_arff(file)
@@ -48,13 +48,13 @@ module Weka
       end
 
       def add_attributes(&block)
-        self.instance_eval(&block) if block
+        instance_eval(&block) if block
         self
       end
 
-      alias :with_attributes  :add_attributes
-      alias :instances_count  :num_instances
-      alias :attributes_count :num_attributes
+      alias with_attributes  add_attributes
+      alias instances_count  num_instances
+      alias attributes_count num_attributes
 
       def each
         if block_given?
@@ -129,10 +129,10 @@ module Weka
         end
       end
 
-      alias :add_numeric_attribute :numeric
-      alias :add_string_attribute  :string
-      alias :add_nominal_attribute :nominal
-      alias :add_date_attribute    :date
+      alias add_numeric_attribute numeric
+      alias add_string_attribute  string
+      alias add_nominal_attribute nominal
+      alias add_date_attribute    date
 
       def class_attribute
         classAttribute if class_attribute_defined?
@@ -187,7 +187,7 @@ module Weka
         return if attribute_names.include?(name.to_s)
 
         error   = "\"#{name}\" is not defined."
-        hint    = "Only defined attributes can be used as class attribute!"
+        hint    = 'Only defined attributes can be used as class attribute!'
         message = "#{error} #{hint}"
 
         raise ArgumentError, message
@@ -198,7 +198,7 @@ module Weka
       end
 
       def instance_from(instance_or_values, weight:)
-        if instance_or_values.kind_of?(Java::WekaCore::Instance)
+        if instance_or_values.is_a?(Java::WekaCore::Instance)
           instance_or_values.weight = weight
           instance_or_values
         else

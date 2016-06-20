@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'fileutils'
 
 describe Weka::Core::Instances do
-
   subject { load_instances('weather.arff') }
 
   it { is_expected.to respond_to :each }
@@ -35,7 +34,7 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :serialize }
 
   describe 'aliases:' do
-    let (:instances) { described_class.new }
+    let(:instances) { described_class.new }
 
     {
       numeric:             :add_numeric_attribute,
@@ -94,7 +93,7 @@ describe Weka::Core::Instances do
       expect(objects).to be_an Array
 
       all_kind_of_instance = objects.reduce(true) do |result, object|
-        result &&= object.kind_of?(Java::WekaCore::DenseInstance)
+        result && object.is_a?(Java::WekaCore::DenseInstance)
       end
 
       expect(all_kind_of_instance).to be true
@@ -107,7 +106,7 @@ describe Weka::Core::Instances do
       expect(objects).to be_an Array
 
       all_kind_of_attribute = objects.reduce(true) do |result, object|
-        result &&= object.kind_of?(Java::WekaCore::Attribute)
+        result && object.is_a?(Java::WekaCore::Attribute)
       end
 
       expect(all_kind_of_attribute).to be true
@@ -116,7 +115,7 @@ describe Weka::Core::Instances do
 
   describe '#attribute_names' do
     it 'should return an Array of the attribute names' do
-      names = %w{ outlook temperature humidity windy play }
+      names = %w(outlook temperature humidity windy play)
       expect(subject.attribute_names).to eq names
     end
   end
@@ -148,13 +147,13 @@ describe Weka::Core::Instances do
 
     describe '#nominal' do
       it 'can be used to add a nominal attribute' do
-        instances.nominal(name, values: ['yes', 'no'])
+        instances.nominal(name, values: %w(yes no))
         expect(instances.attributes.first).to be_nominal
       end
 
       context 'with the class_attribute option' do
         it 'should define the attribute as class attribute' do
-          instances.nominal(name, values: ['yes', 'no'], class_attribute: true)
+          instances.nominal(name, values: %w(yes no), class_attribute: true)
           expect(instances.class_attribute.name).to eq name
         end
       end
@@ -202,7 +201,7 @@ describe Weka::Core::Instances do
 
         it 'should convert the options into strings' do
           instances.nominal(:attribute_name, values: [true, false])
-          expect(instances.attributes.first.values).to eq ['true', 'false']
+          expect(instances.attributes.first.values).to eq %w(true false)
         end
       end
 
@@ -290,7 +289,7 @@ describe Weka::Core::Instances do
       expect {
         instances.add_attributes do
           numeric 'attribute'
-          nominal 'class', values: ['YES', 'NO']
+          nominal 'class', values: %w(YES NO)
         end
       }.to change { instances.attributes.count }.from(0).to(2)
     end
@@ -300,16 +299,16 @@ describe Weka::Core::Instances do
 
       instances.add_attributes do
         numeric 'attribute'
-        nominal 'class', values: ['YES', 'NO']
+        nominal 'class', values: %w(YES NO)
       end
 
-      expect(instances.attributes.map(&:name)).to eq ['attribute', 'class']
+      expect(instances.attributes.map(&:name)).to eq %w(attribute class)
     end
   end
 
   describe '#initialize' do
     it 'should take a relation_name as argument' do
-      name = 'name'
+      name      = 'name'
       instances = Weka::Core::Instances.new(relation_name: name)
 
       expect(instances.relation_name).to eq name
@@ -494,7 +493,10 @@ describe Weka::Core::Instances do
 
       it 'should return the result of .merge_instance' do
         merged = double('instances')
-        allow(Weka::Core::Instances).to receive(:merge_instances).and_return(merged)
+
+        allow(Weka::Core::Instances)
+          .to receive(:merge_instances)
+          .and_return(merged)
 
         expect(instances_a.merge(instances_b)).to eq merged
       end
@@ -514,5 +516,4 @@ describe Weka::Core::Instances do
       end
     end
   end
-
 end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::AttributeSelection::AttributeSelection do
-
   describe 'aliases:' do
     {
       to_results_string:          :summary,

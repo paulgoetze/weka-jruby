@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Filters::Supervised::Attribute::AttributeSelection do
-
   describe 'aliases:' do
     {
       set_evaluator: :use_evaluator,

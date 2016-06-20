@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::AttributeSelection::Search do
-
   subject { described_class }
 
   it_behaves_like 'class builder'

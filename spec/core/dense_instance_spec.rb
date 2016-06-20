@@ -1,11 +1,10 @@
 require 'spec_helper'
 
 describe Weka::Core::DenseInstance do
-
   subject do
     instances = load_instances('weather.arff')
     instances.add_date_attribute('recorded_at')
-    instances.add_instance(['rainy',50, 50,'TRUE','no','2015-12-24 11:11'])
+    instances.add_instance(['rainy', 50, 50, 'TRUE', 'no', '2015-12-24 11:11'])
     instances.instances.last
   end
 
@@ -47,7 +46,7 @@ describe Weka::Core::DenseInstance do
   end
 
   describe '#to_a' do
-    let(:values) { ['rainy',50.0, 50.0,'TRUE','no','2015-12-24 11:11'] }
+    let(:values) { ['rainy', 50.0, 50.0, 'TRUE', 'no', '2015-12-24 11:11'] }
 
     it 'should return an Array with the values of the instance' do
       expect(subject.to_a).to eq values
@@ -74,7 +73,7 @@ describe Weka::Core::DenseInstance do
       expect(attributes).to be_an Array
 
       all_kind_of_attribute = attributes.reduce(true) do |result, attribute|
-        result &&= attribute.kind_of?(Java::WekaCore::Attribute)
+        result && attribute.is_a?(Java::WekaCore::Attribute)
       end
 
       expect(all_kind_of_attribute).to be true
@@ -118,5 +117,4 @@ describe Weka::Core::DenseInstance do
       end
     end
   end
-
 end

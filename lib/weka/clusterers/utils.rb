@@ -61,7 +61,7 @@ module Weka
           end
 
           def add_training_data(data)
-            values   = self.training_instances.internal_values_of(data)
+            values   = training_instances.internal_values_of(data)
             instance = Weka::Core::DenseInstance.new(values)
             add_training_instance(instance)
           end
@@ -96,8 +96,6 @@ module Weka
           instances.first
         end
       end
-
     end
   end
 end
-

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::AttributeSelection::Evaluator do
-
   subject { described_class }
 
   it_behaves_like 'class builder'
@@ -28,7 +27,7 @@ describe Weka::AttributeSelection::Evaluator do
     end
   end
 
-  it "should define a class PrincipalComponents" do
-      expect(subject.const_defined?(:PrincipalComponents)).to be true
-    end
+  it 'should define a class PrincipalComponents' do
+    expect(subject.const_defined?(:PrincipalComponents)).to be true
+  end
 end

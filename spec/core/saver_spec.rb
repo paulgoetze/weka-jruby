@@ -1,13 +1,12 @@
 require 'spec_helper'
 
 describe Weka::Core::Saver do
-
   let(:instances) { load_instances('weather.arff') }
 
   before(:all) { @tmp_dir = File.expand_path('../../tmp/', __FILE__) }
   after(:all)  { FileUtils.remove_dir(@tmp_dir, true) }
 
-  CLASS_METHODS = %i{ save_arff save_csv save_json }
+  CLASS_METHODS = %i(save_arff save_csv save_json).freeze
 
   CLASS_METHODS.each do |method|
     it "responds to .#{method}" do
@@ -28,5 +27,4 @@ describe Weka::Core::Saver do
       end
     end
   end
-
 end

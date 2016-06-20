@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Concerns::Describable do
-
   subject do
     Class.new { include Weka::Concerns::Describable }
   end
@@ -31,7 +30,7 @@ describe Weka::Concerns::Describable do
     end
 
     it 'should return a string' do
-      expect(subject.options).to be_kind_of String
+      expect(subject.options).to be_a String
     end
   end
 end

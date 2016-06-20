@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Concerns::Optionizable do
-
   subject do
     Class.new { include Weka::Concerns::Optionizable }.new
   end
@@ -104,7 +103,7 @@ describe Weka::Concerns::Optionizable do
     before do
       allow_any_instance_of(subject.class)
         .to receive(:get_options)
-        .and_return(['-C', 'last', '-Z',  '-P', '10', '-M', '-B', '0.1'])
+        .and_return(%w(-C last -Z -P 10 -M -B 0.1))
     end
 
     it 'should receive Java‘s #get_options' do

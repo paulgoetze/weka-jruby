@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Classifiers::Bayes do
-
   it_behaves_like 'class builder'
 
   [

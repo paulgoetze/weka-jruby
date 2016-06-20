@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Filters::Utils do
-
   subject do
     Class.new { include Weka::Filters::Utils }.new
   end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Classifiers::Utils do
-
   let(:including_class) do
     Class.new do
       def build_classifier(instances)
@@ -82,7 +81,7 @@ describe Weka::Classifiers::Utils do
     end
 
     it 'should return itself' do
-      expect(subject.add_training_instance(instance)).to be_kind_of subject.class
+      expect(subject.add_training_instance(instance)).to be_a subject.class
     end
   end
 
@@ -274,7 +273,9 @@ describe Weka::Classifiers::Utils do
     let(:class_distributions) { { 'yes' => distributions[0], 'no' => distributions[1] } }
 
     before do
-      allow(subject).to receive(:distribution_for_instance).and_return(distributions)
+      allow(subject)
+        .to receive(:distribution_for_instance)
+        .and_return(distributions)
     end
 
     context 'with a given instance' do
@@ -314,5 +315,4 @@ describe Weka::Classifiers::Utils do
       end
     end
   end
-
 end

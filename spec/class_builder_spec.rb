@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::ClassBuilder do
-
   subject do
     module Some
       module Weka
@@ -14,7 +13,7 @@ describe Weka::ClassBuilder do
     end
   end
 
-  let(:class_name){ :SomeClass }
+  let(:class_name) { :SomeClass }
 
   before { allow(subject).to receive(:java_import).and_return('') }
 
@@ -124,7 +123,7 @@ describe Weka::ClassBuilder do
   describe '.build_classes' do
     context 'without a given weka_module' do
       it 'should run .build_class for each of the given classes' do
-        class_names = %i{ SomeClass SomeOtherClass }
+        class_names = %i(SomeClass SomeOtherClass)
 
         expect(subject).to receive(:build_class).exactly(class_names.count).times
         subject.build_classes(*class_names)
@@ -133,7 +132,7 @@ describe Weka::ClassBuilder do
 
     context 'with a given weka_module' do
       it 'should run .build_class for each of the given classes' do
-        class_names = %i{ SomeClass SomeOtherClass }
+        class_names = %i(SomeClass SomeOtherClass)
 
         expect(subject).to receive(:build_class).exactly(class_names.count).times
         subject.build_classes(*class_names, weka_module: 'weka.module')

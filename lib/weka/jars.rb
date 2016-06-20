@@ -14,6 +14,5 @@ module Weka
       LockJar.install(lockfile, local_repo: jars_dir)
       LockJar.load(lockfile, local_repo: jars_dir)
     end
-
   end
 end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Filters::Unsupervised::Attribute do
-
   it_behaves_like 'class builder'
 
   [

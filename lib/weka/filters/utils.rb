@@ -11,7 +11,6 @@ module Weka
           Filter.use_filter(instances, self)
         end
       end
-
     end
   end
 end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Concerns::Persistent do
-
   describe 'if included' do
     subject { Class.new }
 

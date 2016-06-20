@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Core::SerializationHelper do
-
   it { is_expected.to be_kind_of Java::WekaCore::SerializationHelper }
 
   describe 'aliases:' do

@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 describe Weka::Core::Attribute do
-
-  let(:values) { ['yes', 'no'] }
+  let(:values) { %w(yes no) }
   subject { Weka::Core::Attribute.new('class', values) }
 
   it { is_expected.to respond_to :values }
@@ -19,7 +18,7 @@ describe Weka::Core::Attribute do
       let(:attribute) { Weka::Core::Attribute.new('numeric attribute') }
 
       it 'should return the value as a float' do
-        expect(attribute.internal_value_of(3.5)).to   eq 3.5
+        expect(attribute.internal_value_of(3.5)).to eq 3.5
       end
 
       it 'should return the value as a float if given as string' do
@@ -35,12 +34,12 @@ describe Weka::Core::Attribute do
       end
 
       it 'should return NaN if the given value is "?"' do
-        expect(attribute.internal_value_of("?")).to be Float::NAN
+        expect(attribute.internal_value_of('?')).to be Float::NAN
       end
     end
 
     context 'a nominal attribute' do
-      let(:attribute) { Weka::Core::Attribute.new('class', ['true', 'false']) }
+      let(:attribute) { Weka::Core::Attribute.new('class', %w(true false)) }
 
       it 'should return the correct internal index' do
         expect(attribute.internal_value_of('true')).to  eq 0
@@ -64,14 +63,14 @@ describe Weka::Core::Attribute do
       end
 
       it 'should return NaN if the given value is "?"' do
-        expect(attribute.internal_value_of("?")).to be Float::NAN
+        expect(attribute.internal_value_of('?')).to be Float::NAN
       end
     end
 
     context 'a data attribute' do
       let(:attribute)      { Weka::Core::Attribute.new('date', 'yyyy-MM-dd HH:mm') }
       let(:datetime)       { '2015-12-24 11:11' }
-      let(:unix_timestamp) { 1450955460000.0 }
+      let(:unix_timestamp) { 1_450_955_460_000.0 }
 
       before do
         allow(attribute)
@@ -93,7 +92,7 @@ describe Weka::Core::Attribute do
       end
 
       it 'should return NaN if the given value is "?"' do
-        expect(attribute.internal_value_of("?")).to be Float::NAN
+        expect(attribute.internal_value_of('?')).to be Float::NAN
       end
     end
   end

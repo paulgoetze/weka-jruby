@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Clusterers::ClusterEvaluation do
-
   it { is_expected.to be_kind_of(Java::WekaClusterers::ClusterEvaluation) }
 
   describe 'aliases:' do
@@ -14,5 +13,4 @@ describe Weka::Clusterers::ClusterEvaluation do
       end
     end
   end
-
 end
