@@ -15,12 +15,12 @@ describe Weka::Filters::Utils do
       allow(Weka::Filters::Filter).to receive(:use_filter).and_return(nil)
     end
 
-    it 'should set the filter input format' do
+    it 'sets the filter input format' do
       expect(subject).to receive(:set_input_format).with(instances)
       subject.filter(instances)
     end
 
-    it 'should apply the including filter' do
+    it 'applies the including filter' do
       expect(Weka::Filters::Filter)
         .to receive(:use_filter)
         .with(instances, subject)

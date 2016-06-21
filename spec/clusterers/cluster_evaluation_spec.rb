@@ -8,7 +8,7 @@ describe Weka::Clusterers::ClusterEvaluation do
       summary:        :cluster_results_to_string,
       clusters_count: :num_clusters
     }.each do |alias_method, method|
-      it "should define the alias ##{alias_method} for ##{method}" do
+      it "defines the alias ##{alias_method} for ##{method}" do
         expect(subject.method(method)).to eq subject.method(alias_method)
       end
     end

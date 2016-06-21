@@ -10,7 +10,7 @@ describe Weka::AttributeSelection::Search do
     :Ranker,
     :BestFirst
   ].each do |class_name|
-    it "should define a class #{class_name}" do
+    it "defines a class #{class_name}" do
       expect(subject.const_defined?(class_name)).to be true
     end
   end

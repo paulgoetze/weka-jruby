@@ -13,7 +13,7 @@ describe Weka::Classifiers::Trees do
     :RandomTree,
     :REPTree
   ].each do |class_name|
-    it "should define a class #{class_name}" do
+    it "defines a class #{class_name}" do
       expect(described_class.const_defined?(class_name)).to be true
     end
   end

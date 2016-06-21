@@ -29,7 +29,7 @@ describe Weka::Classifiers::Evaluation do
       weighted_f_measure:             :weighted_fmeasure,
       cumulative_margin_distribution: :toCumulativeMarginDistributionString
     }.each do |alias_method, method|
-      it "should define the alias ##{alias_method} for ##{method}" do
+      it "defines the alias ##{alias_method} for ##{method}" do
         expect(subject.method(method)).to eq subject.method(alias_method)
       end
     end

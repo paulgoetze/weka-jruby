@@ -8,7 +8,7 @@ describe Weka::Classifiers::Lazy do
     :KStar,
     :LWL
   ].each do |class_name|
-    it "should defines a class #{class_name}" do
+    it "definess a class #{class_name}" do
       expect(described_class.const_defined?(class_name)).to be true
     end
   end

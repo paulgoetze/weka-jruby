@@ -35,24 +35,24 @@ describe Weka::Classifiers::Utils do
   it { is_expected.to respond_to :classify }
 
   describe '#train_with_instances' do
-    it 'should call Java‘s #build_classifier' do
+    it 'calls Java’s #build_classifier' do
       expect(subject).to receive(:build_classifier).once.with(instances)
       subject.train_with_instances(instances)
     end
 
-    it 'should set the training_instances' do
+    it 'sets the training_instances' do
       subject = including_class.new
       expect(subject.training_instances).to be_nil
       subject.train_with_instances(instances)
       expect(subject.training_instances).to eq instances
     end
 
-    it 'should return itself' do
+    it 'returns itself' do
       expect(subject.train_with_instances(instances)).to be subject
     end
 
     context 'without an assigned class attribute on instances' do
-      it 'should raise an UnassignedClassError' do
+      it 'raises an UnassignedClassError' do
         instances = load_instances('weather.arff')
 
         expect { including_class.new.train_with_instances(instances) }
@@ -69,18 +69,18 @@ describe Weka::Classifiers::Utils do
       subject.train_with_instances(instances)
     end
 
-    it 'should call Java‘s #update_classifier' do
+    it 'calls Java’s #update_classifier' do
       expect(subject).to receive(:update_classifier).once.with(instance)
       subject.add_training_instance(instance)
     end
 
-    it 'should add the instance to training_instances' do
+    it 'adds the instance to training_instances' do
       expect { subject.add_training_instance(instance) }
         .to change { subject.training_instances.count }
         .by(1)
     end
 
-    it 'should return itself' do
+    it 'returns itself' do
       expect(subject.add_training_instance(instance)).to be_a subject.class
     end
   end
@@ -93,7 +93,7 @@ describe Weka::Classifiers::Utils do
       subject.train_with_instances(instances)
     end
 
-    it 'should call #add_training_instance' do
+    it 'calls #add_training_instance' do
       expect(subject)
         .to receive(:add_training_instance).once
         .with(an_instance_of(Weka::Core::DenseInstance))
@@ -101,7 +101,7 @@ describe Weka::Classifiers::Utils do
       subject.add_training_data(values)
     end
 
-    it 'should return itself' do
+    it 'returns itself' do
       expect(subject.add_training_data(values)).to be_kind_of subject.class
     end
   end
@@ -115,19 +115,19 @@ describe Weka::Classifiers::Utils do
         .to receive(:cross_validate_model)
     end
 
-    it 'should return a Weka::Classifiers::Evaluation' do
+    it 'returns a Weka::Classifiers::Evaluation' do
       return_value = subject.cross_validate
       expect(return_value).to be_kind_of Weka::Classifiers::Evaluation
     end
 
-    it 'should run Java‘s #cross_validate_model on an Evaluation' do
+    it 'runs Java’s #cross_validate_model on an Evaluation' do
       expect_any_instance_of(Weka::Classifiers::Evaluation)
         .to receive(:cross_validate_model).once
 
       subject.cross_validate
     end
 
-    it 'should use 3 folds and the training instances as default test instances' do
+    it 'uses 3 folds and the training instances as default test instances' do
       expect_any_instance_of(Weka::Classifiers::Evaluation)
         .to receive(:cross_validate_model).once
         .with(
@@ -143,7 +143,7 @@ describe Weka::Classifiers::Utils do
     context 'with given folds' do
       let(:folds) { default_folds + 1 }
 
-      it 'should use the given number of folds' do
+      it 'uses the given number of folds' do
         expect_any_instance_of(Weka::Classifiers::Evaluation)
           .to receive(:cross_validate_model).once
           .with(
@@ -156,7 +156,7 @@ describe Weka::Classifiers::Utils do
         subject.cross_validate(folds: folds)
       end
 
-      it 'should use the folds as an integer value' do
+      it 'uses the folds as an integer value' do
         expect_any_instance_of(Weka::Classifiers::Evaluation)
           .to receive(:cross_validate_model).once
           .with(
@@ -173,7 +173,7 @@ describe Weka::Classifiers::Utils do
     context 'without training instances' do
       before { allow(subject).to receive(:training_instances).and_return(nil) }
 
-      it 'should raise an UnassignedTrainingInstancesError' do
+      it 'raises an UnassignedTrainingInstancesError' do
         expect { subject.cross_validate }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
@@ -186,12 +186,12 @@ describe Weka::Classifiers::Utils do
       allow_any_instance_of(Weka::Classifiers::Evaluation).to receive(:evaluate_model)
     end
 
-    it 'should return a Weka::Classifiers::Evaluation' do
+    it 'returns a Weka::Classifiers::Evaluation' do
       return_value = subject.evaluate(instances)
       expect(return_value).to be_kind_of Weka::Classifiers::Evaluation
     end
 
-    it 'should run Java‘s #evaluate_model on an Evaluation' do
+    it 'runs Java’s #evaluate_model on an Evaluation' do
       expect_any_instance_of(Weka::Classifiers::Evaluation)
         .to receive(:evaluate_model).once
         .with(subject, instances)
@@ -200,7 +200,7 @@ describe Weka::Classifiers::Utils do
     end
 
     context 'without an assigned class attribute on test instances' do
-      it 'should raise an UnassignedClassError' do
+      it 'raises an UnassignedClassError' do
         instances = load_instances('weather.arff')
 
         expect { subject.evaluate(instances) }
@@ -211,7 +211,7 @@ describe Weka::Classifiers::Utils do
     context 'without training instances' do
       before { allow(subject).to receive(:training_instances).and_return(nil) }
 
-      it 'should raise an UnassignedTrainingInstancesError' do
+      it 'raises an UnassignedTrainingInstancesError' do
         expect { subject.evaluate(instances) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
@@ -229,7 +229,7 @@ describe Weka::Classifiers::Utils do
     end
 
     context 'with a given instance' do
-      it 'should call Java‘s #classify_instance' do
+      it 'calls Java’s #classify_instance' do
         expect(subject)
           .to receive(:classify_instance).once
           .with(an_instance_of(instance.class))
@@ -237,13 +237,13 @@ describe Weka::Classifiers::Utils do
         subject.classify(instance)
       end
 
-      it 'should return the predicted class value of the instance' do
+      it 'returns the predicted class value of the instance' do
         expect(subject.classify(instance)).to eq class_value
       end
     end
 
     context 'with a given array of values' do
-      it 'should call Java‘s #classify_instance' do
+      it 'calls Java’s #classify_instance' do
         expect(subject)
           .to receive(:classify_instance).once
           .with(an_instance_of(Weka::Core::DenseInstance))
@@ -251,7 +251,7 @@ describe Weka::Classifiers::Utils do
         subject.classify(values)
       end
 
-      it 'should return the predicted class value of the instance' do
+      it 'returns the predicted class value of the instance' do
         expect(subject.classify(values)).to eq class_value
       end
     end
@@ -259,7 +259,7 @@ describe Weka::Classifiers::Utils do
     context 'without training instances' do
       before { allow(subject).to receive(:training_instances).and_return(nil) }
 
-      it 'should raise an UnassignedTrainingInstancesError' do
+      it 'raises an UnassignedTrainingInstancesError' do
         expect { subject.classify(instance) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
@@ -279,7 +279,7 @@ describe Weka::Classifiers::Utils do
     end
 
     context 'with a given instance' do
-      it 'should call Java‘s #distribution_for_instance' do
+      it 'calls Java’s #distribution_for_instance' do
         expect(subject)
           .to receive(:distribution_for_instance).once
           .with(an_instance_of(instance.class))
@@ -287,13 +287,13 @@ describe Weka::Classifiers::Utils do
         subject.distribution_for(instance)
       end
 
-      it 'should return the predicted class distributions of the instance' do
+      it 'returns the predicted class distributions of the instance' do
         expect(subject.distribution_for(instance)).to eq class_distributions
       end
     end
 
     context 'with a given array of values' do
-      it 'should call Java‘s #distribution_for_instance' do
+      it 'calls Java’s #distribution_for_instance' do
         expect(subject)
           .to receive(:distribution_for_instance).once
           .with(an_instance_of(Weka::Core::DenseInstance))
@@ -301,7 +301,7 @@ describe Weka::Classifiers::Utils do
         subject.distribution_for(values)
       end
 
-      it 'should return the predicted class distributions of the instance' do
+      it 'returns the predicted class distributions of the instance' do
         expect(subject.distribution_for(values)).to eq class_distributions
       end
     end
@@ -309,7 +309,7 @@ describe Weka::Classifiers::Utils do
     context 'without training instances' do
       before { allow(subject).to receive(:training_instances).and_return(nil) }
 
-      it 'should raise an UnassignedTrainingInstancesError' do
+      it 'raises an UnassignedTrainingInstancesError' do
         expect { subject.distribution_for(instance) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
