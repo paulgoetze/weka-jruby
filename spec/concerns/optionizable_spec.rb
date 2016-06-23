@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Concerns::Optionizable do
-
   subject do
     Class.new { include Weka::Concerns::Optionizable }.new
   end
@@ -9,7 +8,7 @@ describe Weka::Concerns::Optionizable do
   it { is_expected.to respond_to :use_options }
   it { is_expected.to respond_to :options }
 
-  it 'should respond to .default_options' do
+  it 'responds to .default_options' do
     expect(subject.class).to respond_to :default_options
   end
 
@@ -22,7 +21,7 @@ describe Weka::Concerns::Optionizable do
     end
 
     context 'when called with hash options' do
-      it 'should set the given options' do
+      it 'sets the given options' do
         expect(Java::WekaCore::Utils)
           .to receive(:split_options).once
           .with('-I 100 -K 0')
@@ -33,7 +32,7 @@ describe Weka::Concerns::Optionizable do
     end
 
     context 'when called with single options' do
-      it 'should set the given options' do
+      it 'sets the given options' do
         expect(Java::WekaCore::Utils)
           .to receive(:split_options).once
           .with('-O -B')
@@ -44,7 +43,7 @@ describe Weka::Concerns::Optionizable do
     end
 
     context 'when called with single options & hash options' do
-      it 'should set the given options' do
+      it 'sets the given options' do
         expect(Java::WekaCore::Utils)
           .to receive(:split_options).once
           .with('-O -I 100')
@@ -55,7 +54,7 @@ describe Weka::Concerns::Optionizable do
     end
 
     context 'when called with a string' do
-      it 'should set the given options' do
+      it 'sets the given options' do
         expect(Java::WekaCore::Utils)
           .to receive(:split_options).once
           .with('-O -I 100')
@@ -72,7 +71,7 @@ describe Weka::Concerns::Optionizable do
     context 'if both single options & hash option are defined' do
       before { subject.use_options(:O, :B, I: 100) }
 
-      it 'should return the defined options' do
+      it 'returns the defined options' do
         expect(subject.options).to eq '-O -B -I 100'
       end
     end
@@ -80,7 +79,7 @@ describe Weka::Concerns::Optionizable do
     context 'if only single options are defined' do
       before { subject.use_options(:O, :B) }
 
-      it 'should not include an empty hash' do
+      it 'does not include an empty hash' do
         expect(subject.options).to eq '-O -B'
       end
     end
@@ -94,7 +93,7 @@ describe Weka::Concerns::Optionizable do
           .and_return(default_options)
       end
 
-      it 'should return the default options' do
+      it 'returns the default options' do
         expect(subject.options).to eq default_options
       end
     end
@@ -104,15 +103,15 @@ describe Weka::Concerns::Optionizable do
     before do
       allow_any_instance_of(subject.class)
         .to receive(:get_options)
-        .and_return(['-C', 'last', '-Z',  '-P', '10', '-M', '-B', '0.1'])
+        .and_return(%w(-C last -Z -P 10 -M -B 0.1))
     end
 
-    it 'should receive Java‘s #get_options' do
+    it 'receives Java’s #get_options' do
       expect_any_instance_of(subject.class).to receive(:get_options).once
       subject.class.default_options
     end
 
-    it 'should return a string with the default options' do
+    it 'returns a string with the default options' do
       options = '-C last -Z -P 10 -M -B 0.1'
       expect(subject.class.default_options).to eq options
     end

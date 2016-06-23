@@ -8,7 +8,6 @@ module Weka
     extend ActiveSupport::Concern
 
     module ClassMethods
-
       def build_class(class_name, weka_module: nil, include_concerns: true)
         java_import java_class_path(class_name, weka_module)
         define_class(class_name, weka_module, include_concerns: include_concerns)
@@ -37,7 +36,7 @@ module Weka
       end
 
       def super_modules
-        toplevel_module? ? self.name : self.name.deconstantize
+        toplevel_module? ? name : name.deconstantize
       end
 
       def java_including_module
@@ -45,11 +44,11 @@ module Weka
       end
 
       def including_module
-        self.name.demodulize unless toplevel_module?
+        name.demodulize unless toplevel_module?
       end
 
       def toplevel_module?
-        self.name.scan('::').count == 1
+        name.scan('::').count == 1
       end
 
       def define_class(class_name, weka_module, include_concerns: true)
@@ -66,7 +65,7 @@ module Weka
         class_path   = java_class_path(class_name, weka_module)
         serializable = Weka::Core::SerializationHelper.serializable?(class_path)
 
-        "include Weka::Concerns::Serializable" if serializable
+        'include Weka::Concerns::Serializable' if serializable
       end
 
       def include_utils
@@ -91,6 +90,5 @@ module Weka
         string[0].downcase + string[1..-1]
       end
     end
-
   end
 end

@@ -4,6 +4,5 @@ module Weka
 
     class Filter
     end
-
   end
 end

@@ -33,7 +33,7 @@ The weka gem tries to carry over the namespaces defined in Weka and enhances som
 
 The idea behind keeping the namespaces is, that you can also use the [Weka documentation](http://weka.sourceforge.net/doc.dev/) for looking up functionality and classes.
 
-Please refer to [the gem‘s Wiki](https://github.com/paulgoetze/weka-jruby/wiki) for
+Please refer to [the gem’s Wiki](https://github.com/paulgoetze/weka-jruby/wiki) for
 detailed information about how to use weka with JRuby and some examplary code snippets.
 
 ## Development
@@ -49,7 +49,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/paulgo
 
 For development we use the [git branching model](http://nvie.com/posts/a-successful-git-branching-model/) described by [nvie](https://github.com/nvie).
 
-Here's how to contribute:
+Here’s how to contribute:
 
 1. Fork it ( https://github.com/paulgoetze/weka-jruby/fork )
 2. Create your feature branch (`git checkout -b feature/my-new-feature develop`)

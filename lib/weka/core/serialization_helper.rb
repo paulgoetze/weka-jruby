@@ -3,10 +3,9 @@ module Weka
     java_import 'weka.core.SerializationHelper'
 
     class SerializationHelper
-
       class << self
-        alias :deserialize :read
-        alias :serialize   :write
+        alias deserialize read
+        alias serialize   write
       end
     end
   end

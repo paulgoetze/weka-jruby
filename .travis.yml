@@ -8,8 +8,8 @@ cache:
   - bundler
 
 before_install:
-  - gem install bundler
   - rvm get head
   - rvm use jruby-9.0.1.0 --install
+  - gem install bundler
 
 script: bundle exec rake spec

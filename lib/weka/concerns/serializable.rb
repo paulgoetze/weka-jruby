@@ -11,7 +11,6 @@ module Weka
           Weka::Core::SerializationHelper.write(filename, self)
         end
       end
-
     end
   end
 end

@@ -6,7 +6,7 @@ module Weka
       extend ActiveSupport::Concern
 
       included do
-        java_import "weka.core.Utils"
+        java_import 'weka.core.Utils'
 
         def use_options(*single_options, **hash_options)
           joined_options = join_options(single_options, hash_options)
@@ -43,7 +43,6 @@ module Weka
           new.get_options.to_a.join(' ')
         end
       end
-
     end
   end
 end
