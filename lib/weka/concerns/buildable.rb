@@ -1,9 +1,9 @@
-require 'active_support/concern'
-
 module Weka
   module Concerns
     module Buildable
-      extend ActiveSupport::Concern
+      def self.included(base)
+        base.extend ClassMethods
+      end
 
       module ClassMethods
         def build(&block)

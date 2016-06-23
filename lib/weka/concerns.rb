@@ -1,4 +1,3 @@
-require 'active_support/concern'
 require 'weka/concerns/buildable'
 require 'weka/concerns/describable'
 require 'weka/concerns/optionizable'
@@ -7,13 +6,11 @@ require 'weka/concerns/serializable'
 
 module Weka
   module Concerns
-    extend ActiveSupport::Concern
-
-    included do
-      include Buildable
-      include Describable
-      include Optionizable
-      include Persistent
+    def self.included(base)
+      base.include Buildable
+      base.include Describable
+      base.include Optionizable
+      base.include Persistent
     end
   end
 end
