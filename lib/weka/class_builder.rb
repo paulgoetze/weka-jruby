@@ -1,11 +1,11 @@
-require 'active_support/concern'
-require 'active_support/core_ext/string'
-require 'active_support/core_ext/module'
+#require 'active_support/core_ext/module'
 require 'weka/concerns'
 
 module Weka
   module ClassBuilder
-    extend ActiveSupport::Concern
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
 
     module ClassMethods
       def build_class(class_name, weka_module: nil, include_concerns: true)
@@ -36,7 +36,11 @@ module Weka
       end
 
       def super_modules
-        toplevel_module? ? name : name.deconstantize
+        toplevel_module? ? name : deconstantize(name)
+      end
+
+      def deconstantize(name)
+        name.split('::')[0...-1].join('::')
       end
 
       def java_including_module
@@ -44,7 +48,11 @@ module Weka
       end
 
       def including_module
-        name.demodulize unless toplevel_module?
+        demodulize(name) unless toplevel_module?
+      end
+
+      def demodulize(name)
+        name.split('::').last
       end
 
       def toplevel_module?
@@ -74,7 +82,11 @@ module Weka
       end
 
       def utils_defined?
-        utils_super_modules.constantize.const_defined?(:Utils)
+        constantize(utils_super_modules).const_defined?(:Utils)
+      end
+
+      def constantize(module_names)
+        Object.module_eval("::#{module_names}")
       end
 
       def utils
@@ -86,7 +98,7 @@ module Weka
       end
 
       def downcase_first_char(string)
-        return if string.blank?
+        return if string.nil? || string.empty?
         string[0].downcase + string[1..-1]
       end
     end
