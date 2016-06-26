@@ -26,6 +26,16 @@ module Weka
         def from_json(file)
           Loader.load_json(file)
         end
+
+        # Loads instances based on a given *.names file (holding the attribute
+        # values) or a given *.data file (holding the attribute values).
+        # The respective other file is loaded from the same directory.
+        #
+        # See http://www.cs.washington.edu/dm/vfml/appendixes/c45.htm for more
+        # information about the C4.5 file format.
+        def from_c45(file)
+          Loader.load_c45(file)
+        end
       end
 
       def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [], &block)
