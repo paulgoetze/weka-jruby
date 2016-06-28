@@ -27,4 +27,27 @@ describe Weka::Core::Saver do
       end
     end
   end
+
+  describe '#save_c45' do
+    let(:file)       { "#{@tmp_dir}/test" }
+    let(:names_file) { "#{file}.names" }
+    let(:data_file)  { "#{file}.data" }
+
+    before { instances.class_attribute = :play }
+
+    after do
+      FileUtils.rm_f(names_file)
+      FileUtils.rm_f(data_file)
+    end
+
+    it 'creates a *.names file and a *.data file' do
+      expect(File.exist?(names_file)).to be false
+      expect(File.exist?(data_file)).to  be false
+
+      described_class.save_c45(file: names_file, instances: instances)
+
+      expect(File.exist?(names_file)).to be true
+      expect(File.exist?(data_file)).to  be true
+    end
+  end
 end

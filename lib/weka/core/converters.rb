@@ -12,6 +12,7 @@ module Weka
                     :JSONLoader,
                     :JSONSaver,
                     :C45Loader,
+                    :C45Saver,
                     include_concerns: false
     end
   end
