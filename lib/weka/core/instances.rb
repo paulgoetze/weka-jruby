@@ -26,6 +26,16 @@ module Weka
         def from_json(file)
           Loader.load_json(file)
         end
+
+        # Loads instances based on a given *.names file (holding the attribute
+        # values) or a given *.data file (holding the attribute values).
+        # The respective other file is loaded from the same directory.
+        #
+        # See http://www.cs.washington.edu/dm/vfml/appendixes/c45.htm for more
+        # information about the C4.5 file format.
+        def from_c45(file)
+          Loader.load_c45(file)
+        end
       end
 
       def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [], &block)
@@ -94,6 +104,19 @@ module Weka
 
       def to_json(file)
         Saver.save_json(file: file, instances: self)
+      end
+
+      # Creates a file with the istances's attribute values and a *.data file
+      # with the actual data.
+      #
+      # You should choose another file extension than .data (preferably
+      # *.names) for the file, else it will just be overwritten with the
+      # automatically created *.data file.
+      #
+      # See http://www.cs.washington.edu/dm/vfml/appendixes/c45.htm for more
+      # information about the C4.5 file format.
+      def to_c45(file)
+        Saver.save_c45(file: file, instances: self)
       end
 
       def numeric(name, class_attribute: false)

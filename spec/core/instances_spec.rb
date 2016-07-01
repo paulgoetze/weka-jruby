@@ -58,13 +58,27 @@ describe Weka::Core::Instances do
       end
 
       describe ".from_#{type}" do
-        it "calls the Weka::Core::Loader#load_#{type}" do
+        it "calls Weka::Core::Loader#load_#{type}" do
           expect(Weka::Core::Loader)
             .to receive(:"load_#{type}").once
             .with("test.#{type}")
 
           described_class.send("from_#{type}", "test.#{type}")
         end
+      end
+    end
+
+    describe '.from_c45' do
+      let(:file) { 'example.data' }
+
+      before { allow(Weka::Core::Loader).to receive(:load_c45).and_return('') }
+
+      it 'calls Weka::Core::Loader#load_c45' do
+        expect(Weka::Core::Loader)
+          .to receive(:load_c45).once
+          .with(file)
+
+        described_class.send(:from_c45, file)
       end
     end
   end
@@ -76,13 +90,29 @@ describe Weka::Core::Instances do
       end
 
       describe "#to_#{type}" do
-        it "calls the Weka::Core::Saver#save_#{type}" do
+        it "calls the Weka::Core::Saver.save_#{type}" do
           expect(Weka::Core::Saver)
             .to receive(:"save_#{type}").once
             .with(file: "test.#{type}", instances: subject)
 
           subject.send("to_#{type}", "test.#{type}")
         end
+      end
+    end
+
+    describe '#to_c45' do
+      let(:file) { 'test.names' }
+
+      before do
+        allow(Weka::Core::Saver).to receive(:save_c45).and_return('')
+      end
+
+      it 'calls the Weka::Core::Saver.save_c45' do
+        expect(Weka::Core::Saver)
+          .to receive(:save_c45).once
+          .with(file: file, instances: subject)
+
+        subject.to_c45(file)
       end
     end
   end
