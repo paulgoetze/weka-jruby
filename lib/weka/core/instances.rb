@@ -120,30 +120,25 @@ module Weka
       end
 
       def numeric(name, class_attribute: false)
-        attribute = Attribute.new(name.to_s)
+        attribute = Attribute.new_numeric(name)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def nominal(name, values:, class_attribute: false)
-        attribute = Attribute.new(name.to_s, Array(values).map(&:to_s))
+        attribute = Attribute.new_nominal(name, values)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def string(name, class_attribute: false)
-        constructor = Attribute.java_class.declared_constructor(
-          java.lang.String,
-          java.util.List
-        )
-
-        attribute = constructor.new_instance(name.to_s, nil)
+        attribute = Attribute.new_string(name)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def date(name, format: 'yyyy-MM-dd HH:mm', class_attribute: false)
-        attribute = Attribute.new(name.to_s, format)
+        attribute = Attribute.new_date(name, format)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end

@@ -2,10 +2,60 @@ require 'spec_helper'
 
 describe Weka::Core::Attribute do
   let(:values) { %w(yes no) }
-  subject { Weka::Core::Attribute.new('class', values) }
+  let(:name)   { 'name' }
+
+  subject { Weka::Core::Attribute.new(name, values) }
 
   it { is_expected.to respond_to :values }
   it { is_expected.to respond_to :internal_value_of }
+
+  describe '.new_numeric' do
+    subject { Weka::Core::Attribute.new_numeric(name) }
+
+    it 'returns a numeric Attribute' do
+      expect(subject.numeric?).to be true
+    end
+
+    it 'returns an Attribute with the given name' do
+      expect(subject.name).to eq name
+    end
+  end
+
+  describe '.new_nominal' do
+    subject { Weka::Core::Attribute.new_nominal(name, values) }
+
+    it 'returns a nominal Attribute' do
+      expect(subject.nominal?).to be true
+    end
+
+    it 'returns an Attribute with the given name' do
+      expect(subject.name).to eq name
+    end
+  end
+
+  describe '.new_date' do
+    subject { Weka::Core::Attribute.new_date(name, 'yyyy-MM-dd HH:mm') }
+
+    it 'returns a date Attribute' do
+      expect(subject.date?).to be true
+    end
+
+    it 'returns an Attribute with the given name' do
+      expect(subject.name).to eq name
+    end
+  end
+
+  xdescribe '.new_string' do
+    subject { Weka::Core::Attribute.new_string(name) }
+
+    it 'returns a string Attribute' do
+      expect(subject.string?).to be true
+    end
+
+    it 'returns an Attribute with the given name' do
+      expect(subject.name).to eq name
+    end
+  end
 
   describe '#values' do
     it 'returns an array of the values' do
