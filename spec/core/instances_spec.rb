@@ -168,7 +168,7 @@ describe Weka::Core::Instances do
       end
     end
 
-    xdescribe '#string' do
+    describe '#string' do
       it 'can be used to add a string attribute' do
         instances.string(name)
         expect(instances.attributes.first).to be_string
@@ -211,7 +211,7 @@ describe Weka::Core::Instances do
         end
       end
 
-      xdescribe '#string' do
+      describe '#string' do
         it 'can be used to add a string attribute' do
           instances.string(:attribute_name)
           expect(instances.attributes.first).to be_string
@@ -486,7 +486,7 @@ describe Weka::Core::Instances do
     let(:filter) { double('filter') }
     before { allow(filter).to receive(:filter).and_return(subject) }
 
-    it 'calls the given filter‘s #filter method' do
+    it 'calls the given filter’s #filter method' do
       expect(filter).to receive(:filter).once.with(subject)
       subject.apply_filter(filter)
     end
@@ -496,7 +496,7 @@ describe Weka::Core::Instances do
     let(:filter) { double('filter') }
     before { allow(filter).to receive(:filter).and_return(subject) }
 
-    it 'calls the given filters‘ #filter methods' do
+    it 'calls the given filters’s #filter methods' do
       expect(filter).to receive(:filter).twice.with(subject)
       subject.apply_filters(filter, filter)
     end

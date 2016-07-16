@@ -132,7 +132,12 @@ module Weka
       end
 
       def string(name, class_attribute: false)
-        attribute = Attribute.new(name.to_s, [])
+        constructor = Attribute.java_class.declared_constructor(
+          java.lang.String,
+          java.util.List
+        )
+
+        attribute = constructor.new_instance(name.to_s, nil)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
