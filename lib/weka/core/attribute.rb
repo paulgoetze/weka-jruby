@@ -54,6 +54,14 @@ module Weka
       end
 
       ##
+      # Returns the string representation of the attribute's type.
+      # Overwrites the weka.core.Attribute type Java method, which returns an
+      # integer representation of the type based on the defined type constants.
+      def type
+        self.class.type_to_string(self)
+      end
+
+      ##
       # The order of the if statements is important here, because a date is also
       # a numeric.
       def internal_value_of(value)
