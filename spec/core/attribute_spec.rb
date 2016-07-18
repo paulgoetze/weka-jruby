@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe Weka::Core::Attribute do
-  let(:values) { %w(yes no) }
+  let(:values) { %w(true false) }
   let(:name)   { 'name' }
+  let(:format) { 'yyyy-MM-dd HH:mm' }
 
   subject { Weka::Core::Attribute.new(name, values) }
 
@@ -34,7 +35,7 @@ describe Weka::Core::Attribute do
   end
 
   describe '.new_date' do
-    subject { Weka::Core::Attribute.new_date(name, 'yyyy-MM-dd HH:mm') }
+    subject { Weka::Core::Attribute.new_date(name, format) }
 
     it 'returns a date Attribute' do
       expect(subject.date?).to be true
@@ -64,85 +65,130 @@ describe Weka::Core::Attribute do
   end
 
   describe '#internal_value_of' do
-    context 'a numeric attribute' do
-      let(:attribute) { Weka::Core::Attribute.new('numeric attribute') }
+    context 'for a numeric attribute' do
+      subject { Weka::Core::Attribute.new_numeric(name) }
 
       it 'returns the value as a float' do
-        expect(attribute.internal_value_of(3.5)).to eq 3.5
+        expect(subject.internal_value_of(3.5)).to eq 3.5
       end
 
       it 'returns the value as a float if given as string' do
-        expect(attribute.internal_value_of('3.5')).to eq 3.5
+        expect(subject.internal_value_of('3.5')).to eq 3.5
       end
 
       it 'returns NaN if the given value is Float::NAN' do
-        expect(attribute.internal_value_of(Float::NAN)).to be Float::NAN
+        expect(subject.internal_value_of(Float::NAN)).to be Float::NAN
       end
 
       it 'returns NaN if the given value is nil' do
-        expect(attribute.internal_value_of(nil)).to be Float::NAN
+        expect(subject.internal_value_of(nil)).to be Float::NAN
       end
 
       it 'returns NaN if the given value is "?"' do
-        expect(attribute.internal_value_of('?')).to be Float::NAN
+        expect(subject.internal_value_of('?')).to be Float::NAN
       end
     end
 
-    context 'a nominal attribute' do
-      let(:attribute) { Weka::Core::Attribute.new('class', %w(true false)) }
+    context 'for a nominal attribute' do
+      subject { Weka::Core::Attribute.new_nominal(name, values) }
 
       it 'returns the correct internal index' do
-        expect(attribute.internal_value_of('true')).to  eq 0
-        expect(attribute.internal_value_of('false')).to eq 1
+        expect(subject.internal_value_of('true')).to  eq 0
+        expect(subject.internal_value_of('false')).to eq 1
       end
 
       it 'returns the correct internal index as given as a non-String' do
-        expect(attribute.internal_value_of(true)).to eq 0
-        expect(attribute.internal_value_of(false)).to eq 1
+        expect(subject.internal_value_of(true)).to eq 0
+        expect(subject.internal_value_of(false)).to eq 1
 
-        expect(attribute.internal_value_of(:true)).to eq 0
-        expect(attribute.internal_value_of(:false)).to eq 1
+        expect(subject.internal_value_of(:true)).to eq 0
+        expect(subject.internal_value_of(:false)).to eq 1
       end
 
       it 'returns NaN if the given value is Float::NAN' do
-        expect(attribute.internal_value_of(Float::NAN)).to be Float::NAN
+        expect(subject.internal_value_of(Float::NAN)).to be Float::NAN
       end
 
       it 'returns NaN if the given value is nil' do
-        expect(attribute.internal_value_of(nil)).to be Float::NAN
+        expect(subject.internal_value_of(nil)).to be Float::NAN
       end
 
       it 'returns NaN if the given value is "?"' do
-        expect(attribute.internal_value_of('?')).to be Float::NAN
+        expect(subject.internal_value_of('?')).to be Float::NAN
       end
     end
 
-    context 'a data attribute' do
-      let(:attribute)      { Weka::Core::Attribute.new('date', 'yyyy-MM-dd HH:mm') }
+    context 'for a data attribute' do
       let(:datetime)       { '2015-12-24 11:11' }
       let(:unix_timestamp) { 1_450_955_460_000.0 }
 
+      subject { Weka::Core::Attribute.new_date(name, format) }
+
       before do
-        allow(attribute)
+        allow(subject)
           .to receive(:parse_date)
           .with(datetime)
           .and_return(unix_timestamp)
       end
 
       it 'returns the right date timestamp value' do
-        expect(attribute.internal_value_of(datetime)).to eq unix_timestamp
+        expect(subject.internal_value_of(datetime)).to eq unix_timestamp
       end
 
       it 'returns NaN if the given value is Float::NAN' do
-        expect(attribute.internal_value_of(Float::NAN)).to be Float::NAN
+        expect(subject.internal_value_of(Float::NAN)).to be Float::NAN
       end
 
       it 'returns NaN if the given value is nil' do
-        expect(attribute.internal_value_of(nil)).to be Float::NAN
+        expect(subject.internal_value_of(nil)).to be Float::NAN
       end
 
       it 'returns NaN if the given value is "?"' do
-        expect(attribute.internal_value_of('?')).to be Float::NAN
+        expect(subject.internal_value_of('?')).to be Float::NAN
+      end
+    end
+  end
+
+  describe '#type' do
+    context 'for a numeric attribute' do
+      subject { Weka::Core::Attribute.new_numeric(name) }
+
+      it 'returns "numeric"' do
+        expect(subject.type).to eq 'numeric'
+      end
+    end
+
+    context 'for a nominal attribute' do
+      subject { Weka::Core::Attribute.new_nominal(name, values) }
+
+      it 'returns "nominal"' do
+        expect(subject.type).to eq 'nominal'
+      end
+    end
+
+    xcontext 'for a string attribute' do
+      subject { Weka::Core::Attribute.new_string(name) }
+
+      it 'returns "string"' do
+        expect(subject.type).to eq 'string'
+      end
+    end
+
+    context 'for a data attribute' do
+      let(:datetime)       { '2015-12-24 11:11' }
+      let(:unix_timestamp) { 1_450_955_460_000.0 }
+
+      subject { Weka::Core::Attribute.new_date(name, format) }
+
+      before do
+        allow(subject)
+          .to receive(:parse_date)
+          .with(datetime)
+          .and_return(unix_timestamp)
+      end
+
+      it 'returns "date"' do
+        expect(subject.type).to eq 'date'
       end
     end
   end
