@@ -39,13 +39,19 @@ module Weka
         #
         # Thus, we use refelection here and call the contructor explicitly, see
         # https://github.com/jruby/jruby/wiki/CallingJavaFromJRuby#constructors
+        #
+        # The object return from Java constructor only has class 
+        # Java::JavaObject so we need to cast it to the proper class
+        #
+        # See also:
+        # https://stackoverflow.com/questions/1792495/casting-objects-in-jruby
         def new_string(name)
           constructor = Attribute.java_class.declared_constructor(
             java.lang.String,
             java.util.List
           )
 
-          constructor.new_instance(name.to_s, nil)
+          constructor.new_instance(name.to_s, nil).to_java(Attribute)
         end
       end
 
@@ -70,6 +76,17 @@ module Weka
         return parse_date(value.to_s)     if date?
         return value.to_f                 if numeric?
         return index_of_value(value.to_s) if nominal?
+
+        if string?
+          # string has unlimited range of possible values. We check if
+          # it has been added. If yes then we simply return the index
+          if (idx = index_of_value(value.to_s)) != -1
+            idx
+          else
+            # else we add the value to the range and return its new index
+            add_string_value(value.to_s)
+          end
+        end
       end
     end
   end

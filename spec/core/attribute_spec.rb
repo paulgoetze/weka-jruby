@@ -46,7 +46,7 @@ describe Weka::Core::Attribute do
     end
   end
 
-  xdescribe '.new_string' do
+  describe '.new_string' do
     subject { Weka::Core::Attribute.new_string(name) }
 
     it 'returns a string Attribute' do
@@ -166,7 +166,7 @@ describe Weka::Core::Attribute do
       end
     end
 
-    xcontext 'for a string attribute' do
+    context 'for a string attribute' do
       subject { Weka::Core::Attribute.new_string(name) }
 
       it 'returns "string"' do
