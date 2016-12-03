@@ -76,17 +76,7 @@ module Weka
         return parse_date(value.to_s)     if date?
         return value.to_f                 if numeric?
         return index_of_value(value.to_s) if nominal?
-        return index_of_string(value)     if string?
-      end
-
-      private
-
-      def index_of_string(value)
-        # string has unlimited range of possible values. We check if
-        # it has been added. If yes then we simply return the index
-        # else we add the value to the range and return its new index
-        index = index_of_value(value.to_s)
-        index != -1 ? index : add_string_value(value.to_s)
+        return index_of_value(value.to_s) if string?
       end
     end
   end
