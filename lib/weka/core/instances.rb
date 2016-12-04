@@ -226,16 +226,18 @@ module Weka
           instance_or_values
         else
           data = internal_values_of(instance_or_values)
+
           # string attribute has unlimited range of possible values.
           # Check the return index, if it is -1 then add the value to
           # the attribute before creating the instance
           data.map!.with_index do |value, index|
-            if value == -1 and attribute(index).string?
+            if value == -1 && attribute(index).string?
               attribute(index).add_string_value(instance_or_values[index].to_s)
             else
               value
             end
           end
+
           DenseInstance.new(data, weight: weight)
         end
       end

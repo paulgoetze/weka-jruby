@@ -149,8 +149,8 @@ describe Weka::Core::Attribute do
     end
 
     context 'for a string attribute' do
-      let(:string_values)         { ['first_string', 'second_string'] }
-      let(:phantom_string_value)  { 'i_do_not_exist' }
+      let(:string_values)        { %w(first_string second_string) }
+      let(:phantom_string_value) { 'i_do_not_exist' }
 
       subject do
         attribute = Weka::Core::Attribute.new_string(name)
@@ -187,7 +187,6 @@ describe Weka::Core::Attribute do
       it 'returns NaN if the given value is "?"' do
         expect(subject.internal_value_of('?')).to be Float::NAN
       end
-
     end
   end
 

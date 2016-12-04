@@ -75,8 +75,7 @@ module Weka
         return Float::NAN                 if [nil, '?'].include?(value)
         return parse_date(value.to_s)     if date?
         return value.to_f                 if numeric?
-        return index_of_value(value.to_s) if nominal?
-        return index_of_value(value.to_s) if string?
+        return index_of_value(value.to_s) if nominal? || string?
       end
     end
   end
