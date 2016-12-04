@@ -1,4 +1,3 @@
-#require 'active_support/core_ext/module'
 require 'weka/concerns'
 
 module Weka
