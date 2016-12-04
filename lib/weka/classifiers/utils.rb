@@ -1,5 +1,3 @@
-require 'active_support/concern'
-require 'active_support/core_ext/hash'
 require 'weka/classifiers/evaluation'
 require 'weka/core/instances'
 
@@ -75,7 +73,7 @@ module Weka
               instance      = classifiable_instance_from(instance_or_values)
               distributions = distribution_for_instance(instance)
 
-              class_distributions_from(distributions).with_indifferent_access
+              class_distributions_from(distributions)
             end
           end
 
@@ -125,7 +123,7 @@ module Weka
             class_values = training_instances.class_attribute.values
 
             distributions.each_with_index.reduce({}) do |result, (distribution, index)|
-              class_value = class_values[index].to_sym
+              class_value = class_values[index]
               result[class_value] = distribution
               result
             end

@@ -20,8 +20,8 @@ describe Weka::AttributeSelection::Evaluator do
     end
 
     it "inherits class #{class_name} from #{super_class_name}" do
-      evaluator_class = "#{subject}::#{class_name}".constantize
-      super_class     = "#{subject}::#{super_class_name}".constantize
+      evaluator_class = Object.module_eval("#{subject}::#{class_name}")
+      super_class     = Object.module_eval("#{subject}::#{super_class_name}")
 
       expect(evaluator_class.new).to be_kind_of super_class
     end
