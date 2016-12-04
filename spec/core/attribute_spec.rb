@@ -46,7 +46,7 @@ describe Weka::Core::Attribute do
     end
   end
 
-  xdescribe '.new_string' do
+  describe '.new_string' do
     subject { Weka::Core::Attribute.new_string(name) }
 
     it 'returns a string Attribute' do
@@ -147,6 +147,48 @@ describe Weka::Core::Attribute do
         expect(subject.internal_value_of('?')).to be Float::NAN
       end
     end
+
+    context 'for a string attribute' do
+      let(:string_values)         { ['first_string', 'second_string'] }
+      let(:phantom_string_value)  { 'i_do_not_exist' }
+
+      subject do
+        attribute = Weka::Core::Attribute.new_string(name)
+        string_values.each { |value| attribute.add_string_value(value) }
+        attribute
+      end
+
+      it 'returns the correct internal index' do
+        expect(subject.internal_value_of(string_values[0])).to eq 0
+        expect(subject.internal_value_of(string_values[1])).to eq 1
+      end
+
+      it 'returns -1 as internal index for non-existent string values' do
+        expect(subject.internal_value_of(phantom_string_value)).to eq(-1)
+      end
+
+      it 'returns the correct internal index as given as a non-String' do
+        expect(subject.internal_value_of(:first_string)).to eq 0
+        expect(subject.internal_value_of(:second_string)).to eq 1
+      end
+
+      it 'returns -1 as internal index for non-existent non-String values' do
+        expect(subject.internal_value_of(:phantom_string_value)).to eq(-1)
+      end
+
+      it 'returns NaN if the given value is Float::NAN' do
+        expect(subject.internal_value_of(Float::NAN)).to be Float::NAN
+      end
+
+      it 'returns NaN if the given value is nil' do
+        expect(subject.internal_value_of(nil)).to be Float::NAN
+      end
+
+      it 'returns NaN if the given value is "?"' do
+        expect(subject.internal_value_of('?')).to be Float::NAN
+      end
+
+    end
   end
 
   describe '#type' do
@@ -166,7 +208,7 @@ describe Weka::Core::Attribute do
       end
     end
 
-    xcontext 'for a string attribute' do
+    context 'for a string attribute' do
       subject { Weka::Core::Attribute.new_string(name) }
 
       it 'returns "string"' do
