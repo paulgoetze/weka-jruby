@@ -1,0 +1,24 @@
+@relation weather
+
+@attribute outlook {sunny, overcast, rainy}
+@attribute description string
+@attribute temperature real
+@attribute humidity real
+@attribute windy {TRUE, FALSE}
+@attribute play {yes, no}
+
+@data
+sunny,'Sunny. High near 40F. Winds WNW at 15 to 25 mph.',85,85,FALSE,no
+sunny,'Sunny skies. High 39F. Winds WNW at 10 to 15 mph.',80,90,FALSE,no
+overcast,'Partly cloudy. Low 27F. Winds NW at 5 to 10 mph.',83,86,FALSE,yes
+rainy,'Clear skies. Low 27F. Winds WNW at 10 to 15 mph.',70,96,FALSE,yes
+rainy,'Cloudy and damp with rain in the morning...then becoming partly cloudy. High 58F. Winds SW at 10 to 15 mph. Chance of rain 100%.',68,80,FALSE,yes
+rainy,'Cloudy early with showers for the afternoon hours. High near 45F. Winds NW at 5 to 10 mph. Chance of rain 50%.',65,70,FALSE,no
+overcast,'Cloudy. High 41F. Winds SE at 5 to 10 mph.',64,65,TRUE,yes
+sunny,'Sunny skies. High 39F. Winds WNW at 10 to 15 mph.',72,95,FALSE,no
+sunny,'Except for a few afternoon clouds, mainly sunny. High 34F. Winds WNW at 5 to 10 mph.',69,70,FALSE,yes
+rainy,'Rain showers early mixing with snow showers later in the day. Temps nearly steady in the upper 30s. Winds WNW at 5 to 10 mph. Chance of precip 40%. Snow accumulations less than one inch.',75,80,FALSE,yes
+overcast,'Partly cloudy skies in the morning will give way to cloudy skies during the afternoon. High 46F. Winds NW at 25 to 30 mph.',75,70,TRUE,yes
+overcast,'Partly cloudy. Low 27F. Winds NW at 5 to 10 mph.',72,90,TRUE,yes
+overcast,'Considerable clouds early. Some decrease in clouds late. Low 34F. Winds light and variable',81,75,FALSE,yes
+rainy,'Overcast with rain showers at times. Low 36F. Winds light and variable. Chance of rain 60%.',71,91,TRUE,no
