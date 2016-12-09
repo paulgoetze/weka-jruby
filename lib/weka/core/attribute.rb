@@ -40,7 +40,7 @@ module Weka
         # Thus, we use refelection here and call the contructor explicitly, see
         # https://github.com/jruby/jruby/wiki/CallingJavaFromJRuby#constructors
         #
-        # The object return from Java constructor only has class
+        # The object returned from Java constructor only has class
         # Java::JavaObject so we need to cast it to the proper class
         #
         # See also:
