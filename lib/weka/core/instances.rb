@@ -62,9 +62,30 @@ module Weka
         self
       end
 
-      alias with_attributes  add_attributes
-      alias instances_count  num_instances
-      alias attributes_count num_attributes
+      alias with_attributes         add_attributes
+      alias instances_count         num_instances
+      alias attributes_count        num_attributes
+      alias has_string_attribute?   check_for_string_attributes
+
+      ## Check if the instances has any attribute of the given type
+      # @param [String, Symbol, Integer] type type of the attribute to check
+      #   String and Symbol argument are converted to corresponding type
+      #   defined in Weka::Core::Attribute
+      #
+      # @example Passing String
+      #   instances.has_attribute_type?('string')
+      #   instances.has_attribute_type?('String')
+      #
+      # @example Passing Symbol
+      #   instances.has_attribute_type?(:String)
+      #
+      # @example Passing Integer
+      #   instances.has_attribute_type?(Attribute::STRING)
+      def has_attribute_type?(type)
+        type = map_attribute_type(type) unless type.is_a? Integer
+        return false if type.nil?
+        check_for_attribute_type(type)
+      end
 
       def each
         if block_given?
@@ -239,6 +260,24 @@ module Weka
           end
 
           DenseInstance.new(data, weight: weight)
+        end
+      end
+
+      def map_attribute_type(type)
+        type = type.downcase.to_sym
+        return nil unless Attribute::TYPES.include? type
+
+        case type
+        when :numeric
+          Attribute::NUMERIC
+        when :nominal
+          Attribute::NOMINAL
+        when :string
+          Attribute::STRING
+        when :date
+          Attribute::DATE
+        else
+          # error, ring the bell?
         end
       end
     end
