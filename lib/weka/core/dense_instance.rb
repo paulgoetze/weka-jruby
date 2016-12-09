@@ -63,6 +63,8 @@ module Weka
           value
         elsif attribute.nominal?
           attribute.value(value)
+        elsif attribute.string?
+          attribute.value(value)
         end
       end
 
