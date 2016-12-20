@@ -61,9 +61,7 @@ module Weka
           format_date(value, attribute.date_format)
         elsif attribute.numeric?
           value
-        elsif attribute.nominal?
-          attribute.value(value)
-        elsif attribute.string?
+        elsif attribute.nominal? || attribute.string?
           attribute.value(value)
         end
       end

@@ -62,10 +62,10 @@ module Weka
         self
       end
 
-      alias with_attributes         add_attributes
-      alias instances_count         num_instances
-      alias attributes_count        num_attributes
-      alias has_string_attribute?   check_for_string_attributes
+      alias with_attributes       add_attributes
+      alias instances_count       num_instances
+      alias attributes_count      num_attributes
+      alias has_string_attribute? check_for_string_attributes
 
       ## Check if the instances has any attribute of the given type
       # @param [String, Symbol, Integer] type type of the attribute to check
@@ -82,7 +82,7 @@ module Weka
       # @example Passing Integer
       #   instances.has_attribute_type?(Attribute::STRING)
       def has_attribute_type?(type)
-        type = map_attribute_type(type) unless type.is_a? Integer
+        type = map_attribute_type(type) unless type.is_a?(Integer)
         return false if type.nil?
         check_for_attribute_type(type)
       end
@@ -264,21 +264,8 @@ module Weka
       end
 
       def map_attribute_type(type)
-        type = type.downcase.to_sym
-        return nil unless Attribute::TYPES.include? type
-
-        case type
-        when :numeric
-          Attribute::NUMERIC
-        when :nominal
-          Attribute::NOMINAL
-        when :string
-          Attribute::STRING
-        when :date
-          Attribute::DATE
-        else
-          # error, ring the bell?
-        end
+        return unless Attribute::TYPES.include?(type.downcase.to_sym)
+        Attribute.const_get(type.upcase)
       end
     end
 

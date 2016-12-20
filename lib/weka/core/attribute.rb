@@ -7,7 +7,7 @@ module Weka
     class Attribute
       include Weka::Concerns::Persistent
 
-      TYPES = %i(numeric nominal string date)
+      TYPES = %i(numeric nominal string date).freeze
 
       class << self
         def new_numeric(name)
