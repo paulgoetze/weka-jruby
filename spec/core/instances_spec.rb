@@ -555,14 +555,16 @@ describe Weka::Core::Instances do
   end
 
   describe '#has_string_attribute?' do
-    it 'returns false if no string attribute exists' do
-      expect(subject.has_string_attribute?).to be false
+    context 'if no string attribute exists' do
+      it 'returns false' do
+        expect(subject.has_string_attribute?).to be false
+      end
     end
 
-    context 'dataset has string attribute' do
+    context 'if dataset has string attribute' do
       subject { load_instances('weather.string.arff') }
 
-      it 'returns true if string attribute exists' do
+      it 'returns true' do
         expect(subject.has_string_attribute?).to be true
       end
     end
@@ -580,8 +582,8 @@ describe Weka::Core::Instances do
       subject.has_attribute_type?(type)
     end
 
-    context 'checking with String argument' do
-      %w(string numeric nominal date).each do |type|
+    context 'when given String argument' do
+      Weka::Core::Attribute::TYPES.map(&:to_s).each do |type|
         if type == 'date'
           it 'returns false if the attribute type does not exist' do
             expect(subject.has_attribute_type?(type)).to be false
@@ -602,7 +604,7 @@ describe Weka::Core::Instances do
       end
     end
 
-    context 'checking with Symbol argument' do
+    context 'when given Symbol argument' do
       Weka::Core::Attribute::TYPES.each do |type|
         if type == :date
           it 'returns false if the attribute type does not exist' do
@@ -624,7 +626,7 @@ describe Weka::Core::Instances do
       end
     end
 
-    context 'checking with Integer argument' do
+    context 'when given Integer argument' do
       attribute_types = [
         Weka::Core::Attribute::NUMERIC,
         Weka::Core::Attribute::NOMINAL,
