@@ -436,31 +436,63 @@ describe Weka::Core::Instances do
   end
 
   describe '#add_instance' do
-    it 'adds an instance from given values to the Instances object' do
-      data = [:sunny, 70, 80, 'TRUE', :yes]
-      subject.add_instance(data)
 
-      expect(subject.instances.last.to_s).to eq data.join(',')
+    context 'when passing an array of attribute values' do
+      it 'adds an instance from given values to the Instances object' do
+        data = [:sunny, 70, 80, 'TRUE', :yes]
+        subject.add_instance(data)
+
+        expect(subject.instances.last.to_s).to eq data.join(',')
+      end
+
+      it 'adds a given instance to the Instances object' do
+        data = subject.first
+        subject.add_instance(data)
+
+        expect(subject.instances.last.to_s).to eq data.to_s
+      end
+
+      it 'adds a given instance with only missing values' do
+        data = Weka::Core::DenseInstance.new(subject.size)
+        subject.add_instance(data)
+        expect(subject.instances.last.to_s).to eq data.to_s
+      end
+
+      it 'adds a given instance with partly missing values' do
+        data = [:sunny, 70, nil, '?', Float::NAN]
+        subject.add_instance(data)
+
+        expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+      end
     end
 
-    it 'adds a given instance to the Instances object' do
-      data = subject.first
-      subject.add_instance(data)
+    context 'when passing an hash of attribute values' do
+      it 'adds an instance from given values to the Instances object' do
+        data = {
+          outlook: :sunny,
+          temperature: 70,
+          humidity: 80,
+          windy: 'TRUE',
+          play: :yes
+        }
+        subject.add_instance(data)
 
-      expect(subject.instances.last.to_s).to eq data.to_s
-    end
+        expect(subject.instances.last.to_s).to eq data.values.join(',')
+      end
 
-    it 'adds a given instance with only missing values' do
-      data = Weka::Core::DenseInstance.new(subject.size)
-      subject.add_instance(data)
-      expect(subject.instances.last.to_s).to eq data.to_s
-    end
+      it 'adds a given instance with partly missing values' do
+        data = {
+          outlook: :sunny,
+          temperature: 70,
+          humidity: nil,
+          windy: '?',
+          play: Float::NAN
+        }
+        subject.add_instance(data)
 
-    it 'adds a given instance with partly missing values' do
-      data = [:sunny, 70, nil, '?', Float::NAN]
-      subject.add_instance(data)
+        expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+      end
 
-      expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
     end
   end
 
@@ -482,11 +514,36 @@ describe Weka::Core::Instances do
   end
 
   describe '#internal_values_of' do
-    it 'returns the internal values of the given values' do
-      values          = [:sunny, 85, 85, :FALSE, :no]
-      internal_values = [0, 85.0, 85.0, 1, 1]
 
-      expect(subject.internal_values_of(values)).to eq internal_values
+    context 'when passing an array' do
+      it 'returns an array of internal values of the given values' do
+        values = [:sunny, 85, 85, :FALSE, :no]
+        internal_values = [0, 85.0, 85.0, 1, 1]
+
+        expect(subject.internal_values_of(values)).to eq internal_values
+      end
+    end
+
+    context 'when passing a hash' do
+      it 'returns a hash of internal values of the given values' do
+        values = {
+          outlook: :sunny,
+          temperature: 85,
+          humidity: 85,
+          windy: :FALSE,
+          play: :no
+        }
+
+        internal_values = {
+          outlook: 0,
+          temperature: 85.0,
+          humidity: 85.0,
+          windy: 1,
+          play: 1
+        }
+
+        expect(subject.internal_values_of(values)).to eq internal_values
+      end
     end
   end
 
