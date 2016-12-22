@@ -37,13 +37,14 @@ describe Weka::Core::Instances do
     let(:instances) { described_class.new }
 
     {
-      numeric:             :add_numeric_attribute,
-      string:              :add_string_attribute,
-      nominal:             :add_nominal_attribute,
-      date:                :add_date_attribute,
-      add_attributes:      :with_attributes,
-      instances_count:     :num_instances,
-      attributes_count:    :num_attributes
+      numeric:                :add_numeric_attribute,
+      string:                 :add_string_attribute,
+      nominal:                :add_nominal_attribute,
+      date:                   :add_date_attribute,
+      add_attributes:         :with_attributes,
+      instances_count:        :num_instances,
+      attributes_count:       :num_attributes,
+      has_string_attribute?:  :check_for_string_attributes
     }.each do |method, alias_method|
       it "defines the alias ##{alias_method} for ##{method}" do
         expect(instances.method(method)).to eq instances.method(alias_method)
@@ -168,10 +169,17 @@ describe Weka::Core::Instances do
       end
     end
 
-    xdescribe '#string' do
+    describe '#string' do
       it 'can be used to add a string attribute' do
         instances.string(name)
         expect(instances.attributes.first).to be_string
+      end
+
+      context 'with the class_attribute option' do
+        it 'defines the attribute as class attribute' do
+          instances.string(name, class_attribute: true)
+          expect(instances.class_attribute.name).to eq name
+        end
       end
     end
 
@@ -211,7 +219,7 @@ describe Weka::Core::Instances do
         end
       end
 
-      xdescribe '#string' do
+      describe '#string' do
         it 'can be used to add a string attribute' do
           instances.string(:attribute_name)
           expect(instances.attributes.first).to be_string
@@ -486,7 +494,7 @@ describe Weka::Core::Instances do
     let(:filter) { double('filter') }
     before { allow(filter).to receive(:filter).and_return(subject) }
 
-    it 'calls the given filter‘s #filter method' do
+    it 'calls the given filter’s #filter method' do
       expect(filter).to receive(:filter).once.with(subject)
       subject.apply_filter(filter)
     end
@@ -496,7 +504,7 @@ describe Weka::Core::Instances do
     let(:filter) { double('filter') }
     before { allow(filter).to receive(:filter).and_return(subject) }
 
-    it 'calls the given filters‘ #filter methods' do
+    it 'calls the given filters’s #filter methods' do
       expect(filter).to receive(:filter).twice.with(subject)
       subject.apply_filters(filter, filter)
     end
@@ -542,6 +550,104 @@ describe Weka::Core::Instances do
         merged_attributes = [attribute_a, attribute_b, attribute_c]
 
         expect(merged.attributes).to match_array merged_attributes
+      end
+    end
+  end
+
+  describe '#has_string_attribute?' do
+    context 'if no string attribute exists' do
+      it 'returns false' do
+        expect(subject.has_string_attribute?).to be false
+      end
+    end
+
+    context 'if dataset has string attribute' do
+      subject { load_instances('weather.string.arff') }
+
+      it 'returns true' do
+        expect(subject.has_string_attribute?).to be true
+      end
+    end
+  end
+
+  describe '#has_attribute_type?' do
+    subject     { load_instances('weather.string.arff') }
+    let(:type)  { 'nominal' }
+
+    it 'calls the underlying Java method .check_for_attribute_type' do
+      expect(subject)
+        .to receive(:check_for_attribute_type)
+        .with(subject.send(:map_attribute_type, type))
+
+      subject.has_attribute_type?(type)
+    end
+
+    context 'when given String argument' do
+      Weka::Core::Attribute::TYPES.map(&:to_s).each do |type|
+        if type == 'date'
+          it 'returns false if the attribute type does not exist' do
+            expect(subject.has_attribute_type?(type)).to be false
+          end
+        else
+          it 'returns true if the attribute type exists' do
+            expect(subject.has_attribute_type?(type)).to be true
+          end
+        end
+      end
+
+      it 'handles attribute type in uppercase' do
+        expect(subject.has_attribute_type?('STRING')).to be true
+      end
+
+      it 'returns false for undefined attribute type' do
+        expect(subject.has_attribute_type?('I_DO_NOT_EXIST')).to be false
+      end
+    end
+
+    context 'when given Symbol argument' do
+      Weka::Core::Attribute::TYPES.each do |type|
+        if type == :date
+          it 'returns false if the attribute type does not exist' do
+            expect(subject.has_attribute_type?(type)).to be false
+          end
+        else
+          it 'returns true if the attribute type exists' do
+            expect(subject.has_attribute_type?(type)).to be true
+          end
+        end
+      end
+
+      it 'handles attribute type in uppercase' do
+        expect(subject.has_attribute_type?(:STRING)).to be true
+      end
+
+      it 'returns false for undefined attribute type' do
+        expect(subject.has_attribute_type?(:I_DO_NOT_EXIST)).to be false
+      end
+    end
+
+    context 'when given Integer argument' do
+      attribute_types = [
+        Weka::Core::Attribute::NUMERIC,
+        Weka::Core::Attribute::NOMINAL,
+        Weka::Core::Attribute::STRING,
+        Weka::Core::Attribute::DATE
+      ]
+
+      attribute_types.each do |type|
+        if type == Weka::Core::Attribute::DATE
+          it 'returns false if the attribute type does not exist' do
+            expect(subject.has_attribute_type?(type)).to be false
+          end
+        else
+          it 'returns true if the attribute type exists' do
+            expect(subject.has_attribute_type?(type)).to be true
+          end
+        end
+      end
+
+      it 'returns false for undefined attribute type' do
+        expect(subject.has_attribute_type?(1000)).to be false
       end
     end
   end

@@ -62,9 +62,29 @@ module Weka
         self
       end
 
-      alias with_attributes  add_attributes
-      alias instances_count  num_instances
-      alias attributes_count num_attributes
+      alias with_attributes       add_attributes
+      alias instances_count       num_instances
+      alias attributes_count      num_attributes
+      alias has_string_attribute? check_for_string_attributes
+
+      ## Check if the instances has any attribute of the given type
+      # @param [String, Symbol, Integer] type type of the attribute to check
+      #   String and Symbol argument are converted to corresponding type
+      #   defined in Weka::Core::Attribute
+      #
+      # @example Passing String
+      #   instances.has_attribute_type?('string')
+      #   instances.has_attribute_type?('String')
+      #
+      # @example Passing Symbol
+      #   instances.has_attribute_type?(:String)
+      #
+      # @example Passing Integer
+      #   instances.has_attribute_type?(Attribute::STRING)
+      def has_attribute_type?(type)
+        type = map_attribute_type(type) unless type.is_a?(Integer)
+        check_for_attribute_type(type)
+      end
 
       def each
         if block_given?
@@ -120,25 +140,25 @@ module Weka
       end
 
       def numeric(name, class_attribute: false)
-        attribute = Attribute.new(name.to_s)
+        attribute = Attribute.new_numeric(name)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def nominal(name, values:, class_attribute: false)
-        attribute = Attribute.new(name.to_s, Array(values).map(&:to_s))
+        attribute = Attribute.new_nominal(name, values)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def string(name, class_attribute: false)
-        attribute = Attribute.new(name.to_s, [])
+        attribute = Attribute.new_string(name)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def date(name, format: 'yyyy-MM-dd HH:mm', class_attribute: false)
-        attribute = Attribute.new(name.to_s, format)
+        attribute = Attribute.new_date(name, format)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
@@ -226,8 +246,25 @@ module Weka
           instance_or_values
         else
           data = internal_values_of(instance_or_values)
+
+          # string attribute has unlimited range of possible values.
+          # Check the return index, if it is -1 then add the value to
+          # the attribute before creating the instance
+          data.map!.with_index do |value, index|
+            if value == -1 && attribute(index).string?
+              attribute(index).add_string_value(instance_or_values[index].to_s)
+            else
+              value
+            end
+          end
+
           DenseInstance.new(data, weight: weight)
         end
+      end
+
+      def map_attribute_type(type)
+        return -1 unless Attribute::TYPES.include?(type.downcase.to_sym)
+        Attribute.const_get(type.upcase)
       end
     end
 
