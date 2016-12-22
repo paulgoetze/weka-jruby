@@ -59,6 +59,9 @@ Here’s how to contribute:
 
 Please try to add RSpec tests along with your new features. This will ensure that your code does not break existing functionality and that your feature is working as expected.
 
+We use [Rubocop](https://github.com/bbatsov/rubocop) for code style recommendations.
+Please make sure your contributions comply with the default config of Rubocop.
+
 ## Acknowledgement
 
 The original ideas for wrapping Weka in JRuby come from [@arrigonialberto86](https://github.com/arrigonialberto86) and his [ruby-band](https://github.com/arrigonialberto86/ruby-band) gem. Great thanks!
