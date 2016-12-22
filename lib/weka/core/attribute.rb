@@ -7,7 +7,7 @@ module Weka
     class Attribute
       include Weka::Concerns::Persistent
 
-      TYPES = %(numeric nominal string date).freeze
+      TYPES = %i(numeric nominal string date).freeze
 
       class << self
         def new_numeric(name)
@@ -40,7 +40,7 @@ module Weka
         # Thus, we use refelection here and call the contructor explicitly, see
         # https://github.com/jruby/jruby/wiki/CallingJavaFromJRuby#constructors
         #
-        # The object return from Java constructor only has class
+        # The object returned from Java constructor only has class
         # Java::JavaObject so we need to cast it to the proper class
         #
         # See also:

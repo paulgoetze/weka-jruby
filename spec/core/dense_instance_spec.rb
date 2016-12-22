@@ -26,7 +26,7 @@ describe Weka::Core::DenseInstance do
 
   describe 'instantiation' do
     describe 'with an Integer value' do
-      it 'creates a instance with only missing values' do
+      it 'creates an instance with only missing values' do
         values = Weka::Core::DenseInstance.new(2).values
         expect(values).to eq ['?', '?']
       end
@@ -56,6 +56,29 @@ describe Weka::Core::DenseInstance do
       subject do
         instances = load_instances('weather.arff')
         instances.add_date_attribute('recorded_at')
+        instances.add_instance(values)
+        instances.class_attribute = :play
+        instances.instances.last
+      end
+
+      it 'returns an Array with the values of the instance' do
+        expect(subject.to_a).to eq values
+      end
+    end
+
+    context 'with string attribute' do
+      let(:values) do
+        ['overcast',
+         'Wind increasing. A few clouds from time to time. High 32F. Winds WNW at 20 to 30 mph.',
+         15.0,
+         40.0,
+         'TRUE',
+         'no'
+        ]
+      end
+
+      subject do
+        instances = load_instances('weather.string.arff')
         instances.add_instance(values)
         instances.class_attribute = :play
         instances.instances.last
