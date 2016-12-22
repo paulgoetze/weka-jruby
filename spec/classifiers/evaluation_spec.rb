@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Classifiers::Evaluation do
-
   subject do
     instances = load_instances('weather.arff')
     instances.class_attribute = :play
@@ -29,8 +28,9 @@ describe Weka::Classifiers::Evaluation do
       unclassified_percentage:        :pct_unclassified,
       weighted_f_measure:             :weighted_fmeasure,
       cumulative_margin_distribution: :toCumulativeMarginDistributionString,
+      confusion_matrix:               :to_matrix_string
     }.each do |alias_method, method|
-      it "should define the alias ##{alias_method} for ##{method}" do
+      it "defines the alias ##{alias_method} for ##{method}" do
         expect(subject.method(method)).to eq subject.method(alias_method)
       end
     end

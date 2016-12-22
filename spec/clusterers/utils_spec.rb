@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Clusterers::Utils do
-
   let(:including_class) do
     Class.new do
       def build_clusterer(instances)
@@ -29,19 +28,19 @@ describe Weka::Clusterers::Utils do
   it { is_expected.to respond_to :evaluate }
 
   describe '#train_with_instances' do
-    it 'should call Java‘s #build_classifier' do
+    it 'calls Java’s #build_classifier' do
       expect(subject).to receive(:build_clusterer).once.with(instances)
       subject.train_with_instances(instances)
     end
 
-    it 'should set the training_instances' do
+    it 'sets the training_instances' do
       subject = including_class.new
       expect(subject.training_instances).to be_nil
       subject.train_with_instances(instances)
       expect(subject.training_instances).to eq instances
     end
 
-    it 'should return itself' do
+    it 'returns itself' do
       expect(subject.train_with_instances(instances)).to be subject
     end
   end
@@ -54,22 +53,21 @@ describe Weka::Clusterers::Utils do
       subject.train_with_instances(instances)
     end
 
-    it 'should call Java‘s #update_classifier' do
+    it 'calls Java’s #update_classifier' do
       expect(subject).to receive(:update_clusterer).once.with(instance)
       subject.add_training_instance(instance)
     end
 
-    it 'should add the instance to training_instances' do
+    it 'adds the instance to training_instances' do
       expect { subject.add_training_instance(instance) }
         .to change { subject.training_instances.count }
         .by(1)
     end
 
-    it 'should return itself' do
-      expect(subject.add_training_instance(instance)).to be_kind_of subject.class
+    it 'returns itself' do
+      expect(subject.add_training_instance(instance)).to be_a subject.class
     end
   end
-
 
   describe '#add_training_data' do
     let(:values) { [:sunny, 85, 85, :FALSE, :no] }
@@ -79,7 +77,7 @@ describe Weka::Clusterers::Utils do
       subject.train_with_instances(instances)
     end
 
-    it 'should call #add_training_instance' do
+    it 'calls #add_training_instance' do
       expect(subject)
         .to receive(:add_training_instance).once
         .with(an_instance_of(Weka::Core::DenseInstance))
@@ -87,8 +85,8 @@ describe Weka::Clusterers::Utils do
       subject.add_training_data(values)
     end
 
-    it 'should return itself' do
-      expect(subject.add_training_data(values)).to be_kind_of subject.class
+    it 'returns itself' do
+      expect(subject.add_training_data(values)).to be_a subject.class
     end
   end
 
@@ -130,17 +128,19 @@ describe Weka::Clusterers::Utils do
 
       it { is_expected.to respond_to :cross_validate }
 
-      it 'should return a Weka::Clusterers::ClusterEvaluation' do
+      it 'returns a Weka::Clusterers::ClusterEvaluation' do
         return_value = subject.cross_validate
         expect(return_value).to eq cross_validation_result
       end
 
-      it 'should run Java‘s #cross_validate_model on a ClusterEvaluation' do
-        expect(Weka::Clusterers::ClusterEvaluation).to receive(:cross_validate_model).once
+      it 'runs Java’s #cross_validate_model on a ClusterEvaluation' do
+        expect(Weka::Clusterers::ClusterEvaluation)
+          .to receive(:cross_validate_model).once
+
         subject.cross_validate
       end
 
-      it 'should use 3 folds and the training instances as default test instances' do
+      it 'uses 3 folds and the training instances as default test instances' do
         expect(Weka::Clusterers::ClusterEvaluation)
           .to receive(:cross_validate_model).once
           .with(
@@ -156,7 +156,7 @@ describe Weka::Clusterers::Utils do
       context 'with given folds' do
         let(:folds) { default_folds + 1 }
 
-        it 'should use the given number of folds' do
+        it 'uses the given number of folds' do
           expect(Weka::Clusterers::ClusterEvaluation)
             .to receive(:cross_validate_model).once
             .with(
@@ -169,7 +169,7 @@ describe Weka::Clusterers::Utils do
           subject.cross_validate(folds: folds)
         end
 
-        it 'should use the folds as an integer value' do
+        it 'uses the folds as an integer value' do
           expect(Weka::Clusterers::ClusterEvaluation)
             .to receive(:cross_validate_model).once
             .with(
@@ -184,9 +184,11 @@ describe Weka::Clusterers::Utils do
       end
 
       context 'without training instances' do
-        before { allow(subject).to receive(:training_instances).and_return(nil) }
+        before do
+          allow(subject).to receive(:training_instances).and_return(nil)
+        end
 
-        it 'should raise an UnassignedTrainingInstancesError' do
+        it 'raises an UnassignedTrainingInstancesError' do
           expect { subject.cross_validate }
             .to raise_error Weka::UnassignedTrainingInstancesError
         end
@@ -197,15 +199,16 @@ describe Weka::Clusterers::Utils do
   describe '#evaluate' do
     before do
       allow(subject).to receive(:training_instances).and_return(instances)
-      allow_any_instance_of(Weka::Clusterers::ClusterEvaluation).to receive(:evaluate_clusterer)
+      allow_any_instance_of(Weka::Clusterers::ClusterEvaluation)
+        .to receive(:evaluate_clusterer)
     end
 
-    it 'should return a Weka::Clusterers::ClusterEvaluation' do
+    it 'returns a Weka::Clusterers::ClusterEvaluation' do
       return_value = subject.evaluate(instances)
       expect(return_value).to be_kind_of Weka::Clusterers::ClusterEvaluation
     end
 
-    it 'should run Java‘s #evaluate_model on an Evaluation' do
+    it 'runs Java’s #evaluate_model on an Evaluation' do
       expect_any_instance_of(Weka::Clusterers::ClusterEvaluation)
         .to receive(:evaluate_clusterer).once
         .with(instances)
@@ -216,7 +219,7 @@ describe Weka::Clusterers::Utils do
     context 'without training instances' do
       before { allow(subject).to receive(:training_instances).and_return(nil) }
 
-      it 'should raise an UnassignedTrainingInstancesError' do
+      it 'raises an UnassignedTrainingInstancesError' do
         expect { subject.evaluate(instances) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
@@ -224,16 +227,16 @@ describe Weka::Clusterers::Utils do
   end
 
   describe '#cluster' do
-    let(:instance)  { instances.first }
-    let(:values)    { [:overcast, 83, 86, :FALSE, :yes] }
-    let(:cluster)   { 1 }
+    let(:instance) { instances.first }
+    let(:values)   { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:cluster)  { 1 }
 
     before do
       allow(subject).to receive(:cluster_instance).and_return(cluster)
     end
 
     context 'with a given instance' do
-      it 'should call Java‘s #cluster_instance' do
+      it 'calls Java’s #cluster_instance' do
         expect(subject)
           .to receive(:cluster_instance).once
           .with(an_instance_of(instance.class))
@@ -241,13 +244,13 @@ describe Weka::Clusterers::Utils do
         subject.cluster(instance)
       end
 
-      it 'should return the predicted class value of the instance' do
+      it 'returns the predicted class value of the instance' do
         expect(subject.cluster(instance)).to eq cluster
       end
     end
 
     context 'with a given array of values' do
-      it 'should call Java‘s #cluster_instance' do
+      it 'calls Java’s #cluster_instance' do
         expect(subject)
           .to receive(:cluster_instance).once
           .with(an_instance_of(Weka::Core::DenseInstance))
@@ -255,7 +258,7 @@ describe Weka::Clusterers::Utils do
         subject.cluster(values)
       end
 
-      it 'should return the predicted class value of the instance' do
+      it 'returns the predicted class value of the instance' do
         expect(subject.cluster(values)).to eq cluster
       end
     end
@@ -263,7 +266,7 @@ describe Weka::Clusterers::Utils do
     context 'without training instances' do
       before { allow(subject).to receive(:training_instances).and_return(nil) }
 
-      it 'should raise an UnassignedTrainingInstancesError' do
+      it 'raises an UnassignedTrainingInstancesError' do
         expect { subject.cluster(instance) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
@@ -271,16 +274,18 @@ describe Weka::Clusterers::Utils do
   end
 
   describe '#distribution_for' do
-    let(:instance)            { instances.first }
-    let(:values)              { [:overcast, 83, 86, :FALSE, :yes] }
-    let(:distributions)       { [0.543684388757196, 0.4563156112428039] }
+    let(:instance)      { instances.first }
+    let(:values)        { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:distributions) { [0.543684388757196, 0.4563156112428039] }
 
     before do
-      allow(subject).to receive(:distribution_for_instance).and_return(distributions)
+      allow(subject)
+        .to receive(:distribution_for_instance)
+        .and_return(distributions)
     end
 
     context 'with a given instance' do
-      it 'should call Java‘s #distribution_for_instance' do
+      it 'calls Java’s #distribution_for_instance' do
         expect(subject)
           .to receive(:distribution_for_instance).once
           .with(an_instance_of(instance.class))
@@ -288,13 +293,13 @@ describe Weka::Clusterers::Utils do
         subject.distribution_for(instance)
       end
 
-      it 'should return the predicted cluster distributions of the instance' do
+      it 'returns the predicted cluster distributions of the instance' do
         expect(subject.distribution_for(instance)).to eq distributions
       end
     end
 
     context 'with a given array of values' do
-      it 'should call Java‘s #distribution_for_instance' do
+      it 'calls Java’s #distribution_for_instance' do
         expect(subject)
           .to receive(:distribution_for_instance).once
           .with(an_instance_of(Weka::Core::DenseInstance))
@@ -302,7 +307,7 @@ describe Weka::Clusterers::Utils do
         subject.distribution_for(values)
       end
 
-      it 'should return the predicted cluster distributions of the instance' do
+      it 'returns the predicted cluster distributions of the instance' do
         expect(subject.distribution_for(values)).to eq distributions
       end
     end
@@ -310,11 +315,10 @@ describe Weka::Clusterers::Utils do
     context 'without training instances' do
       before { allow(subject).to receive(:training_instances).and_return(nil) }
 
-      it 'should raise an UnassignedTrainingInstancesError' do
+      it 'raises an UnassignedTrainingInstancesError' do
         expect { subject.distribution_for(instance) }
           .to raise_error Weka::UnassignedTrainingInstancesError
       end
     end
   end
-
 end

@@ -1,12 +1,11 @@
-require 'active_support/concern'
-
 module Weka
   module Concerns
     module Describable
-      extend ActiveSupport::Concern
+      def self.included(base)
+        base.extend ClassMethods
+      end
 
       module ClassMethods
-
         def description
           new.global_info
         end

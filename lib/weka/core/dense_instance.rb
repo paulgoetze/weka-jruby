@@ -1,13 +1,13 @@
 module Weka
   module Core
-    java_import "weka.core.DenseInstance"
+    java_import 'weka.core.DenseInstance'
 
     class DenseInstance
-      java_import "java.util.Date"
-      java_import "java.text.SimpleDateFormat"
+      java_import 'java.util.Date'
+      java_import 'java.text.SimpleDateFormat'
 
       def initialize(data, weight: 1.0)
-        if data.kind_of?(Integer)
+        if data.is_a?(Integer)
           super(data)
         else
           super(weight, to_java_double(data))
@@ -38,8 +38,8 @@ module Weka
         end
       end
 
-      alias :values       :to_a
-      alias :values_count :num_values
+      alias values       to_a
+      alias values_count num_values
 
       private
 
@@ -61,7 +61,7 @@ module Weka
           format_date(value, attribute.date_format)
         elsif attribute.numeric?
           value
-        elsif attribute.nominal?
+        elsif attribute.nominal? || attribute.string?
           attribute.value(value)
         end
       end

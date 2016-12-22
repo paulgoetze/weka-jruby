@@ -16,10 +16,9 @@ module Weka
                       :PartitionMembership
 
         class AttributeSelection
-          alias :use_evaluator :set_evaluator
-          alias :use_search    :set_search
+          alias use_evaluator set_evaluator
+          alias use_search    set_search
         end
-
       end
     end
   end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::Filters::Unsupervised::Attribute do
-
   it_behaves_like 'class builder'
 
   [
@@ -61,7 +60,7 @@ describe Weka::Filters::Unsupervised::Attribute do
     :TimeSeriesTranslate,
     :Transpose
   ].each do |class_name|
-    it "should define a class #{class_name}" do
+    it "defines a class #{class_name}" do
       expect(described_class.const_defined?(class_name)).to be true
     end
   end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Weka::AttributeSelection::Evaluator do
-
   subject { described_class }
 
   it_behaves_like 'class builder'
@@ -16,19 +15,19 @@ describe Weka::AttributeSelection::Evaluator do
     :SymmetricalUncertAttribute => :SymmetricalUncertAttributeEval,
     :WrapperSubset              => :WrapperSubsetEval
   }.each do |class_name, super_class_name|
-    it "should define a class #{class_name}" do
+    it "defines a class #{class_name}" do
       expect(subject.const_defined?(class_name)).to be true
     end
 
-    it "should inherit class #{class_name} from #{super_class_name}" do
-      evaluator_class = "#{subject}::#{class_name}".constantize
-      super_class     = "#{subject}::#{super_class_name}".constantize
+    it "inherits class #{class_name} from #{super_class_name}" do
+      evaluator_class = Object.module_eval("#{subject}::#{class_name}")
+      super_class     = Object.module_eval("#{subject}::#{super_class_name}")
 
       expect(evaluator_class.new).to be_kind_of super_class
     end
   end
 
-  it "should define a class PrincipalComponents" do
-      expect(subject.const_defined?(:PrincipalComponents)).to be true
-    end
+  it 'defines a class PrincipalComponents' do
+    expect(subject.const_defined?(:PrincipalComponents)).to be true
+  end
 end

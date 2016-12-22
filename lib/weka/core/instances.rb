@@ -6,13 +6,13 @@ require 'weka/concerns/serializable'
 
 module Weka
   module Core
-    java_import "weka.core.Instances"
-    java_import "weka.core.FastVector"
+    java_import 'weka.core.Instances'
+    java_import 'weka.core.FastVector'
 
     class Instances
       include Weka::Concerns::Serializable
 
-      DEFAULT_RELATION_NAME = 'Instances'
+      DEFAULT_RELATION_NAME = 'Instances'.freeze
 
       class << self
         def from_arff(file)
@@ -25,6 +25,16 @@ module Weka
 
         def from_json(file)
           Loader.load_json(file)
+        end
+
+        # Loads instances based on a given *.names file (holding the attribute
+        # values) or a given *.data file (holding the attribute values).
+        # The respective other file is loaded from the same directory.
+        #
+        # See http://www.cs.washington.edu/dm/vfml/appendixes/c45.htm for more
+        # information about the C4.5 file format.
+        def from_c45(file)
+          Loader.load_c45(file)
         end
       end
 
@@ -48,13 +58,33 @@ module Weka
       end
 
       def add_attributes(&block)
-        self.instance_eval(&block) if block
+        instance_eval(&block) if block
         self
       end
 
-      alias :with_attributes  :add_attributes
-      alias :instances_count  :num_instances
-      alias :attributes_count :num_attributes
+      alias with_attributes       add_attributes
+      alias instances_count       num_instances
+      alias attributes_count      num_attributes
+      alias has_string_attribute? check_for_string_attributes
+
+      ## Check if the instances has any attribute of the given type
+      # @param [String, Symbol, Integer] type type of the attribute to check
+      #   String and Symbol argument are converted to corresponding type
+      #   defined in Weka::Core::Attribute
+      #
+      # @example Passing String
+      #   instances.has_attribute_type?('string')
+      #   instances.has_attribute_type?('String')
+      #
+      # @example Passing Symbol
+      #   instances.has_attribute_type?(:String)
+      #
+      # @example Passing Integer
+      #   instances.has_attribute_type?(Attribute::STRING)
+      def has_attribute_type?(type)
+        type = map_attribute_type(type) unless type.is_a?(Integer)
+        check_for_attribute_type(type)
+      end
 
       def each
         if block_given?
@@ -96,26 +126,39 @@ module Weka
         Saver.save_json(file: file, instances: self)
       end
 
+      # Creates a file with the istances's attribute values and a *.data file
+      # with the actual data.
+      #
+      # You should choose another file extension than .data (preferably
+      # *.names) for the file, else it will just be overwritten with the
+      # automatically created *.data file.
+      #
+      # See http://www.cs.washington.edu/dm/vfml/appendixes/c45.htm for more
+      # information about the C4.5 file format.
+      def to_c45(file)
+        Saver.save_c45(file: file, instances: self)
+      end
+
       def numeric(name, class_attribute: false)
-        attribute = Attribute.new(name.to_s)
+        attribute = Attribute.new_numeric(name)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def nominal(name, values:, class_attribute: false)
-        attribute = Attribute.new(name.to_s, Array(values).map(&:to_s))
+        attribute = Attribute.new_nominal(name, values)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def string(name, class_attribute: false)
-        attribute = Attribute.new(name.to_s, [])
+        attribute = Attribute.new_string(name)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
 
       def date(name, format: 'yyyy-MM-dd HH:mm', class_attribute: false)
-        attribute = Attribute.new(name.to_s, format)
+        attribute = Attribute.new_date(name, format)
         add_attribute(attribute)
         self.class_attribute = name if class_attribute
       end
@@ -129,10 +172,10 @@ module Weka
         end
       end
 
-      alias :add_numeric_attribute :numeric
-      alias :add_string_attribute  :string
-      alias :add_nominal_attribute :nominal
-      alias :add_date_attribute    :date
+      alias add_numeric_attribute numeric
+      alias add_string_attribute  string
+      alias add_nominal_attribute nominal
+      alias add_date_attribute    date
 
       def class_attribute
         classAttribute if class_attribute_defined?
@@ -187,7 +230,7 @@ module Weka
         return if attribute_names.include?(name.to_s)
 
         error   = "\"#{name}\" is not defined."
-        hint    = "Only defined attributes can be used as class attribute!"
+        hint    = 'Only defined attributes can be used as class attribute!'
         message = "#{error} #{hint}"
 
         raise ArgumentError, message
@@ -198,13 +241,30 @@ module Weka
       end
 
       def instance_from(instance_or_values, weight:)
-        if instance_or_values.kind_of?(Java::WekaCore::Instance)
+        if instance_or_values.is_a?(Java::WekaCore::Instance)
           instance_or_values.weight = weight
           instance_or_values
         else
           data = internal_values_of(instance_or_values)
+
+          # string attribute has unlimited range of possible values.
+          # Check the return index, if it is -1 then add the value to
+          # the attribute before creating the instance
+          data.map!.with_index do |value, index|
+            if value == -1 && attribute(index).string?
+              attribute(index).add_string_value(instance_or_values[index].to_s)
+            else
+              value
+            end
+          end
+
           DenseInstance.new(data, weight: weight)
         end
+      end
+
+      def map_attribute_type(type)
+        return -1 unless Attribute::TYPES.include?(type.downcase.to_sym)
+        Attribute.const_get(type.upcase)
       end
     end
 
