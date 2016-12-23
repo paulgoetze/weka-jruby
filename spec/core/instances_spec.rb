@@ -508,7 +508,7 @@ describe Weka::Core::Instances do
       [[:sunny, 70, 80, :TRUE, :yes], [:overcast, 80, 85, :FALSE, :yes]]
     end
 
-    context 'when passing array of attribute values' do
+    context 'when each instance is stored as an array of attribute values' do
       it 'adds the data to the Instances object' do
         expect { subject.add_instances(data) }
           .to change { subject.instances_count }
@@ -516,7 +516,7 @@ describe Weka::Core::Instances do
       end
     end
 
-    context 'when passing array of attribute values' do
+    context 'when each instance is stored as a hash of attribute values' do
       let(:hash_data) do
         data.map do |attribute_values|
           subject.send(:attribute_values_to_hash, attribute_values)
