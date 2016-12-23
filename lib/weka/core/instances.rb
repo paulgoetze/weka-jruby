@@ -49,16 +49,16 @@ module Weka
         enumerate_instances.to_a
       end
 
-      def attributes
-        enumerate_attributes.to_a
+      def attributes(include_class_attribute = false)
+        attrs = enumerate_attributes.to_a
+        if include_class_attribute && class_attribute_defined?
+          attrs.insert(class_index, class_attribute)
+        end
+        attrs
       end
 
-      def attribute_names(use_symbol = false)
-        if use_symbol
-          attributes.map { |attribute| attribute.name.to_sym }
-        else
-          attributes.map(&:name)
-        end
+      def attribute_names(include_class_attribute = false)
+        attributes(include_class_attribute).map(&:name)
       end
 
       def add_attributes(&block)
@@ -318,8 +318,7 @@ module Weka
       # @return [Array] an array containing attribute values in the
       #   correct order
       def attribute_values_from_hash(attribute_values)
-        names = attribute_names(true)
-        names << class_attribute.name.to_sym if class_attribute_defined?
+        names = attribute_names(true).map!(&:to_sym)
         names.inject([]) do |values, attribute_name|
           values << attribute_values[attribute_name]
         end
@@ -334,8 +333,7 @@ module Weka
       #
       # @return [Hash] a hash as described above
       def attribute_values_to_hash(attribute_values)
-        names = attribute_names(true)
-        names << class_attribute.name.to_sym if class_attribute_defined?
+        names = attribute_names(true).map!(&:to_sym)
         names.each_with_object({}).with_index do |(attr_name, hash), index|
           hash[attr_name] = attribute_values[index]
         end

@@ -151,21 +151,15 @@ describe Weka::Core::Instances do
       expect(subject.attribute_names).to eq names
     end
 
-    context 'if use_symbol is true' do
-      it 'returns an Array of the symbols of the attribute names' do
-        expect(subject.attribute_names(true)).to eq names.map(&:to_sym)
-      end
-    end
-
     context 'if class attribute is set' do
       subject do
         instances = load_instances('weather.arff')
-        instances.class_attribute = :play
+        instances.class_attribute = :windy
         instances
       end
 
       it 'does not return the class attribute' do
-        expect(subject.attribute_names).to eq(names.reject { |n| n == 'play' })
+        expect(subject.attribute_names).to eq(names.reject { |n| n == 'windy' })
       end
     end
   end
@@ -519,7 +513,7 @@ describe Weka::Core::Instances do
       context 'when class attribute is set' do
         subject do
           instances = load_instances('weather.arff')
-          instances.class_attribute = :play
+          instances.class_attribute = :windy
           instances
         end
 
@@ -599,7 +593,7 @@ describe Weka::Core::Instances do
       context 'when class attribute is set' do
         subject do
           instances = load_instances('weather.arff')
-          instances.class_attribute = :play
+          instances.class_attribute = :windy
           instances
         end
 
