@@ -318,7 +318,9 @@ module Weka
       # @return [Array] an array containing attribute values in the
       #   correct order
       def attribute_values_from_hash(attribute_values)
-        attribute_names(true).inject([]) do |values, attribute_name|
+        names = attribute_names(true)
+        names << class_attribute.name.to_sym if class_attribute_defined?
+        names.inject([]) do |values, attribute_name|
           values << attribute_values[attribute_name]
         end
       end
@@ -332,7 +334,9 @@ module Weka
       #
       # @return [Hash] a hash as described above
       def attribute_values_to_hash(attribute_values)
-        attribute_names(true).each_with_object({}).with_index do |(attr_name, hash), index|
+        names = attribute_names(true)
+        names << class_attribute.name.to_sym if class_attribute_defined?
+        names.each_with_object({}).with_index do |(attr_name, hash), index|
           hash[attr_name] = attribute_values[index]
         end
       end

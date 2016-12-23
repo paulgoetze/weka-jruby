@@ -156,6 +156,18 @@ describe Weka::Core::Instances do
         expect(subject.attribute_names(true)).to eq names.map(&:to_sym)
       end
     end
+
+    context 'if class attribute is set' do
+      subject do
+        instances = load_instances('weather.arff')
+        instances.class_attribute = :play
+        instances
+      end
+
+      it 'does not return the class attribute' do
+        expect(subject.attribute_names).to eq(names.reject { |n| n == 'play' })
+      end
+    end
   end
 
   describe 'attribute definers:' do
@@ -474,32 +486,48 @@ describe Weka::Core::Instances do
     end
 
     context 'when passing a hash of attribute values' do
-      it 'adds an instance from given values to the Instances object' do
-        data = {
+      let(:data) do
+        {
           outlook: :sunny,
           temperature: 70,
-          humidity: 80,
-          windy: 'TRUE',
-          play: :yes
+          humidity: humidity_value,
+          windy: windy_value,
+          play: play_value
         }
-        subject.add_instance(data)
+      end
 
+      let(:humidity_value)  { 80 }
+      let(:windy_value)     { 'TRUE' }
+      let(:play_value)      { :yes }
+
+      it 'adds an instance from given values to the Instances object' do
+        subject.add_instance(data)
         expect(subject.instances.last.to_s).to eq data.values.join(',')
       end
 
-      it 'adds a given instance with partly missing values' do
-        data = {
-          outlook: :sunny,
-          temperature: 70,
-          humidity: nil,
-          windy: '?',
-          play: Float::NAN
-        }
-        subject.add_instance(data)
+      context 'when some attribute values are missing' do
+        let(:humidity_value)  { nil }
+        let(:windy_value)     { '?' }
+        let(:play_value)      { Float::NAN }
 
-        expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+        it 'adds a given instance with partly missing values' do
+          subject.add_instance(data)
+          expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+        end
       end
 
+      context 'when class attribute is set' do
+        subject do
+          instances = load_instances('weather.arff')
+          instances.class_attribute = :play
+          instances
+        end
+
+        it 'adds a given instance to the Instances object' do
+          subject.add_instance(data)
+          expect(subject.instances.last.to_s).to eq data.values.join(',')
+        end
+      end
     end
   end
 
@@ -548,24 +576,36 @@ describe Weka::Core::Instances do
     end
 
     context 'when passing a hash' do
+      values = {
+        outlook: :sunny,
+        temperature: 85,
+        humidity: 85,
+        windy: :FALSE,
+        play: :no
+      }
+
+      internal_values = {
+        outlook: 0,
+        temperature: 85.0,
+        humidity: 85.0,
+        windy: 1,
+        play: 1
+      }
+
       it 'returns a hash of internal values of the given values' do
-        values = {
-          outlook: :sunny,
-          temperature: 85,
-          humidity: 85,
-          windy: :FALSE,
-          play: :no
-        }
-
-        internal_values = {
-          outlook: 0,
-          temperature: 85.0,
-          humidity: 85.0,
-          windy: 1,
-          play: 1
-        }
-
         expect(subject.internal_values_of(values)).to eq internal_values
+      end
+
+      context 'when class attribute is set' do
+        subject do
+          instances = load_instances('weather.arff')
+          instances.class_attribute = :play
+          instances
+        end
+
+        it 'return the index of the class attribute' do
+          expect(subject.internal_values_of(values)).to eq internal_values
+        end
       end
     end
   end
