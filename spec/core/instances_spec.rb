@@ -473,7 +473,7 @@ describe Weka::Core::Instances do
       end
     end
 
-    context 'when passing an hash of attribute values' do
+    context 'when passing a hash of attribute values' do
       it 'adds an instance from given values to the Instances object' do
         data = {
           outlook: :sunny,

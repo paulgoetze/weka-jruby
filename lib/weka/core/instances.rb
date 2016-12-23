@@ -298,7 +298,7 @@ module Weka
           end
 
           data = internal_values_of(instance_or_values)
-          data = check_string_attributes(data, instance_or_values)
+          check_string_attributes(data, instance_or_values) if has_string_attribute?
           DenseInstance.new(data, weight: weight)
         end
       end
