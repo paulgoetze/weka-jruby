@@ -204,12 +204,12 @@ module Weka
       #   instances.add_instance(instance)
       #
       # @example Passing an array of attribute values
-      #   attribute_values = [attr1_value, attr2_value, attr3_value, ...]
-      #   instances.add_instance(attribute_values)
+      #   attr_values = [attr1_value, attr2_value, attr3_value]
+      #   instances.add_instance(attr_values)
       #
       # @example Passing a hash of attribute values.
-      #   attribute_values = { attr1_name: attr1_value, attr2_name: attr2_value, ... }
-      #   instances.add_instance(attribute_values)
+      #   attr_values = { attr1_name: attr1_value, attr2_name: attr2_value }
+      #   instances.add_instance(attr_values)
       #
       def add_instance(instance_or_values, weight: 1.0)
         instance = instance_from(instance_or_values, weight: weight)
@@ -289,29 +289,16 @@ module Weka
       # @return [Instance] the object that contains the given
       #   attribute values.
       def instance_from(instance_or_values, weight:)
-
         if instance_or_values.is_a?(Java::WekaCore::Instance)
           instance_or_values.weight = weight
           instance_or_values
         else
-
           if instance_or_values.is_a?(Hash)
             instance_or_values = attribute_values_from_hash(instance_or_values)
           end
 
           data = internal_values_of(instance_or_values)
-
-          # string attribute has unlimited range of possible values.
-          # Check the return index, if it is -1 then add the value to
-          # the attribute before creating the instance
-          data.map!.with_index do |value, index|
-            if value == -1 && attribute(index).string?
-              attribute(index).add_string_value(instance_or_values[index])
-            else
-              value
-            end
-          end
-
+          data = check_string_attributes(data, instance_or_values)
           DenseInstance.new(data, weight: weight)
         end
       end
@@ -345,9 +332,21 @@ module Weka
       #
       # @return [Hash] a hash as described above
       def attribute_values_to_hash(attribute_values)
-        attribute_names(true).each_with_index.inject({}) do |hash, (attr_name, index)|
+        attribute_names(true).each_with_object({}).with_index do |(attr_name, hash), index|
           hash[attr_name] = attribute_values[index]
-          hash
+        end
+      end
+
+      def check_string_attributes(internal_values, attribute_values)
+        # string attribute has unlimited range of possible values.
+        # Check the return index, if it is -1 then add the value to
+        # the attribute before creating the instance
+        internal_values.map!.with_index do |value, index|
+          if value == -1 && attribute(index).string?
+            attribute(index).add_string_value(attribute_values[index])
+          else
+            value
+          end
         end
       end
     end
