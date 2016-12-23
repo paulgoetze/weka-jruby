@@ -308,7 +308,7 @@ module Weka
         Attribute.const_get(type.upcase)
       end
 
-      # convert a hash whose keys are attribute names and values are attribute
+      # Convert a hash whose keys are attribute names and values are attribute
       #   values into an array containing attribute values in the order
       #   of the Instances attributes.
       #
@@ -323,7 +323,7 @@ module Weka
         end
       end
 
-      # convert an array of attribute values in the same order as Instances
+      # Convert an array of attribute values in the same order as Instances
       #   attributes into a hash whose keys are attribute names and values
       #   are corresponding attribute values.
       #

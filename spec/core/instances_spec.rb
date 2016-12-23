@@ -145,9 +145,16 @@ describe Weka::Core::Instances do
   end
 
   describe '#attribute_names' do
+    names = %w(outlook temperature humidity windy play)
+
     it 'returns an Array of the attribute names' do
-      names = %w(outlook temperature humidity windy play)
       expect(subject.attribute_names).to eq names
+    end
+
+    context 'if use_symbol is true' do
+      it 'returns an Array of the symbols of the attribute names' do
+        expect(subject.attribute_names(true)).to eq names.map(&:to_sym)
+      end
     end
   end
 
@@ -501,10 +508,26 @@ describe Weka::Core::Instances do
       [[:sunny, 70, 80, :TRUE, :yes], [:overcast, 80, 85, :FALSE, :yes]]
     end
 
-    it 'adds the data to the Instances object' do
-      expect { subject.add_instances(data) }
-        .to change { subject.instances_count }
-        .by(data.count)
+    context 'when passing array of attribute values' do
+      it 'adds the data to the Instances object' do
+        expect { subject.add_instances(data) }
+          .to change { subject.instances_count }
+          .by(data.count)
+      end
+    end
+
+    context 'when passing array of attribute values' do
+      let(:hash_data) do
+        data.map do |attribute_values|
+          subject.send(:attribute_values_to_hash, attribute_values)
+        end
+      end
+
+      it 'adds the data to the Instances object' do
+        expect { subject.add_instances(hash_data) }
+          .to change { subject.instances_count }
+          .by(hash_data.count)
+      end
     end
 
     it 'calls #add_instance internally' do
