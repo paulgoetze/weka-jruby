@@ -298,7 +298,7 @@ module Weka
           end
 
           data = internal_values_of(instance_or_values)
-          check_string_attributes(data, instance_or_values) if has_string_attribute?
+          data = check_string_attributes(data, instance_or_values) if has_string_attribute?
           DenseInstance.new(data, weight: weight)
         end
       end
@@ -341,7 +341,7 @@ module Weka
         # string attribute has unlimited range of possible values.
         # Check the return index, if it is -1 then add the value to
         # the attribute before creating the instance
-        internal_values.map!.with_index do |value, index|
+        internal_values.map.with_index do |value, index|
           if value == -1 && attribute(index).string?
             attribute(index).add_string_value(attribute_values[index])
           else
