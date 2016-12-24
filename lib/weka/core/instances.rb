@@ -277,9 +277,9 @@ module Weka
       end
 
       def attribute_with_name(name)
-        attributes(include_class_attribute: true).select do |attribute|
+        attributes(include_class_attribute: true).find do |attribute|
           attribute.name == name.to_s
-        end.first
+        end
       end
 
       # Wrap the attribute values for the instance to be added with
