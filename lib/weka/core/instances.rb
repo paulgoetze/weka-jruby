@@ -49,16 +49,18 @@ module Weka
         enumerate_instances.to_a
       end
 
-      def attributes(include_class_attribute = false)
+      def attributes(include_class_attribute: false)
         attrs = enumerate_attributes.to_a
+
         if include_class_attribute && class_attribute_defined?
           attrs.insert(class_index, class_attribute)
         end
+
         attrs
       end
 
-      def attribute_names(include_class_attribute = false)
-        attributes(include_class_attribute).map(&:name)
+      def attribute_names(include_class_attribute: false)
+        attributes(include_class_attribute: include_class_attribute).map(&:name)
       end
 
       def add_attributes(&block)
@@ -232,7 +234,7 @@ module Weka
         use_hash = values.is_a?(Hash)
         values = attribute_values_from_hash(values) if use_hash
 
-        values = values.each_with_index.map do |value, index|
+        values = values.map.with_index do |value, index|
           attribute(index).internal_value_of(value)
         end
 
@@ -263,7 +265,9 @@ module Weka
       end
 
       def ensure_attribute_defined!(name)
-        return if attribute_names.include?(name.to_s)
+        if attribute_names(include_class_attribute: true).include?(name.to_s)
+          return
+        end
 
         error   = "\"#{name}\" is not defined."
         hint    = 'Only defined attributes can be used as class attribute!'
@@ -273,7 +277,9 @@ module Weka
       end
 
       def attribute_with_name(name)
-        attributes.select { |attribute| attribute.name == name.to_s }.first
+        attributes(include_class_attribute: true).select do |attribute|
+          attribute.name == name.to_s
+        end.first
       end
 
       # Wrap the attribute values for the instance to be added with
@@ -312,30 +318,27 @@ module Weka
       #   values into an array containing attribute values in the order
       #   of the Instances attributes.
       #
-      # @param [Hash] attribute_values a hash whose keys are attribute
+      # @param [Hash] hash a hash whose keys are attribute
       #   names and values are attribute values.
       #
       # @return [Array] an array containing attribute values in the
       #   correct order
-      def attribute_values_from_hash(attribute_values)
-        names = attribute_names(true).map!(&:to_sym)
-        names.inject([]) do |values, attribute_name|
-          values << attribute_values[attribute_name]
-        end
+      def attribute_values_from_hash(hash)
+        names = attribute_names(include_class_attribute: true).map(&:to_sym)
+        hash.values_at(*names)
       end
 
       # Convert an array of attribute values in the same order as Instances
       #   attributes into a hash whose keys are attribute names and values
       #   are corresponding attribute values.
       #
-      # @param [Array] attribute_values an array containing the attribute
-      #   values
+      # @param [Array] values an array containing the attribute values
       #
       # @return [Hash] a hash as described above
-      def attribute_values_to_hash(attribute_values)
-        names = attribute_names(true).map!(&:to_sym)
-        names.each_with_object({}).with_index do |(attr_name, hash), index|
-          hash[attr_name] = attribute_values[index]
+      def attribute_values_to_hash(values)
+        names = attribute_names(include_class_attribute: true).map(&:to_sym)
+        names.each_with_index.inject({}) do |hash, (name, index)|
+          hash.update(name => values[index])
         end
       end
 
