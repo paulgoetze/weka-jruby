@@ -640,7 +640,7 @@ describe Weka::Core::Instances do
       context 'when class attribute is set' do
         let(:set_class_attribute) { true }
 
-        it 'return the index of the class attribute' do
+        it 'returns a hash of internal values of the given values' do
           expect(subject.internal_values_of(values)).to eq internal_values
         end
       end
