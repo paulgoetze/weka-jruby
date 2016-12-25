@@ -2,7 +2,14 @@ require 'spec_helper'
 require 'fileutils'
 
 describe Weka::Core::Instances do
-  subject { load_instances('weather.arff') }
+  let(:set_class_attribute)   { false }
+  let(:class_attribute_name)  { :windy }
+
+  subject do
+    instances = load_instances('weather.arff')
+    instances.class_attribute = class_attribute_name if set_class_attribute
+    instances
+  end
 
   it { is_expected.to respond_to :each }
   it { is_expected.to respond_to :each_with_index }
@@ -142,12 +149,48 @@ describe Weka::Core::Instances do
 
       expect(all_kind_of_attribute).to be true
     end
+
+    context 'when class attribute is not set' do
+      it 'returns all attributes' do
+        expect(subject.attributes.size).to eq subject.attributes_count
+        expect(subject.attributes(include_class_attribute: true).size)
+          .to eq subject.attributes_count
+      end
+    end
+
+    context 'when class attribute is set' do
+      let(:set_class_attribute) { true }
+
+      it 'returns all attributes if include_class_attribute is true' do
+        expect(subject.attributes(include_class_attribute: true).size)
+          .to eq subject.attributes_count
+      end
+
+      it 'skips the class attribute if include_class_attribute is false' do
+        expect(subject.attributes.size).to eq(subject.attributes_count-1)
+      end
+    end
   end
 
   describe '#attribute_names' do
+    names = %w(outlook temperature humidity windy play)
+
     it 'returns an Array of the attribute names' do
-      names = %w(outlook temperature humidity windy play)
       expect(subject.attribute_names).to eq names
+    end
+
+    context 'when class attribute is set' do
+      let(:set_class_attribute) { true }
+
+      it 'skips the class attribute if include_class_attribute is false' do
+        expect(subject.attribute_names)
+          .not_to include subject.class_attribute.name
+      end
+
+      it 'returns all attributes if include_class_attribute is true' do
+        expect(subject.attribute_names(include_class_attribute: true))
+          .to include subject.class_attribute.name
+      end
     end
   end
 
@@ -271,6 +314,20 @@ describe Weka::Core::Instances do
       expect { subject.class_attribute = :not_existing_attribute }
         .to raise_error(ArgumentError)
     end
+
+    context 'when class attribute is already set' do
+      let(:set_class_attribute) { true }
+
+      it 'can set the same attribute as class attribute again' do
+        subject.class_attribute = class_attribute_name
+        expect(subject.class_attribute.name).to eq class_attribute_name.to_s
+      end
+
+      it 'can set another attribute as class attribute' do
+        subject.class_attribute = :play
+        expect(subject.class_attribute.name).to eq :play.to_s
+      end
+    end
   end
 
   describe '#class_attribute' do
@@ -323,12 +380,12 @@ describe Weka::Core::Instances do
     it 'adds the numbers of attributes given in the block' do
       instances = Weka::Core::Instances.new
 
-      expect {
+      expect do
         instances.add_attributes do
           numeric 'attribute'
           nominal 'class', values: %w(YES NO)
         end
-      }.to change { instances.attributes.count }.from(0).to(2)
+      end.to change { instances.attributes.count }.from(0).to(2)
     end
 
     it 'adds the types of attributes given in the block' do
@@ -436,31 +493,74 @@ describe Weka::Core::Instances do
   end
 
   describe '#add_instance' do
-    it 'adds an instance from given values to the Instances object' do
-      data = [:sunny, 70, 80, 'TRUE', :yes]
-      subject.add_instance(data)
+    context 'when passing an array of attribute values' do
+      it 'adds an instance from given values to the Instances object' do
+        data = [:sunny, 70, 80, 'TRUE', :yes]
+        subject.add_instance(data)
 
-      expect(subject.instances.last.to_s).to eq data.join(',')
+        expect(subject.instances.last.to_s).to eq data.join(',')
+      end
+
+      it 'adds a given instance to the Instances object' do
+        data = subject.first
+        subject.add_instance(data)
+
+        expect(subject.instances.last.to_s).to eq data.to_s
+      end
+
+      it 'adds a given instance with only missing values' do
+        data = Weka::Core::DenseInstance.new(subject.size)
+        subject.add_instance(data)
+        expect(subject.instances.last.to_s).to eq data.to_s
+      end
+
+      it 'adds a given instance with partly missing values' do
+        data = [:sunny, 70, nil, '?', Float::NAN]
+        subject.add_instance(data)
+
+        expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+      end
     end
 
-    it 'adds a given instance to the Instances object' do
-      data = subject.first
-      subject.add_instance(data)
+    context 'when passing a hash of attribute values' do
+      let(:humidity_value)  { 80 }
+      let(:windy_value)     { 'TRUE' }
+      let(:play_value)      { :yes }
 
-      expect(subject.instances.last.to_s).to eq data.to_s
-    end
+      let(:data) do
+        {
+          outlook: :sunny,
+          temperature: 70,
+          humidity: humidity_value,
+          windy: windy_value,
+          play: play_value
+        }
+      end
 
-    it 'adds a given instance with only missing values' do
-      data = Weka::Core::DenseInstance.new(subject.size)
-      subject.add_instance(data)
-      expect(subject.instances.last.to_s).to eq data.to_s
-    end
+      it 'adds an instance from given values to the Instances object' do
+        subject.add_instance(data)
+        expect(subject.instances.last.to_s).to eq data.values.join(',')
+      end
 
-    it 'adds a given instance with partly missing values' do
-      data = [:sunny, 70, nil, '?', Float::NAN]
-      subject.add_instance(data)
+      context 'when some attribute values are missing' do
+        let(:humidity_value)  { nil }
+        let(:windy_value)     { '?' }
+        let(:play_value)      { Float::NAN }
 
-      expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+        it 'adds a given instance with partly missing values' do
+          subject.add_instance(data)
+          expect(subject.instances.last.to_s).to eq 'sunny,70,?,?,?'
+        end
+      end
+
+      context 'when class attribute is set' do
+        let(:set_class_attribute) { true }
+
+        it 'adds a given instance to the Instances object' do
+          subject.add_instance(data)
+          expect(subject.instances.last.to_s).to eq data.values.join(',')
+        end
+      end
     end
   end
 
@@ -469,10 +569,31 @@ describe Weka::Core::Instances do
       [[:sunny, 70, 80, :TRUE, :yes], [:overcast, 80, 85, :FALSE, :yes]]
     end
 
-    it 'adds the data to the Instances object' do
-      expect { subject.add_instances(data) }
-        .to change { subject.instances_count }
-        .by(data.count)
+    context 'when each instance is stored as an array of attribute values' do
+      it 'adds the data to the Instances object' do
+        expect { subject.add_instances(data) }
+          .to change { subject.instances_count }
+          .by(data.count)
+      end
+    end
+
+    context 'when each instance is stored as a hash of attribute values' do
+      let(:hash_data) do
+        names = subject.attribute_names(include_class_attribute: true)
+                       .map(&:to_sym)
+
+        data.map do |attribute_values|
+          names.each_with_index.inject({}) do |hash, (name, index)|
+            hash.update(name => attribute_values[index])
+          end
+        end
+      end
+
+      it 'adds the data to the Instances object' do
+        expect { subject.add_instances(hash_data) }
+          .to change { subject.instances_count }
+          .by(hash_data.count)
+      end
     end
 
     it 'calls #add_instance internally' do
@@ -482,11 +603,47 @@ describe Weka::Core::Instances do
   end
 
   describe '#internal_values_of' do
-    it 'returns the internal values of the given values' do
-      values          = [:sunny, 85, 85, :FALSE, :no]
-      internal_values = [0, 85.0, 85.0, 1, 1]
+    context 'when passing an array' do
+      it 'returns an array of internal values of the given values' do
+        values = [:sunny, 85, 85, :FALSE, :no]
+        internal_values = [0, 85.0, 85.0, 1, 1]
 
-      expect(subject.internal_values_of(values)).to eq internal_values
+        expect(subject.internal_values_of(values)).to eq internal_values
+      end
+    end
+
+    context 'when passing a hash' do
+      let(:values) do
+        {
+          outlook: :sunny,
+          temperature: 85,
+          humidity: 85,
+          windy: :FALSE,
+          play: :no
+        }
+      end
+
+      let(:internal_values) do
+        {
+          outlook: 0,
+          temperature: 85.0,
+          humidity: 85.0,
+          windy: 1,
+          play: 1
+        }
+      end
+
+      it 'returns a hash of internal values of the given values' do
+        expect(subject.internal_values_of(values)).to eq internal_values
+      end
+
+      context 'when class attribute is set' do
+        let(:set_class_attribute) { true }
+
+        it 'returns a hash of internal values of the given values' do
+          expect(subject.internal_values_of(values)).to eq internal_values
+        end
+      end
     end
   end
 
