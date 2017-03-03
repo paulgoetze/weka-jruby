@@ -2,14 +2,9 @@ require 'spec_helper'
 require 'fileutils'
 
 describe Weka::Core::Instances do
-  let(:set_class_attribute)   { false }
-  let(:class_attribute_name)  { :windy }
+  let(:class_attribute_name) { :windy }
 
-  subject do
-    instances = load_instances('weather.arff')
-    instances.class_attribute = class_attribute_name if set_class_attribute
-    instances
-  end
+  subject { load_instances('weather.arff') }
 
   it { is_expected.to respond_to :each }
   it { is_expected.to respond_to :each_with_index }
@@ -159,7 +154,7 @@ describe Weka::Core::Instances do
     end
 
     context 'when class attribute is set' do
-      let(:set_class_attribute) { true }
+      before { subject.class_attribute = class_attribute_name }
 
       it 'returns all attributes if include_class_attribute is true' do
         expect(subject.attributes(include_class_attribute: true).size)
@@ -180,7 +175,7 @@ describe Weka::Core::Instances do
     end
 
     context 'when class attribute is set' do
-      let(:set_class_attribute) { true }
+      before { subject.class_attribute = class_attribute_name }
 
       it 'skips the class attribute if include_class_attribute is false' do
         expect(subject.attribute_names)
@@ -316,7 +311,7 @@ describe Weka::Core::Instances do
     end
 
     context 'when class attribute is already set' do
-      let(:set_class_attribute) { true }
+      before { subject.class_attribute = class_attribute_name }
 
       it 'can set the same attribute as class attribute again' do
         subject.class_attribute = class_attribute_name
@@ -443,7 +438,7 @@ describe Weka::Core::Instances do
     describe '#each_with_index' do
       it 'runs a block on each instance' do
         subject.each_with_index do |instance, index|
-          @result = "#{instance.value(0)}, #{index}" if index == 0
+          @result = "#{instance.value(0)}, #{index}" if index.zero?
         end
 
         expect(@result).to eq '0.0, 0' # 0.0 => index of nominal value
@@ -477,7 +472,7 @@ describe Weka::Core::Instances do
     describe '#each_attribute_with_index' do
       it 'runs a block on each attribute' do
         subject.each_attribute_with_index do |attribute, index|
-          @result = "#{attribute.name}, #{index}" if index == 0
+          @result = "#{attribute.name}, #{index}" if index.zero?
         end
 
         expect(@result).to eq 'outlook, 0'
@@ -523,9 +518,9 @@ describe Weka::Core::Instances do
     end
 
     context 'when passing a hash of attribute values' do
-      let(:humidity_value)  { 80 }
-      let(:windy_value)     { 'TRUE' }
-      let(:play_value)      { :yes }
+      let(:humidity_value) { 80 }
+      let(:windy_value)    { 'TRUE' }
+      let(:play_value)     { :yes }
 
       let(:data) do
         {
@@ -543,9 +538,9 @@ describe Weka::Core::Instances do
       end
 
       context 'when some attribute values are missing' do
-        let(:humidity_value)  { nil }
-        let(:windy_value)     { '?' }
-        let(:play_value)      { Float::NAN }
+        let(:humidity_value) { nil }
+        let(:windy_value)    { '?' }
+        let(:play_value)     { Float::NAN }
 
         it 'adds a given instance with partly missing values' do
           subject.add_instance(data)
@@ -554,7 +549,7 @@ describe Weka::Core::Instances do
       end
 
       context 'when class attribute is set' do
-        let(:set_class_attribute) { true }
+        before { subject.class_attribute = class_attribute_name }
 
         it 'adds a given instance to the Instances object' do
           subject.add_instance(data)
@@ -579,8 +574,9 @@ describe Weka::Core::Instances do
 
     context 'when each instance is stored as a hash of attribute values' do
       let(:hash_data) do
-        names = subject.attribute_names(include_class_attribute: true)
-                       .map(&:to_sym)
+        names = subject
+          .attribute_names(include_class_attribute: true)
+          .map(&:to_sym)
 
         data.map do |attribute_values|
           names.each_with_index.inject({}) do |hash, (name, index)|
@@ -638,7 +634,7 @@ describe Weka::Core::Instances do
       end
 
       context 'when class attribute is set' do
-        let(:set_class_attribute) { true }
+        before { subject.class_attribute = class_attribute_name }
 
         it 'returns a hash of internal values of the given values' do
           expect(subject.internal_values_of(values)).to eq internal_values
@@ -728,8 +724,8 @@ describe Weka::Core::Instances do
   end
 
   describe '#has_attribute_type?' do
-    subject     { load_instances('weather.string.arff') }
-    let(:type)  { 'nominal' }
+    subject    { load_instances('weather.string.arff') }
+    let(:type) { 'nominal' }
 
     it 'calls the underlying Java method .check_for_attribute_type' do
       expect(subject)
@@ -804,7 +800,7 @@ describe Weka::Core::Instances do
       end
 
       it 'returns false for undefined attribute type' do
-        expect(subject.has_attribute_type?(1000)).to be false
+        expect(subject.has_attribute_type?(-1)).to be false
       end
     end
   end
