@@ -40,7 +40,7 @@ module Weka
         end
       end
 
-      def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [], &block)
+      def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [])
         attribute_list = FastVector.new
         attributes.each { |attribute| attribute_list.add_element(attribute) }
 
