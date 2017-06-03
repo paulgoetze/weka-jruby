@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'fileutils'
+require 'matrix'
 
 describe Weka::Core::Instances do
   let(:class_attribute_name) { :windy }
@@ -34,6 +35,7 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :reset_class_attribute }
 
   it { is_expected.to respond_to :serialize }
+  it { is_expected.to respond_to :to_m }
 
   describe 'aliases:' do
     let(:instances) { described_class.new }
@@ -802,6 +804,31 @@ describe Weka::Core::Instances do
       it 'returns false for undefined attribute type' do
         expect(subject.has_attribute_type?(-1)).to be false
       end
+    end
+  end
+
+  describe '#to_m' do
+    subject { load_instances('weather.arff') }
+
+    it 'returns a matrix of all instance values' do
+      matrix = Matrix[
+        ['sunny', 85.0, 85.0, 'FALSE', 'no'],
+        ['sunny', 80.0, 90.0, 'TRUE', 'no'],
+        ['overcast', 83.0, 86.0, 'FALSE', 'yes'],
+        ['rainy', 70.0, 96.0, 'FALSE', 'yes'],
+        ['rainy', 68.0, 80.0, 'FALSE', 'yes'],
+        ['rainy', 65.0, 70.0, 'TRUE', 'no'],
+        ['overcast', 64.0, 65.0, 'TRUE', 'yes'],
+        ['sunny', 72.0, 95.0, 'FALSE', 'no'],
+        ['sunny', 69.0, 70.0, 'FALSE', 'yes'],
+        ['rainy', 75.0, 80.0, 'FALSE', 'yes'],
+        ['sunny', 75.0, 70.0, 'TRUE', 'yes'],
+        ['overcast', 72.0, 90.0, 'TRUE', 'yes'],
+        ['overcast', 81.0, 75.0, 'FALSE', 'yes'],
+        ['rainy', 71.0, 91.0, 'TRUE', 'no']
+      ]
+
+      expect(subject.to_m).to eq matrix
     end
   end
 end

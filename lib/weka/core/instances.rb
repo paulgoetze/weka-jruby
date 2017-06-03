@@ -1,3 +1,4 @@
+require 'matrix'
 require 'weka/core/converters'
 require 'weka/core/loader'
 require 'weka/core/saver'
@@ -257,6 +258,13 @@ module Weka
         instances.inject(self) do |merged_instances, dataset|
           self.class.merge_instances(merged_instances, dataset)
         end
+      end
+
+      # Get the all instances's values as Matrix.
+      #
+      # @return [Matrix] a Matrix holding the instance's values as rows.
+      def to_m
+        Matrix[*instances.map(&:values)]
       end
 
       private
