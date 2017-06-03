@@ -10,6 +10,7 @@ module Weka
     java_import 'weka.core.FastVector'
 
     class Instances
+      include Weka::Concerns::Persistent
       include Weka::Concerns::Serializable
 
       DEFAULT_RELATION_NAME = 'Instances'.freeze
@@ -355,7 +356,5 @@ module Weka
         end
       end
     end
-
-    Java::WekaCore::Instances.__persistent__ = true
   end
 end
