@@ -1,3 +1,4 @@
+require 'matrix'
 require 'weka/core/converters'
 require 'weka/core/loader'
 require 'weka/core/saver'
@@ -10,6 +11,7 @@ module Weka
     java_import 'weka.core.FastVector'
 
     class Instances
+      include Weka::Concerns::Persistent
       include Weka::Concerns::Serializable
 
       DEFAULT_RELATION_NAME = 'Instances'.freeze
@@ -38,7 +40,7 @@ module Weka
         end
       end
 
-      def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [], &block)
+      def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [])
         attribute_list = FastVector.new
         attributes.each { |attribute| attribute_list.add_element(attribute) }
 
@@ -258,6 +260,13 @@ module Weka
         end
       end
 
+      # Get the all instances's values as Matrix.
+      #
+      # @return [Matrix] a Matrix holding the instance's values as rows.
+      def to_m
+        Matrix[*instances.map(&:values)]
+      end
+
       private
 
       def add_attribute(attribute)
@@ -355,7 +364,5 @@ module Weka
         end
       end
     end
-
-    Java::WekaCore::Instances.__persistent__ = true
   end
 end
