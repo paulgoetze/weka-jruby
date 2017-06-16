@@ -1,8 +1,12 @@
+require 'weka/class_builder'
+
 module Weka
   module Classifiers
     java_import 'weka.classifiers.Evaluation'
 
     class Evaluation
+      include ClassBuilder
+
       # Use both nomenclatures f_measure and fmeasure for consistency
       # due to jruby's auto method generation of 'fMeasure' to 'f_measure' and
       # 'weightedFMeasure' to 'weighted_fmeasure'.
@@ -29,8 +33,11 @@ module Weka
       alias average_cost            avg_cost
 
       alias cumulative_margin_distribution to_cumulative_margin_distribution_string
-    end
 
-    Java::WekaClassifiers::Evaluation.__persistent__ = true
+      build_classes :CostCurve,
+                    :MarginCurve,
+                    :ThresholdCurve,
+                    weka_module: 'weka.classifiers.evaluation'
+    end
   end
 end
