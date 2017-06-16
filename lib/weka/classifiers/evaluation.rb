@@ -34,10 +34,19 @@ module Weka
 
       alias cumulative_margin_distribution to_cumulative_margin_distribution_string
 
+      module Curve
+        def self.included(base)
+          base.class_eval do
+            alias_method :curve, :get_curve
+          end
+        end
+      end
+
       build_classes :CostCurve,
                     :MarginCurve,
                     :ThresholdCurve,
-                    weka_module: 'weka.classifiers.evaluation'
+                    weka_module: 'weka.classifiers.evaluation',
+                    additional_includes: Curve
     end
   end
 end
