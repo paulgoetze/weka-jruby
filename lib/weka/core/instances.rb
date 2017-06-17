@@ -1,3 +1,4 @@
+require 'matrix'
 require 'weka/core/converters'
 require 'weka/core/loader'
 require 'weka/core/saver'
@@ -10,6 +11,7 @@ module Weka
     java_import 'weka.core.FastVector'
 
     class Instances
+      include Weka::Concerns::Persistent
       include Weka::Concerns::Serializable
 
       DEFAULT_RELATION_NAME = 'Instances'.freeze
@@ -38,7 +40,7 @@ module Weka
         end
       end
 
-      def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [], &block)
+      def initialize(relation_name: DEFAULT_RELATION_NAME, attributes: [])
         attribute_list = FastVector.new
         attributes.each { |attribute| attribute_list.add_element(attribute) }
 
@@ -49,12 +51,18 @@ module Weka
         enumerate_instances.to_a
       end
 
-      def attributes
-        enumerate_attributes.to_a
+      def attributes(include_class_attribute: false)
+        attrs = enumerate_attributes.to_a
+
+        if include_class_attribute && class_attribute_defined?
+          attrs.insert(class_index, class_attribute)
+        end
+
+        attrs
       end
 
-      def attribute_names
-        attributes.map(&:name)
+      def attribute_names(include_class_attribute: false)
+        attributes(include_class_attribute: include_class_attribute).map(&:name)
       end
 
       def add_attributes(&block)
@@ -67,7 +75,7 @@ module Weka
       alias attributes_count      num_attributes
       alias has_string_attribute? check_for_string_attributes
 
-      ## Check if the instances has any attribute of the given type
+      # Check if the instances has any attribute of the given type
       # @param [String, Symbol, Integer] type type of the attribute to check
       #   String and Symbol argument are converted to corresponding type
       #   defined in Weka::Core::Attribute
@@ -189,6 +197,24 @@ module Weka
         class_index >= 0
       end
 
+      # Add new instance
+      # @param [Instance, Array, Hash] instance_or_values the attribute values
+      #   of the instance to be added. If passing an array, the attribute values
+      #   must be in the same order as the attributes defined in Instances.
+      #   If passing a hash, The keys are the names of the attributes and their
+      #   values are corresponding attributes values.
+      #
+      # @example Passing Instance
+      #   instances.add_instance(instance)
+      #
+      # @example Passing an array of attribute values
+      #   attr_values = [attr1_value, attr2_value, attr3_value]
+      #   instances.add_instance(attr_values)
+      #
+      # @example Passing a hash of attribute values.
+      #   attr_values = { attr1_name: attr1_value, attr2_name: attr2_value }
+      #   instances.add_instance(attr_values)
+      #
       def add_instance(instance_or_values, weight: 1.0)
         instance = instance_from(instance_or_values, weight: weight)
         add(instance)
@@ -198,10 +224,24 @@ module Weka
         data.each { |values| add_instance(values, weight: weight) }
       end
 
+      # Retrieve the internal floating point values used to represent
+      #   the attributes.
+      #
+      # @param [Array, Hash] values the attribute values whose floating
+      #   point representation should be retrieved.
+      #
+      # @return [Array, Hash] an array of the internal floating point
+      #   representation if the input is an Array. Hash otherwise.
       def internal_values_of(values)
-        values.each_with_index.map do |value, index|
+        use_hash = values.is_a?(Hash)
+        values = attribute_values_from_hash(values) if use_hash
+
+        values = values.map.with_index do |value, index|
           attribute(index).internal_value_of(value)
         end
+
+        values = attribute_values_to_hash(values) if use_hash
+        values
       end
 
       def apply_filter(filter)
@@ -220,6 +260,13 @@ module Weka
         end
       end
 
+      # Get the all instances's values as Matrix.
+      #
+      # @return [Matrix] a Matrix holding the instance's values as rows.
+      def to_m
+        Matrix[*instances.map(&:values)]
+      end
+
       private
 
       def add_attribute(attribute)
@@ -227,7 +274,9 @@ module Weka
       end
 
       def ensure_attribute_defined!(name)
-        return if attribute_names.include?(name.to_s)
+        if attribute_names(include_class_attribute: true).include?(name.to_s)
+          return
+        end
 
         error   = "\"#{name}\" is not defined."
         hint    = 'Only defined attributes can be used as class attribute!'
@@ -237,25 +286,36 @@ module Weka
       end
 
       def attribute_with_name(name)
-        attributes.select { |attribute| attribute.name == name.to_s }.first
+        attributes(include_class_attribute: true).find do |attribute|
+          attribute.name == name.to_s
+        end
       end
 
+      # Wrap the attribute values for the instance to be added with
+      #   an Instance object, if needed. The Instance object is
+      #   assigned with the given weight.
+      #
+      # @param [Instance, Array, Hash] instance_or_values either the
+      #   instance object to be added or the attribute values for it.
+      #   For the latter case, it accepts an array or a hash.
+      #
+      # @param [Float] weight the weight for the Instance to be added
+      #
+      # @return [Instance] the object that contains the given
+      #   attribute values.
       def instance_from(instance_or_values, weight:)
         if instance_or_values.is_a?(Java::WekaCore::Instance)
           instance_or_values.weight = weight
           instance_or_values
         else
+          if instance_or_values.is_a?(Hash)
+            instance_or_values = attribute_values_from_hash(instance_or_values)
+          end
+
           data = internal_values_of(instance_or_values)
 
-          # string attribute has unlimited range of possible values.
-          # Check the return index, if it is -1 then add the value to
-          # the attribute before creating the instance
-          data.map!.with_index do |value, index|
-            if value == -1 && attribute(index).string?
-              attribute(index).add_string_value(instance_or_values[index].to_s)
-            else
-              value
-            end
+          if has_string_attribute?
+            data = check_string_attributes(data, instance_or_values)
           end
 
           DenseInstance.new(data, weight: weight)
@@ -266,8 +326,48 @@ module Weka
         return -1 unless Attribute::TYPES.include?(type.downcase.to_sym)
         Attribute.const_get(type.upcase)
       end
-    end
 
-    Java::WekaCore::Instances.__persistent__ = true
+      # Convert a hash whose keys are attribute names and values are attribute
+      #   values into an array containing attribute values in the order
+      #   of the Instances attributes.
+      #
+      # @param [Hash] hash a hash whose keys are attribute names and
+      #   values are attribute values.
+      #
+      # @return [Array] an array containing attribute values in the
+      #   correct order
+      def attribute_values_from_hash(hash)
+        names = attribute_names(include_class_attribute: true).map(&:to_sym)
+        hash.values_at(*names)
+      end
+
+      # Convert an array of attribute values in the same order as Instances
+      #   attributes into a hash whose keys are attribute names and values
+      #   are corresponding attribute values.
+      #
+      # @param [Array] values an array containing the attribute values
+      #
+      # @return [Hash] a hash as described above
+      def attribute_values_to_hash(values)
+        names = attribute_names(include_class_attribute: true).map(&:to_sym)
+
+        names.each_with_index.inject({}) do |hash, (name, index)|
+          hash.update(name => values[index])
+        end
+      end
+
+      def check_string_attributes(internal_values, attribute_values)
+        # string attribute has unlimited range of possible values.
+        # Check the return index, if it is -1 then add the value to
+        # the attribute before creating the instance
+        internal_values.map.with_index do |value, index|
+          if value == -1 && attribute(index).string?
+            attribute(index).add_string_value(attribute_values[index])
+          else
+            value
+          end
+        end
+      end
+    end
   end
 end

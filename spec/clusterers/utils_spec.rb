@@ -3,17 +3,13 @@ require 'spec_helper'
 describe Weka::Clusterers::Utils do
   let(:including_class) do
     Class.new do
-      def build_clusterer(instances)
-      end
+      def build_clusterer(instances); end
 
-      def update_clusterer(instance)
-      end
+      def update_clusterer(instance); end
 
-      def cluster_instance
-      end
+      def cluster_instance; end
 
-      def distribution_for_instance
-      end
+      def distribution_for_instance; end
 
       include Weka::Clusterers::Utils
     end
@@ -96,12 +92,12 @@ describe Weka::Clusterers::Utils do
 
     context 'if clusterer is not density-based' do
       subject do
-        Class.new {
-          def build_clusterer(instances)
-          end
-
+        test_class = Class.new do
+          def build_clusterer(instances); end
           include Weka::Clusterers::Utils
-        }.new
+        end
+
+        test_class.new
       end
 
       it { is_expected.not_to respond_to :cross_validate }
@@ -109,14 +105,13 @@ describe Weka::Clusterers::Utils do
 
     context 'if clusterer is density-based' do
       subject do
-        Class.new {
+        test_class = Class.new do
           include Java::WekaClusterers::DensityBasedClusterer
-
-          def build_clusterer(instances)
-          end
-
+          def build_clusterer(instances); end
           include Weka::Clusterers::Utils
-        }.new
+        end
+
+        test_class.new
       end
 
       before do
@@ -231,9 +226,7 @@ describe Weka::Clusterers::Utils do
     let(:values)   { [:overcast, 83, 86, :FALSE, :yes] }
     let(:cluster)  { 1 }
 
-    before do
-      allow(subject).to receive(:cluster_instance).and_return(cluster)
-    end
+    before { allow(subject).to receive(:cluster_instance).and_return(cluster) }
 
     context 'with a given instance' do
       it 'calls Java’s #cluster_instance' do

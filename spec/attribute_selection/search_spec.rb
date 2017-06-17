@@ -5,10 +5,10 @@ describe Weka::AttributeSelection::Search do
 
   it_behaves_like 'class builder'
 
-  [
-    :GreedyStepwise,
-    :Ranker,
-    :BestFirst
+  %i[
+    GreedyStepwise
+    Ranker
+    BestFirst
   ].each do |class_name|
     it "defines a class #{class_name}" do
       expect(subject.const_defined?(class_name)).to be true

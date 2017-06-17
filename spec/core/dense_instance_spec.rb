@@ -68,12 +68,13 @@ describe Weka::Core::DenseInstance do
 
     context 'with string attribute' do
       let(:values) do
-        ['overcast',
-         'Wind increasing. A few clouds from time to time. High 32F. Winds WNW at 20 to 30 mph.',
-         15.0,
-         40.0,
-         'TRUE',
-         'no'
+        [
+          'overcast',
+          'Wind increasing. A few clouds from time to time. High 32F. Winds WNW at 20 to 30 mph.',
+          15.0,
+          40.0,
+          'TRUE',
+          'no'
         ]
       end
 

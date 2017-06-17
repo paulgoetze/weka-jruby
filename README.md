@@ -2,6 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/weka.svg)](http://badge.fury.io/rb/weka)
 [![Travis Build](https://travis-ci.org/paulgoetze/weka-jruby.svg)](https://travis-ci.org/paulgoetze/weka-jruby)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9634a6709ef545198e079a8daddff100)](https://www.codacy.com/app/paul-christoph-goetze/weka-jruby?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paulgoetze/weka-jruby&amp;utm_campaign=Badge_Grade)
 
 Machine Learning & Data Mining with JRuby based on the [Weka](http://www.cs.waikato.ac.nz/~ml/weka/index.html) Java library.
 
@@ -60,7 +61,7 @@ Here’s how to contribute:
 Please try to add RSpec tests along with your new features. This will ensure that your code does not break existing functionality and that your feature is working as expected.
 
 We use [Rubocop](https://github.com/bbatsov/rubocop) for code style recommendations.
-Please make sure your contributions comply with the default config of Rubocop.
+Please make sure your contributions comply with the project’s Rubocop config.
 
 ## Acknowledgement
 

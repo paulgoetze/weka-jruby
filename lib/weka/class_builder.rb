@@ -7,14 +7,24 @@ module Weka
     end
 
     module ClassMethods
-      def build_class(class_name, weka_module: nil, include_concerns: true)
+      def build_class(class_name, weka_module: nil, include_concerns: true, additional_includes: [])
         java_import java_class_path(class_name, weka_module)
-        define_class(class_name, weka_module, include_concerns: include_concerns)
+        define_class(
+          class_name,
+          weka_module,
+          include_concerns: include_concerns,
+          additional_includes: additional_includes
+        )
       end
 
-      def build_classes(*class_names, weka_module: nil, include_concerns: true)
+      def build_classes(*class_names, weka_module: nil, include_concerns: true, additional_includes: [])
         class_names.each do |name|
-          build_class(name, weka_module: weka_module, include_concerns: include_concerns)
+          build_class(
+            name,
+            weka_module: weka_module,
+            include_concerns: include_concerns,
+            additional_includes: additional_includes
+          )
         end
       end
 
@@ -58,12 +68,13 @@ module Weka
         name.scan('::').count == 1
       end
 
-      def define_class(class_name, weka_module, include_concerns: true)
+      def define_class(class_name, weka_module, include_concerns: true, additional_includes: [])
         module_eval <<-CLASS_DEFINITION, __FILE__, __LINE__ + 1
           class #{class_name}
             #{'include Concerns' if include_concerns}
             #{include_serializable_for(class_name, weka_module)}
             #{include_utils}
+            #{include_additionals(additional_includes)}
           end
         CLASS_DEFINITION
       end
@@ -82,6 +93,13 @@ module Weka
 
       def utils_defined?
         constantize(utils_super_modules).const_defined?(:Utils)
+      end
+
+      def include_additionals(modules)
+        modules = Array(modules)
+        return if modules.empty?
+
+        modules.map { |name| "include #{name}" }.join("\n")
       end
 
       def constantize(module_names)
