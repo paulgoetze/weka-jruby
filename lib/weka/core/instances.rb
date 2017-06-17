@@ -297,7 +297,7 @@ module Weka
       #
       # @param [Instance, Array, Hash] instance_or_values either the
       #   instance object to be added or the attribute values for it.
-      #   For the latter case, we can pass an array or a hash.
+      #   For the latter case, it accepts an array or a hash.
       #
       # @param [Float] weight the weight for the Instance to be added
       #
@@ -313,7 +313,11 @@ module Weka
           end
 
           data = internal_values_of(instance_or_values)
-          data = check_string_attributes(data, instance_or_values) if has_string_attribute?
+
+          if has_string_attribute?
+            data = check_string_attributes(data, instance_or_values)
+          end
+
           DenseInstance.new(data, weight: weight)
         end
       end
@@ -327,8 +331,8 @@ module Weka
       #   values into an array containing attribute values in the order
       #   of the Instances attributes.
       #
-      # @param [Hash] hash a hash whose keys are attribute
-      #   names and values are attribute values.
+      # @param [Hash] hash a hash whose keys are attribute names and
+      #   values are attribute values.
       #
       # @return [Array] an array containing attribute values in the
       #   correct order
@@ -346,6 +350,7 @@ module Weka
       # @return [Hash] a hash as described above
       def attribute_values_to_hash(values)
         names = attribute_names(include_class_attribute: true).map(&:to_sym)
+
         names.each_with_index.inject({}) do |hash, (name, index)|
           hash.update(name => values[index])
         end

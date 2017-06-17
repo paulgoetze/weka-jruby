@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Weka::Core::Attribute do
-  let(:values) { %w(true false) }
+  let(:values) { %w[true false] }
   let(:name)   { 'name' }
   let(:format) { 'yyyy-MM-dd HH:mm' }
 
@@ -149,7 +149,7 @@ describe Weka::Core::Attribute do
     end
 
     context 'for a string attribute' do
-      let(:string_values)        { %w(first_string second_string) }
+      let(:string_values)        { %w[first_string second_string] }
       let(:phantom_string_value) { 'i_do_not_exist' }
 
       subject do

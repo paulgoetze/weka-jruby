@@ -6,7 +6,7 @@ describe Weka::Core::Saver do
   before(:all) { @tmp_dir = File.expand_path('../../tmp/', __FILE__) }
   after(:all)  { FileUtils.remove_dir(@tmp_dir, true) }
 
-  CLASS_METHODS = %i(save_arff save_csv save_json).freeze
+  CLASS_METHODS = %i[save_arff save_csv save_json].freeze
 
   CLASS_METHODS.each do |method|
     it "responds to .#{method}" do
@@ -14,7 +14,7 @@ describe Weka::Core::Saver do
     end
   end
 
-  [:arff, :csv, :json].each do |type|
+  %i[arff csv json].each do |type|
     method = "save_#{type}"
 
     describe "##{method}" do

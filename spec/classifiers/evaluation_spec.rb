@@ -49,7 +49,7 @@ describe Weka::Classifiers::Evaluation do
       expect(described_class.const_defined?(class_name)).to be true
     end
 
-    describe "#{class_name}" do
+    describe class_name.to_s do
       let(:curve) do
         Object.module_eval("Weka::Classifiers::Evaluation::#{class_name}").new
       end

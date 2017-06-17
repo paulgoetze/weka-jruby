@@ -57,25 +57,17 @@ module Weka
 
         attribute = attribute_at(index)
 
-        if attribute.date?
-          format_date(value, attribute.date_format)
-        elsif attribute.numeric?
-          value
-        elsif attribute.nominal? || attribute.string?
-          attribute.value(value)
-        end
+        return format_date(value, attribute.date_format) if attribute.date?
+        return value if attribute.numeric?
+        return attribute.value(value) if attribute.nominal? || attribute.string?
       end
 
       def attribute_at(index)
-        return attributes[index] unless dataset.class_attribute_defined?
+        return attributes[index]     unless dataset.class_attribute_defined?
+        return class_attribute       if dataset.class_index == index
+        return attributes[index - 1] if index > dataset.class_index
 
-        if dataset.class_index == index
-          class_attribute
-        elsif index > dataset.class_index
-          attributes[index - 1]
-        else
-          attributes[index]
-        end
+        attributes[index]
       end
 
       def format_date(value, format)

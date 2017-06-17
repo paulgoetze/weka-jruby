@@ -103,7 +103,7 @@ describe Weka::Concerns::Optionizable do
     before do
       allow_any_instance_of(subject.class)
         .to receive(:get_options)
-        .and_return(%w(-C last -Z -P 10 -M -B 0.1))
+        .and_return(%w[-C last -Z -P 10 -M -B 0.1])
     end
 
     it 'receives Java’s #get_options' do

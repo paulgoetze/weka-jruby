@@ -3,17 +3,13 @@ require 'spec_helper'
 describe Weka::Classifiers::Utils do
   let(:including_class) do
     Class.new do
-      def build_classifier(instances)
-      end
+      def build_classifier(instances); end
 
-      def update_classifier(instance)
-      end
+      def update_classifier(instance); end
 
-      def classify_instance
-      end
+      def classify_instance; end
 
-      def distribution_for_instance
-      end
+      def distribution_for_instance; end
 
       include Weka::Classifiers::Utils
     end
@@ -183,7 +179,8 @@ describe Weka::Classifiers::Utils do
   describe '#evaluate' do
     before do
       allow(subject).to receive(:training_instances).and_return(instances)
-      allow_any_instance_of(Weka::Classifiers::Evaluation).to receive(:evaluate_model)
+      allow_any_instance_of(Weka::Classifiers::Evaluation)
+        .to receive(:evaluate_model)
     end
 
     it 'returns a Weka::Classifiers::Evaluation' do

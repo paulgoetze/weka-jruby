@@ -17,7 +17,7 @@ describe Weka::ClassBuilder do
 
   before { allow(subject).to receive(:java_import).and_return('') }
 
-  [:build_class, :build_classes].each do |method|
+  %i[build_class build_classes].each do |method|
     it "defines .#{method} if included" do
       expect(subject).to respond_to method
     end
@@ -57,7 +57,7 @@ describe Weka::ClassBuilder do
           expect(built_class).to respond_to :default_options
         end
 
-        [:use_options, :options].each do |method|
+        %i[use_options options].each do |method|
           it "responds to ##{method}" do
             expect(built_class_instance).to respond_to method
           end
@@ -70,8 +70,7 @@ describe Weka::ClassBuilder do
         module Some
           module Weka
             module Utils
-              def shared_method
-              end
+              def shared_method; end
             end
           end
         end
@@ -123,18 +122,24 @@ describe Weka::ClassBuilder do
   describe '.build_classes' do
     context 'without a given weka_module' do
       it 'runs .build_class for each of the given classes' do
-        class_names = %i(SomeClass SomeOtherClass)
+        class_names = %i[SomeClass SomeOtherClass]
 
-        expect(subject).to receive(:build_class).exactly(class_names.count).times
+        expect(subject)
+          .to receive(:build_class)
+          .exactly(class_names.count).times
+
         subject.build_classes(*class_names)
       end
     end
 
     context 'with a given weka_module' do
       it 'runs .build_class for each of the given classes' do
-        class_names = %i(SomeClass SomeOtherClass)
+        class_names = %i[SomeClass SomeOtherClass]
 
-        expect(subject).to receive(:build_class).exactly(class_names.count).times
+        expect(subject)
+          .to receive(:build_class)
+          .exactly(class_names.count).times
+
         subject.build_classes(*class_names, weka_module: 'weka.module')
       end
     end

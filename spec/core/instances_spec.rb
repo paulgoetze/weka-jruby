@@ -57,7 +57,7 @@ describe Weka::Core::Instances do
   end
 
   describe 'loader' do
-    [:arff, :csv, :json].each do |type|
+    %i[arff csv json].each do |type|
       before do
         allow(Weka::Core::Loader).to receive(:"load_#{type}").and_return('')
       end
@@ -89,7 +89,7 @@ describe Weka::Core::Instances do
   end
 
   describe 'saver' do
-    [:arff, :csv, :json].each do |type|
+    %i[arff csv json].each do |type|
       before do
         allow(Weka::Core::Saver).to receive(:"save_#{type}").and_return('')
       end
@@ -108,9 +108,7 @@ describe Weka::Core::Instances do
     describe '#to_c45' do
       let(:file) { 'test.names' }
 
-      before do
-        allow(Weka::Core::Saver).to receive(:save_c45).and_return('')
-      end
+      before { allow(Weka::Core::Saver).to receive(:save_c45).and_return('') }
 
       it 'calls the Weka::Core::Saver.save_c45' do
         expect(Weka::Core::Saver)
@@ -164,13 +162,13 @@ describe Weka::Core::Instances do
       end
 
       it 'skips the class attribute if include_class_attribute is false' do
-        expect(subject.attributes.size).to eq(subject.attributes_count-1)
+        expect(subject.attributes.size).to eq(subject.attributes_count - 1)
       end
     end
   end
 
   describe '#attribute_names' do
-    names = %w(outlook temperature humidity windy play)
+    names = %w[outlook temperature humidity windy play]
 
     it 'returns an Array of the attribute names' do
       expect(subject.attribute_names).to eq names
@@ -225,13 +223,13 @@ describe Weka::Core::Instances do
 
     describe '#nominal' do
       it 'can be used to add a nominal attribute' do
-        instances.nominal(name, values: %w(yes no))
+        instances.nominal(name, values: %w[yes no])
         expect(instances.attributes.first).to be_nominal
       end
 
       context 'with the class_attribute option' do
         it 'defines the attribute as class attribute' do
-          instances.nominal(name, values: %w(yes no), class_attribute: true)
+          instances.nominal(name, values: %w[yes no], class_attribute: true)
           expect(instances.class_attribute.name).to eq name
         end
       end
@@ -268,7 +266,7 @@ describe Weka::Core::Instances do
 
       describe '#nominal' do
         it 'can be used to add a nominal attribute' do
-          instances.nominal(:attribute_name, values: [:yes, :no])
+          instances.nominal(:attribute_name, values: %i[yes no])
           expect(instances.attributes.first).to be_nominal
         end
 
@@ -279,7 +277,7 @@ describe Weka::Core::Instances do
 
         it 'converts the options into strings' do
           instances.nominal(:attribute_name, values: [true, false])
-          expect(instances.attributes.first.values).to eq %w(true false)
+          expect(instances.attributes.first.values).to eq %w[true false]
         end
       end
 
@@ -380,7 +378,7 @@ describe Weka::Core::Instances do
       expect do
         instances.add_attributes do
           numeric 'attribute'
-          nominal 'class', values: %w(YES NO)
+          nominal 'class', values: %w[YES NO]
         end
       end.to change { instances.attributes.count }.from(0).to(2)
     end
@@ -390,10 +388,10 @@ describe Weka::Core::Instances do
 
       instances.add_attributes do
         numeric 'attribute'
-        nominal 'class', values: %w(YES NO)
+        nominal 'class', values: %w[YES NO]
       end
 
-      expect(instances.attributes.map(&:name)).to eq %w(attribute class)
+      expect(instances.attributes.map(&:name)).to eq %w[attribute class]
     end
   end
 
