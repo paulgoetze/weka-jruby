@@ -5,128 +5,154 @@ module Weka
   module Classifiers
     module Utils
       def self.included(base)
-        base.class_eval do
-          java_import 'java.util.Random'
+        base.include Buildable     if base.instance_methods.include?(:build_classifier)
+        base.include Classifiable  if base.instance_methods.include?(:classify_instance)
+        base.include Updatable     if base.instance_methods.include?(:update_classifier)
+        base.include Distributable if base.instance_methods.include?(:distribution_for_instance)
+      end
 
-          if instance_methods.include?(:build_classifier)
-            attr_reader :training_instances
+      module Checks
+        private
 
-            def train_with_instances(instances)
-              ensure_class_attribute_assigned!(instances)
+        def ensure_class_attribute_assigned!(instances)
+          return if instances.class_attribute_defined?
 
-              @training_instances = instances
-              build_classifier(instances)
+          error   = 'Class attribute is not assigned for Instances.'
+          hint    = 'You can assign a class attribute with #class_attribute=.'
+          message = "#{error} #{hint}"
 
-              self
-            end
+          raise UnassignedClassError, message
+        end
 
-            def cross_validate(folds: 3)
-              ensure_trained_with_instances!
+        def ensure_trained_with_instances!
+          return unless training_instances.nil?
 
-              evaluation = Evaluation.new(training_instances)
-              random     = Java::JavaUtil::Random.new(1)
+          error   = 'Classifier is not trained with Instances.'
+          hint    = 'You can set the training instances with #train_with_instances.'
+          message = "#{error} #{hint}"
 
-              evaluation.cross_validate_model(self, training_instances, folds.to_i, random)
-              evaluation
-            end
+          raise UnassignedTrainingInstancesError, message
+        end
+      end
 
-            def evaluate(test_instances)
-              ensure_trained_with_instances!
-              ensure_class_attribute_assigned!(test_instances)
+      module Transformers
+        private
 
-              evaluation = Evaluation.new(training_instances)
-              evaluation.evaluate_model(self, test_instances)
-              evaluation
-            end
-          end
+        def classifiable_instance_from(instance_or_values)
+          attributes = training_instances.attributes
+          instances  = Weka::Core::Instances.new(attributes: attributes)
 
-          if instance_methods.include?(:classify_instance)
-            def classify(instance_or_values)
-              ensure_trained_with_instances!
+          class_attribute = training_instances.class_attribute
+          class_index     = training_instances.class_index
+          instances.insert_attribute_at(class_attribute, class_index)
 
-              instance = classifiable_instance_from(instance_or_values)
-              index    = classify_instance(instance)
+          instances.class_index = training_instances.class_index
+          instances.add_instance(instance_or_values)
 
-              class_value_of_index(index)
-            end
-          end
+          instance = instances.first
+          instance.set_class_missing
+          instance
+        end
+      end
 
-          if instance_methods.include?(:update_classifier)
-            def add_training_instance(instance)
-              training_instances.add(instance)
-              update_classifier(instance)
+      module Buildable
+        java_import 'java.util.Random'
+        include Checks
 
-              self
-            end
+        attr_reader :training_instances
 
-            def add_training_data(data)
-              values   = training_instances.internal_values_of(data)
-              instance = Weka::Core::DenseInstance.new(values)
-              add_training_instance(instance)
-            end
-          end
+        def train_with_instances(instances)
+          ensure_class_attribute_assigned!(instances)
 
-          if instance_methods.include?(:distribution_for_instance)
-            def distribution_for(instance_or_values)
-              ensure_trained_with_instances!
+          @training_instances = instances
+          build_classifier(instances)
 
-              instance      = classifiable_instance_from(instance_or_values)
-              distributions = distribution_for_instance(instance)
+          self
+        end
 
-              class_distributions_from(distributions)
-            end
-          end
+        def cross_validate(folds: 3)
+          ensure_trained_with_instances!
 
-          private
+          evaluation = Evaluation.new(training_instances)
+          random     = Java::JavaUtil::Random.new(1)
 
-          def ensure_class_attribute_assigned!(instances)
-            return if instances.class_attribute_defined?
+          evaluation.cross_validate_model(
+            self,
+            training_instances,
+            folds.to_i,
+            random
+          )
 
-            error   = 'Class attribute is not assigned for Instances.'
-            hint    = 'You can assign a class attribute with #class_attribute=.'
-            message = "#{error} #{hint}"
+          evaluation
+        end
 
-            raise UnassignedClassError, message
-          end
+        def evaluate(test_instances)
+          ensure_trained_with_instances!
+          ensure_class_attribute_assigned!(test_instances)
 
-          def ensure_trained_with_instances!
-            return unless training_instances.nil?
+          evaluation = Evaluation.new(training_instances)
+          evaluation.evaluate_model(self, test_instances)
+          evaluation
+        end
+      end
 
-            error   = 'Classifier is not trained with Instances.'
-            hint    = 'You can set the training instances with #train_with_instances.'
-            message = "#{error} #{hint}"
+      module Classifiable
+        include Checks
+        include Transformers
 
-            raise UnassignedTrainingInstancesError, message
-          end
+        def classify(instance_or_values)
+          ensure_trained_with_instances!
 
-          def classifiable_instance_from(instance_or_values)
-            attributes = training_instances.attributes
-            instances  = Weka::Core::Instances.new(attributes: attributes)
+          instance = classifiable_instance_from(instance_or_values)
+          index    = classify_instance(instance)
 
-            class_attribute = training_instances.class_attribute
-            class_index     = training_instances.class_index
-            instances.insert_attribute_at(class_attribute, class_index)
+          class_value_of_index(index)
+        end
 
-            instances.class_index = training_instances.class_index
-            instances.add_instance(instance_or_values)
+        private
 
-            instance = instances.first
-            instance.set_class_missing
-            instance
-          end
+        def class_value_of_index(index)
+          training_instances.class_attribute.value(index)
+        end
+      end
 
-          def class_value_of_index(index)
-            training_instances.class_attribute.value(index)
-          end
+      module Updatable
+        def add_training_instance(instance)
+          training_instances.add(instance)
+          update_classifier(instance)
 
-          def class_distributions_from(distributions)
-            class_values = training_instances.class_attribute.values
+          self
+        end
 
-            distributions.each_with_index.reduce({}) do |result, (distribution, index)|
-              class_value = class_values[index]
-              result[class_value] = distribution
-              result
-            end
+        def add_training_data(data)
+          values   = training_instances.internal_values_of(data)
+          instance = Weka::Core::DenseInstance.new(values)
+          add_training_instance(instance)
+        end
+      end
+
+      module Distributable
+        include Checks
+        include Transformers
+
+        def distribution_for(instance_or_values)
+          ensure_trained_with_instances!
+
+          instance      = classifiable_instance_from(instance_or_values)
+          distributions = distribution_for_instance(instance)
+
+          class_distributions_from(distributions)
+        end
+
+        private
+
+        def class_distributions_from(distributions)
+          class_values = training_instances.class_attribute.values
+
+          distributions.each_with_object({}).with_index do |(distribution, result), index|
+            class_value = class_values[index]
+            result[class_value] = distribution
+            result
           end
         end
       end
