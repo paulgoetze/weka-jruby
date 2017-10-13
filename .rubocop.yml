@@ -5,6 +5,7 @@ AllCops:
     - '*.gemspec'
     - 'Gemfile'
     - 'Gemfile.lock'
+    - 'lib/weka_jars.rb'
 
 Style/Copyright:
   Enabled: false

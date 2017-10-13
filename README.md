@@ -39,8 +39,12 @@ detailed information about how to use weka with JRuby and some examplary code sn
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies.
-To install this gem onto your local machine, run `bundle exec rake install`.
+1. Check out the repo with `git clone git@github.com:paulgoetze/weka-jruby.git`.
+2. Set a local environment variable `export JARS_VENDOR=false`.  
+   This will prevent
+   compiling the jars into your repo’s /lib directory and will load them from your local maven repository instead.
+   See the  [jar-dependencies README](https://github.com/mkristian/jar-dependencies#for-development-you-do-not-need-to-vendor-the-jars-at-all) for more information.
+3. Run `bin/setup` or `bundle install` to install the dependencies.
 
 Then, run `rake spec` to run the tests. You can also run `bin/console` or `rake irb` for an interactive prompt that will allow you to experiment.
 
