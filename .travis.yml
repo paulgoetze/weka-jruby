@@ -2,14 +2,6 @@ sudo: false
 language: ruby
 
 rvm:
-  - jruby-9000
-
-cache:
-  - bundler
-
-before_install:
-  - rvm get head
-  - rvm use jruby-9.0.1.0 --install
-  - gem install bundler
-
-script: bundle exec rake spec
+  - jruby-9.0.0.0
+  - jruby-9.1.0.0
+  - jruby-head
