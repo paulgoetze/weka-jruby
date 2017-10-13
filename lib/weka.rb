@@ -1,11 +1,9 @@
 require 'java'
-require 'weka/jars'
 require 'weka/version'
 require 'weka/exceptions'
+require Dir[File.join(File.dirname(__FILE__), '*_jars.rb')].first
 
 module Weka
-  include Jars
-
   class << self
     def require_all(type)
       files        = Dir[File.expand_path("../weka/#{type}/**/*.rb", __FILE__)]

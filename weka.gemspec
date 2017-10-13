@@ -23,10 +23,11 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency     'lock_jar',         '~> 0.13'
-
   spec.add_development_dependency 'bundler',          '~> 1.6'
   spec.add_development_dependency 'rake',             '~> 10.0'
   spec.add_development_dependency 'rspec',            '~> 3.0'
   spec.add_development_dependency 'shoulda-matchers', '~> 3.0'
+
+  spec.add_runtime_dependency 'jar-dependencies', '~> 0.3.11'
+  spec.requirements << 'jar nz.ac.waikato.cms.weka, weka-dev, 3.7.13'
 end
