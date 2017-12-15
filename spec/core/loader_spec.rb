@@ -13,9 +13,7 @@ describe Weka::Core::Loader do
     method = "load_#{type}"
 
     describe "##{method}" do
-      let(:file) do
-        File.expand_path("../../support/resources/weather.#{type}", __FILE__)
-      end
+      let(:file) { resources_file("weather.#{type}") }
 
       it "returns an Instances object for a given #{type.upcase} file" do
         instances = described_class.send(method, file)
@@ -25,13 +23,8 @@ describe Weka::Core::Loader do
   end
 
   describe '#load_c45' do
-    let(:names_file) do
-      File.expand_path('../../support/resources/weather.names', __FILE__)
-    end
-
-    let(:data_file) do
-      File.expand_path('../../support/resources/weather.data', __FILE__)
-    end
+    let(:names_file) { resources_file('weather.names') }
+    let(:data_file)  { resources_file('weather.data') }
 
     it 'returns an Instances object for a given *.names file' do
       instances = described_class.load_c45(names_file)

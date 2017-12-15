@@ -7,6 +7,12 @@ describe Weka::Concerns::Serializable do
 
   let(:filename) { 'file.model' }
 
+  before do
+    allow(Weka::Core::SerializationHelper)
+      .to receive(:serialize)
+      .and_return(filename)
+  end
+
   it 'responds to #serialize' do
     expect(subject.new).to respond_to :serialize
   end
