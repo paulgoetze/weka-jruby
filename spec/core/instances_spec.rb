@@ -36,6 +36,7 @@ describe Weka::Core::Instances do
 
   it { is_expected.to respond_to :serialize }
   it { is_expected.to respond_to :to_m }
+  it { is_expected.to respond_to :copy }
 
   describe 'aliases:' do
     let(:instances) { described_class.new }
@@ -827,6 +828,18 @@ describe Weka::Core::Instances do
       ]
 
       expect(subject.to_m).to eq matrix
+    end
+  end
+
+  describe '#copy' do
+    it 'copies the calling instances' do
+      instances = subject.copy
+
+      expect(instances).to be_kind_of Weka::Core::Instances
+      expect(instances.to_s).to eq subject.to_s
+
+      expect { instances.add_instance(subject.instances.first) }
+        .not_to change { subject.size }
     end
   end
 end

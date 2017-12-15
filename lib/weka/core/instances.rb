@@ -47,6 +47,11 @@ module Weka
         super(relation_name.to_s, attribute_list, 0)
       end
 
+      def copy
+        constructor = Instances.java_class.declared_constructor(Instances)
+        constructor.new_instance(self).to_java(Instances)
+      end
+
       def instances
         enumerate_instances.to_a
       end
