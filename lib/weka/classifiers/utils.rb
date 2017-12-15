@@ -1,3 +1,4 @@
+require 'weka/core/serialization_helper'
 require 'weka/classifiers/evaluation'
 require 'weka/core/instances'
 
@@ -19,7 +20,7 @@ module Weka
 
           error   = 'Class attribute is not assigned for Instances.'
           hint    = 'You can assign a class attribute with #class_attribute=.'
-          message = "#{error} #{hint}"
+          message = "#{error}\n#{hint}"
 
           raise UnassignedClassError, message
         end
@@ -29,9 +30,38 @@ module Weka
 
           error   = 'Classifier is not trained with Instances.'
           hint    = 'You can set the training instances with #train_with_instances.'
-          message = "#{error} #{hint}"
+          message = "#{error}\n#{hint}"
 
           raise UnassignedTrainingInstancesError, message
+        end
+
+        def ensure_valid_instances_structure!(instances)
+          unless instances.is_a?(Weka::Core::Instances)
+            message = 'Instances has to be a Weka::Core::Instances object.'
+            raise ArgumentError, message
+          end
+
+          return if training_instances.nil?
+          return if instances.equal_headers(training_instances)
+
+          message = 'The passed instances need to have the same structure as ' +
+                    'the classifier’s training instances.'
+
+          raise InvalidInstancesStructureError, message
+        end
+
+        def ensure_instances_structure_available!
+          return unless instances_structure.nil?
+
+          error   = "Classifier does not have any instances structure info."
+          hint    = 'You probably tried to classify values with a classifier ' +
+                    'that is untrained or doesn’t have an instances_structure ' +
+                    'set. Please run #train_with_instances, try serializing ' +
+                    'and deserializing your classifier again in case you used ' +
+                    'a deserialized classifier or set its instances_structure.'
+          message = "#{error}\n#{hint}"
+
+          raise MissingInstancesStructureError, message
         end
       end
 
@@ -39,14 +69,7 @@ module Weka
         private
 
         def classifiable_instance_from(instance_or_values)
-          attributes = training_instances.attributes
-          instances  = Weka::Core::Instances.new(attributes: attributes)
-
-          class_attribute = training_instances.class_attribute
-          class_index     = training_instances.class_index
-          instances.insert_attribute_at(class_attribute, class_index)
-
-          instances.class_index = training_instances.class_index
+          instances = instances_structure.copy
           instances.add_instance(instance_or_values)
 
           instance = instances.first
@@ -60,14 +83,22 @@ module Weka
         include Checks
 
         attr_reader :training_instances
+        attr_reader :instances_structure
 
         def train_with_instances(instances)
           ensure_class_attribute_assigned!(instances)
 
           @training_instances = instances
+          @instances_structure = instances.string_free_structure
+
           build_classifier(instances)
 
           self
+        end
+
+        def instances_structure=(instances)
+          ensure_valid_instances_structure!(instances)
+          @instances_structure = instances.string_free_structure
         end
 
         def cross_validate(folds: 3)
@@ -101,7 +132,7 @@ module Weka
         include Transformers
 
         def classify(instance_or_values)
-          ensure_trained_with_instances!
+          ensure_instances_structure_available!
 
           instance = classifiable_instance_from(instance_or_values)
           index    = classify_instance(instance)
@@ -112,7 +143,7 @@ module Weka
         private
 
         def class_value_of_index(index)
-          training_instances.class_attribute.value(index)
+          instances_structure.class_attribute.value(index)
         end
       end
 
@@ -136,7 +167,7 @@ module Weka
         include Transformers
 
         def distribution_for(instance_or_values)
-          ensure_trained_with_instances!
+          ensure_instances_structure_available!
 
           instance      = classifiable_instance_from(instance_or_values)
           distributions = distribution_for_instance(instance)
@@ -147,7 +178,7 @@ module Weka
         private
 
         def class_distributions_from(distributions)
-          class_values = training_instances.class_attribute.values
+          class_values = instances_structure.class_attribute.values
 
           distributions.each_with_object({}).with_index do |(distribution, result), index|
             class_value = class_values[index]

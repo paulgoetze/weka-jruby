@@ -3,4 +3,6 @@ module Weka
 
   class UnassignedClassError < Error; end
   class UnassignedTrainingInstancesError < Error; end
+  class MissingInstancesStructureError < Error; end
+  class InvalidInstancesStructureError < Error; end
 end

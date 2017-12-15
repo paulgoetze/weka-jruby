@@ -4,11 +4,8 @@ describe Weka::Classifiers::Utils do
   let(:including_class) do
     Class.new do
       def build_classifier(instances); end
-
       def update_classifier(instance); end
-
       def classify_instance; end
-
       def distribution_for_instance; end
 
       include Weka::Classifiers::Utils
@@ -29,6 +26,8 @@ describe Weka::Classifiers::Utils do
   it { is_expected.to respond_to :cross_validate }
   it { is_expected.to respond_to :evaluate }
   it { is_expected.to respond_to :classify }
+  it { is_expected.to respond_to :instances_structure }
+  it { is_expected.to respond_to :instances_structure= }
 
   describe '#train_with_instances' do
     it 'calls Java’s #build_classifier' do
@@ -221,44 +220,104 @@ describe Weka::Classifiers::Utils do
     let(:class_value) { 'no' }
     let(:class_index) { 1.0 }
 
-    before do
-      allow(subject).to receive(:classify_instance).and_return(class_index)
+    context 'for a newly built classifier' do
+      before do
+        allow(subject).to receive(:classify_instance).and_return(class_index)
+      end
+
+      context 'with a given instance' do
+        it 'calls Java’s #classify_instance' do
+          expect(subject)
+            .to receive(:classify_instance).once
+            .with(an_instance_of(instance.class))
+
+          subject.classify(instance)
+        end
+
+        it 'returns the predicted class value of the instance' do
+          expect(subject.classify(instance)).to eq class_value
+        end
+      end
+
+      context 'with a given array of values' do
+        it 'calls Java’s #classify_instance' do
+          expect(subject)
+            .to receive(:classify_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.classify(values)
+        end
+
+        it 'returns the predicted class value of the instance' do
+          expect(subject.classify(values)).to eq class_value
+        end
+      end
+
+      context 'without an available instances structure' do
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
+
+        it 'raises a MissingInstancesStructureError' do
+          expect { subject.classify(instance) }
+            .to raise_error Weka::MissingInstancesStructureError
+        end
+      end
     end
 
-    context 'with a given instance' do
-      it 'calls Java’s #classify_instance' do
-        expect(subject)
-          .to receive(:classify_instance).once
-          .with(an_instance_of(instance.class))
+    context 'for a deserialized classifier' do
+      subject do
+        classifier = Weka::Classifiers::Bayes::NaiveBayes.new
+        classifier.train_with_instances(instances)
 
-        subject.classify(instance)
+        filename = temp_file('test.model')
+        classifier.serialize(filename)
+        Weka::Core::SerializationHelper.deserialize(filename)
       end
 
-      it 'returns the predicted class value of the instance' do
-        expect(subject.classify(instance)).to eq class_value
-      end
-    end
-
-    context 'with a given array of values' do
-      it 'calls Java’s #classify_instance' do
-        expect(subject)
-          .to receive(:classify_instance).once
-          .with(an_instance_of(Weka::Core::DenseInstance))
-
-        subject.classify(values)
+      before do
+        allow(subject).to receive(:classify_instance).and_return(class_index)
       end
 
-      it 'returns the predicted class value of the instance' do
-        expect(subject.classify(values)).to eq class_value
+      after { remove_temp_dir }
+
+      context 'with a given instance' do
+        it 'calls Java’s #classify_instance' do
+          expect(subject)
+            .to receive(:classify_instance).once
+            .with(an_instance_of(instance.class))
+
+          subject.classify(instance)
+        end
+
+        it 'returns the predicted class value of the instance' do
+          expect(subject.classify(instance)).to eq class_value
+        end
       end
-    end
 
-    context 'without training instances' do
-      before { allow(subject).to receive(:training_instances).and_return(nil) }
+      context 'with a given array of values' do
+        it 'calls Java’s #classify_instance' do
+          expect(subject)
+            .to receive(:classify_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
 
-      it 'raises an UnassignedTrainingInstancesError' do
-        expect { subject.classify(instance) }
-          .to raise_error Weka::UnassignedTrainingInstancesError
+          subject.classify(values)
+        end
+
+        it 'returns the predicted class value of the instance' do
+          expect(subject.classify(values)).to eq class_value
+        end
+      end
+
+      context 'without an available instances structure' do
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
+
+        it 'raises a MissingInstancesStructureError' do
+          expect { subject.classify(instance) }
+            .to raise_error Weka::MissingInstancesStructureError
+        end
       end
     end
   end
@@ -275,40 +334,139 @@ describe Weka::Classifiers::Utils do
         .and_return(distributions)
     end
 
-    context 'with a given instance' do
-      it 'calls Java’s #distribution_for_instance' do
-        expect(subject)
-          .to receive(:distribution_for_instance).once
-          .with(an_instance_of(instance.class))
+    context 'for a newly build classifier' do
+      context 'with a given instance' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(instance.class))
 
-        subject.distribution_for(instance)
+          subject.distribution_for(instance)
+        end
+
+        it 'returns the predicted class distributions of the instance' do
+          expect(subject.distribution_for(instance)).to eq class_distributions
+        end
       end
 
-      it 'returns the predicted class distributions of the instance' do
-        expect(subject.distribution_for(instance)).to eq class_distributions
+      context 'with a given array of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values)
+        end
+
+        it 'returns the predicted class distributions of the instance' do
+          expect(subject.distribution_for(values)).to eq class_distributions
+        end
+      end
+
+      context 'without an available instances structure' do
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
+
+        it 'raises a MissingInstancesStructureError' do
+          expect { subject.distribution_for(instance) }
+            .to raise_error Weka::MissingInstancesStructureError
+        end
       end
     end
 
-    context 'with a given array of values' do
-      it 'calls Java’s #distribution_for_instance' do
-        expect(subject)
-          .to receive(:distribution_for_instance).once
-          .with(an_instance_of(Weka::Core::DenseInstance))
+    context 'for a deserialized classifier' do
+      subject do
+        classifier = Weka::Classifiers::Bayes::NaiveBayes.new
+        classifier.train_with_instances(instances)
 
-        subject.distribution_for(values)
+        filename = temp_file('test.model')
+        classifier.serialize(filename)
+        Weka::Core::SerializationHelper.deserialize(filename)
       end
 
-      it 'returns the predicted class distributions of the instance' do
-        expect(subject.distribution_for(values)).to eq class_distributions
+      after { remove_temp_dir }
+
+      context 'with a given instance' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(instance.class))
+
+          subject.distribution_for(instance)
+        end
+
+        it 'returns the predicted class distributions of the instance' do
+          expect(subject.distribution_for(instance)).to eq class_distributions
+        end
+      end
+
+      context 'with a given array of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values)
+        end
+
+        it 'returns the predicted class distributions of the instance' do
+          expect(subject.distribution_for(values)).to eq class_distributions
+        end
+      end
+
+      context 'without an available instances structure' do
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
+
+        it 'raises a MissingInstancesStructureError' do
+          expect { subject.distribution_for(instance) }
+            .to raise_error Weka::MissingInstancesStructureError
+        end
+      end
+    end
+  end
+
+  describe '#instances_structure' do
+    context 'for a trained classifier' do
+      it 'returns the structure of the training dataset' do
+        structure = subject.instances_structure
+
+        expect(structure).to be_kind_of Weka::Core::Instances
+        expect(structure).to eq subject.training_instances.string_free_structure
       end
     end
 
-    context 'without training instances' do
-      before { allow(subject).to receive(:training_instances).and_return(nil) }
+    context 'for an untrained classifier' do
+      it 'returns nil' do
+        expect(including_class.new.instances_structure).to be_nil
+      end
+    end
+  end
 
-      it 'raises an UnassignedTrainingInstancesError' do
-        expect { subject.distribution_for(instance) }
-          .to raise_error Weka::UnassignedTrainingInstancesError
+  describe '#instances_structure=' do
+    context 'for a different structure than the training data' do
+      it 'raises an InvalidInstancesStructureError' do
+        expect { subject.instances_structure = Weka::Core::Instances.new }
+          .to raise_error Weka::InvalidInstancesStructureError
+      end
+    end
+
+    context 'when passing a non-Weka::Core::Instance' do
+      it 'raises a ValueError' do
+        expect { subject.instances_structure = 'something else' }
+          .to raise_error ArgumentError
+      end
+    end
+
+    context 'for an untrained classifier' do
+      it 'assigns the given instances header' do
+        classifier = including_class.new
+        classifier.instances_structure = instances
+        structure = classifier.instances_structure
+
+        expect(structure).to eq instances.string_free_structure
       end
     end
   end
