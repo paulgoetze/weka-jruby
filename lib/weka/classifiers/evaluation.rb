@@ -1,4 +1,5 @@
 require 'weka/class_builder'
+require 'weka/concerns'
 
 module Weka
   module Classifiers
@@ -6,6 +7,7 @@ module Weka
 
     class Evaluation
       include ClassBuilder
+      include Weka::Concerns::Persistent
 
       # Use both nomenclatures f_measure and fmeasure for consistency
       # due to jruby's auto method generation of 'fMeasure' to 'f_measure' and
