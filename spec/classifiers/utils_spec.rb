@@ -26,6 +26,7 @@ describe Weka::Classifiers::Utils do
   it { is_expected.to respond_to :cross_validate }
   it { is_expected.to respond_to :evaluate }
   it { is_expected.to respond_to :classify }
+  it { is_expected.to respond_to :distribution_for }
   it { is_expected.to respond_to :instances_structure }
   it { is_expected.to respond_to :instances_structure= }
 
