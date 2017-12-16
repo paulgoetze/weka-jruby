@@ -110,7 +110,7 @@ describe Weka::Core::DenseInstance do
     describe '#each_attribute' do
       it 'runs a block on each attribute' do
         subject.each_attribute do |attribute|
-          @result = attribute.name unless @result
+          @result ||= attribute.name
         end
 
         expect(@result).to eq 'outlook'

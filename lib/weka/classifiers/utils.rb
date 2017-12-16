@@ -1,4 +1,3 @@
-require 'weka/core/serialization_helper'
 require 'weka/classifiers/evaluation'
 require 'weka/core/instances'
 
@@ -44,7 +43,7 @@ module Weka
           return if training_instances.nil?
           return if instances.equal_headers(training_instances)
 
-          message = 'The passed instances need to have the same structure as ' +
+          message = 'The passed instances need to have the same structure as ' \
                     'the classifier’s training instances.'
 
           raise InvalidInstancesStructureError, message
@@ -53,12 +52,13 @@ module Weka
         def ensure_instances_structure_available!
           return unless instances_structure.nil?
 
-          error   = "Classifier does not have any instances structure info."
-          hint    = 'You probably tried to classify values with a classifier ' +
-                    'that is untrained or doesn’t have an instances_structure ' +
-                    'set. Please run #train_with_instances, try serializing ' +
-                    'and deserializing your classifier again in case you used ' +
-                    'a deserialized classifier or set its instances_structure.'
+          error   = 'Classifier does not have any instances structure info.'
+          hint    = 'You probably tried to classify values with a ' \
+                    'classifier that is untrained or doesn’t have an ' \
+                    'instances_structure set. Please run ' \
+                    '#train_with_instances, try serializing and ' \
+                    'deserializing your classifier again in case you used a ' \
+                    'deserialized classifier or set its instances_structure.'
           message = "#{error}\n#{hint}"
 
           raise MissingInstancesStructureError, message

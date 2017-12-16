@@ -4,8 +4,11 @@ describe Weka::Classifiers::Utils do
   let(:including_class) do
     Class.new do
       def build_classifier(instances); end
+
       def update_classifier(instance); end
+
       def classify_instance; end
+
       def distribution_for_instance; end
 
       include Weka::Classifiers::Utils

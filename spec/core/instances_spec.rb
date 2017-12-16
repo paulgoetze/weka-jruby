@@ -422,7 +422,7 @@ describe Weka::Core::Instances do
     describe '#each' do
       it 'runs a block on each instance' do
         subject.each do |instance|
-          @result = instance.value(0) unless @result
+          @result ||= instance.value(0)
         end
 
         expect(@result).to eq 0.0 # index of nominal value
@@ -456,7 +456,7 @@ describe Weka::Core::Instances do
     describe '#each_attribute' do
       it 'runs a block on each attribute' do
         subject.each_attribute do |attribute|
-          @result = attribute.name unless @result
+          @result ||= attribute.name
         end
 
         expect(@result).to eq 'outlook'
@@ -839,7 +839,7 @@ describe Weka::Core::Instances do
       expect(instances.to_s).to eq subject.to_s
 
       expect { instances.add_instance(subject.instances.first) }
-        .not_to change { subject.size }
+        .not_to(change { subject.size })
     end
   end
 end

@@ -41,7 +41,7 @@ module Weka
           return if training_instances.nil?
           return if instances.equal_headers(training_instances)
 
-          message = 'The passed instances need to have the same structure as ' +
+          message = 'The passed instances need to have the same structure as ' \
                     'the clusterers training instances.'
 
           raise InvalidInstancesStructureError, message
@@ -50,12 +50,13 @@ module Weka
         def ensure_instances_structure_available!
           return unless instances_structure.nil?
 
-          error   = "Clusterer does not have any instances structure info."
-          hint    = 'You probably tried to cluster values with a clusterer ' +
-                    'that is untrained or doesn’t have an instances_structure ' +
-                    'set. Please run #train_with_instances, try serializing ' +
-                    'and deserializing your clusterer again in case you used ' +
-                    'a deserialized clusterer or set its instances_structure.'
+          error   = 'Clusterer does not have any instances structure info.'
+          hint    = 'You probably tried to cluster values with a clusterer ' \
+                    'that is untrained or doesn’t have an ' \
+                    'instances_structure set. Please run ' \
+                    '#train_with_instances, try serializing and ' \
+                    'deserializing your clusterer again in case you used a ' \
+                    'deserialized clusterer or set its instances_structure.'
           message = "#{error}\n#{hint}"
 
           raise MissingInstancesStructureError, message

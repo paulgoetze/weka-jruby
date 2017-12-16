@@ -4,8 +4,11 @@ describe Weka::Clusterers::Utils do
   let(:including_class) do
     Class.new do
       def build_clusterer(instances); end
+
       def update_clusterer(instance); end
+
       def cluster_instance; end
+
       def distribution_for_instance; end
 
       include Weka::Clusterers::Utils

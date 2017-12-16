@@ -96,9 +96,11 @@ describe Weka::ClassBuilder do
       end
 
       before do
+        class_definition = "class #{class_name}; end"
+
         allow(subject)
           .to receive(:java_import)
-          .and_return(subject.module_eval("class #{class_name}; end"))
+          .and_return(subject.module_eval(class_definition, __FILE__, __LINE__))
       end
 
       it 'does not include extra methods in the defined class' do
