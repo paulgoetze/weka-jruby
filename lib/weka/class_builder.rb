@@ -103,7 +103,7 @@ module Weka
       end
 
       def constantize(module_names)
-        Object.module_eval("::#{module_names}")
+        Object.module_eval("::#{module_names}", __FILE__, __LINE__)
       end
 
       def utils

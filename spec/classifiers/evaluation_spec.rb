@@ -51,7 +51,8 @@ describe Weka::Classifiers::Evaluation do
 
     describe class_name.to_s do
       let(:curve) do
-        Object.module_eval("Weka::Classifiers::Evaluation::#{class_name}").new
+        evaluation_class_name = "Weka::Classifiers::Evaluation::#{class_name}"
+        Object.module_eval(evaluation_class_name, __FILE__, __LINE__).new
       end
 
       it 'responds to #curve' do

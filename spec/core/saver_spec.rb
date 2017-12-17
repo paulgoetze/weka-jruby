@@ -3,10 +3,9 @@ require 'spec_helper'
 describe Weka::Core::Saver do
   let(:instances) { load_instances('weather.arff') }
 
-  before(:all) { @tmp_dir = File.expand_path('../../tmp/', __FILE__) }
-  after(:all)  { FileUtils.remove_dir(@tmp_dir, true) }
+  after { remove_temp_dir }
 
-  CLASS_METHODS = %i[save_arff save_csv save_json].freeze
+  CLASS_METHODS = %i[save_arff save_csv save_json save_c45].freeze
 
   CLASS_METHODS.each do |method|
     it "responds to .#{method}" do
@@ -18,7 +17,7 @@ describe Weka::Core::Saver do
     method = "save_#{type}"
 
     describe "##{method}" do
-      let(:file) { "#{@tmp_dir}/test.#{type}" }
+      let(:file) { temp_file("test.#{type}") }
 
       it "saves the given Instances to a #{type.upcase} file" do
         expect(File.exist?(file)).to be false
@@ -29,16 +28,10 @@ describe Weka::Core::Saver do
   end
 
   describe '#save_c45' do
-    let(:file)       { "#{@tmp_dir}/test" }
-    let(:names_file) { "#{file}.names" }
-    let(:data_file)  { "#{file}.data" }
+    let(:names_file) { temp_file('test.names') }
+    let(:data_file)  { temp_file('test.data') }
 
     before { instances.class_attribute = :play }
-
-    after do
-      FileUtils.rm_f(names_file)
-      FileUtils.rm_f(data_file)
-    end
 
     it 'creates a *.names file and a *.data file' do
       expect(File.exist?(names_file)).to be false

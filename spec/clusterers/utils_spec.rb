@@ -21,7 +21,12 @@ describe Weka::Clusterers::Utils do
 
   it { is_expected.to respond_to :train_with_instances }
   it { is_expected.to respond_to :training_instances }
+  it { is_expected.to respond_to :add_training_instance }
   it { is_expected.to respond_to :evaluate }
+  it { is_expected.to respond_to :cluster }
+  it { is_expected.to respond_to :distribution_for }
+  it { is_expected.to respond_to :instances_structure }
+  it { is_expected.to respond_to :instances_structure= }
 
   describe '#train_with_instances' do
     it 'calls Java’s #build_classifier' do
@@ -222,95 +227,289 @@ describe Weka::Clusterers::Utils do
   end
 
   describe '#cluster' do
-    let(:instance) { instances.first }
-    let(:values)   { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:instance)     { instances.first }
+    let(:values_array) { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:values_hash) do
+      {
+        outlook: :overcast,
+        temperature: 83,
+        humidity: 86,
+        windy: :FALSE,
+        play: :yes
+      }
+    end
     let(:cluster)  { 1 }
 
-    before { allow(subject).to receive(:cluster_instance).and_return(cluster) }
-
-    context 'with a given instance' do
-      it 'calls Java’s #cluster_instance' do
-        expect(subject)
-          .to receive(:cluster_instance).once
-          .with(an_instance_of(instance.class))
-
-        subject.cluster(instance)
+    context 'for a newly built clusterer' do
+      before do
+        allow(subject).to receive(:cluster_instance).and_return(cluster)
       end
 
-      it 'returns the predicted class value of the instance' do
-        expect(subject.cluster(instance)).to eq cluster
+      context 'with a given instance' do
+        it 'calls Java’s #cluster_instance' do
+          expect(subject)
+            .to receive(:cluster_instance).once
+            .with(an_instance_of(instance.class))
+
+          subject.cluster(instance)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.cluster(instance)).to eq cluster
+        end
+      end
+
+      context 'with a given array of values' do
+        it 'calls Java’s #cluster_instance' do
+          expect(subject)
+            .to receive(:cluster_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.cluster(values_array)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.cluster(values_array)).to eq cluster
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #cluster_instance' do
+          expect(subject)
+            .to receive(:cluster_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.cluster(values_hash)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.cluster(values_hash)).to eq cluster
+        end
+      end
+
+      context 'without an available instances structure' do
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
+
+        it 'raises an MissingInstancesStructureError' do
+          expect { subject.cluster(instance) }
+            .to raise_error Weka::MissingInstancesStructureError
+        end
       end
     end
 
-    context 'with a given array of values' do
-      it 'calls Java’s #cluster_instance' do
-        expect(subject)
-          .to receive(:cluster_instance).once
-          .with(an_instance_of(Weka::Core::DenseInstance))
+    context 'for a deserialized clusterer' do
+      subject do
+        clusterer = Weka::Clusterers::EM.new
+        clusterer.train_with_instances(instances)
 
-        subject.cluster(values)
+        filename = temp_file('test.model')
+        clusterer.serialize(filename)
+        Weka::Core::SerializationHelper.deserialize(filename)
       end
 
-      it 'returns the predicted class value of the instance' do
-        expect(subject.cluster(values)).to eq cluster
+      before do
+        allow(subject).to receive(:cluster_instance).and_return(cluster)
       end
-    end
 
-    context 'without training instances' do
-      before { allow(subject).to receive(:training_instances).and_return(nil) }
+      context 'with a given instance' do
+        it 'calls Java’s #cluster_instance' do
+          expect(subject)
+            .to receive(:cluster_instance).once
+            .with(an_instance_of(instance.class))
 
-      it 'raises an UnassignedTrainingInstancesError' do
-        expect { subject.cluster(instance) }
-          .to raise_error Weka::UnassignedTrainingInstancesError
+          subject.cluster(instance)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.cluster(instance)).to eq cluster
+        end
+      end
+
+      context 'with a given array of values' do
+        it 'calls Java’s #cluster_instance' do
+          expect(subject)
+            .to receive(:cluster_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.cluster(values_array)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.cluster(values_array)).to eq cluster
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #cluster_instance' do
+          expect(subject)
+            .to receive(:cluster_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.cluster(values_hash)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.cluster(values_hash)).to eq cluster
+        end
+      end
+
+      context 'without an available instances structure' do
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
+
+        it 'raises an MissingInstancesStructureError' do
+          expect { subject.cluster(instance) }
+            .to raise_error Weka::MissingInstancesStructureError
+        end
       end
     end
   end
 
   describe '#distribution_for' do
-    let(:instance)      { instances.first }
-    let(:values)        { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:instance)     { instances.first }
+    let(:values_array) { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:values_hash) do
+      {
+        outlook: :overcast,
+        temperature: 83,
+        humidity: 86,
+        windy: :FALSE,
+        play: :yes
+      }
+    end
     let(:distributions) { [0.543684388757196, 0.4563156112428039] }
 
-    before do
-      allow(subject)
-        .to receive(:distribution_for_instance)
-        .and_return(distributions)
+    context 'for a newly built clusterer' do
+      before do
+        allow(subject)
+          .to receive(:distribution_for_instance)
+          .and_return(distributions)
+      end
+
+      context 'with a given instance' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(instance.class))
+
+          subject.distribution_for(instance)
+        end
+
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(instance)).to eq distributions
+        end
+      end
+
+      context 'with a given array of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values_array)
+        end
+
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(values_array)).to eq distributions
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values_hash)
+        end
+
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(values_hash)).to eq distributions
+        end
+      end
+
+      context 'without an available instances structure' do
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
+
+        it 'raises a MissingInstancesStructureError' do
+          expect { subject.distribution_for(instance) }
+            .to raise_error Weka::MissingInstancesStructureError
+        end
+      end
     end
 
-    context 'with a given instance' do
-      it 'calls Java’s #distribution_for_instance' do
-        expect(subject)
-          .to receive(:distribution_for_instance).once
-          .with(an_instance_of(instance.class))
+    context 'for a deserialized clusterer' do
+      subject do
+        clusterer = Weka::Clusterers::EM.new
+        clusterer.train_with_instances(instances)
 
-        subject.distribution_for(instance)
+        filename = temp_file('test.model')
+        clusterer.serialize(filename)
+        Weka::Core::SerializationHelper.deserialize(filename)
       end
 
-      it 'returns the predicted cluster distributions of the instance' do
-        expect(subject.distribution_for(instance)).to eq distributions
-      end
-    end
-
-    context 'with a given array of values' do
-      it 'calls Java’s #distribution_for_instance' do
-        expect(subject)
-          .to receive(:distribution_for_instance).once
-          .with(an_instance_of(Weka::Core::DenseInstance))
-
-        subject.distribution_for(values)
+      before do
+        allow(subject)
+          .to receive(:distribution_for_instance)
+          .and_return(distributions)
       end
 
-      it 'returns the predicted cluster distributions of the instance' do
-        expect(subject.distribution_for(values)).to eq distributions
+      context 'with a given instance' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(instance.class))
+
+          subject.distribution_for(instance)
+        end
+
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(instance)).to eq distributions
+        end
       end
-    end
 
-    context 'without training instances' do
-      before { allow(subject).to receive(:training_instances).and_return(nil) }
+      context 'with a given array of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
 
-      it 'raises an UnassignedTrainingInstancesError' do
-        expect { subject.distribution_for(instance) }
-          .to raise_error Weka::UnassignedTrainingInstancesError
+          subject.distribution_for(values_array)
+        end
+
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(values_array)).to eq distributions
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values_hash)
+        end
+
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(values_hash)).to eq distributions
+        end
+      end
+
+      context 'without an available instances structure' do
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
+
+        it 'raises a MissingInstancesStructureError' do
+          expect { subject.distribution_for(instance) }
+            .to raise_error Weka::MissingInstancesStructureError
+        end
       end
     end
   end
