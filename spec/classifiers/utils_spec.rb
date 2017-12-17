@@ -219,8 +219,17 @@ describe Weka::Classifiers::Utils do
   end
 
   describe '#classify' do
-    let(:instance)    { instances.first }
-    let(:values)      { [:overcast, 83, 86, :FALSE, '?'] }
+    let(:instance)     { instances.first }
+    let(:values_array) { [:overcast, 83, 86, :FALSE, '?'] }
+    let(:values_hash) do
+      {
+        outlook: :overcast,
+        temperature: 83,
+        humidity: 86,
+        windy: :FALSE,
+        play: '?'
+      }
+    end
     let(:class_value) { 'no' }
     let(:class_index) { 1.0 }
 
@@ -238,7 +247,7 @@ describe Weka::Classifiers::Utils do
           subject.classify(instance)
         end
 
-        it 'returns the predicted class value of the instance' do
+        it 'returns the predicted class value' do
           expect(subject.classify(instance)).to eq class_value
         end
       end
@@ -249,11 +258,25 @@ describe Weka::Classifiers::Utils do
             .to receive(:classify_instance).once
             .with(an_instance_of(Weka::Core::DenseInstance))
 
-          subject.classify(values)
+          subject.classify(values_array)
         end
 
-        it 'returns the predicted class value of the instance' do
-          expect(subject.classify(values)).to eq class_value
+        it 'returns the predicted class value' do
+          expect(subject.classify(values_array)).to eq class_value
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #classify_instance' do
+          expect(subject)
+            .to receive(:classify_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.classify(values_hash)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.classify(values_hash)).to eq class_value
         end
       end
 
@@ -294,7 +317,7 @@ describe Weka::Classifiers::Utils do
           subject.classify(instance)
         end
 
-        it 'returns the predicted class value of the instance' do
+        it 'returns the predicted class value' do
           expect(subject.classify(instance)).to eq class_value
         end
       end
@@ -305,11 +328,25 @@ describe Weka::Classifiers::Utils do
             .to receive(:classify_instance).once
             .with(an_instance_of(Weka::Core::DenseInstance))
 
-          subject.classify(values)
+          subject.classify(values_array)
         end
 
-        it 'returns the predicted class value of the instance' do
-          expect(subject.classify(values)).to eq class_value
+        it 'returns the predicted class value' do
+          expect(subject.classify(values_array)).to eq class_value
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #classify_instance' do
+          expect(subject)
+            .to receive(:classify_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.classify(values_hash)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.classify(values_hash)).to eq class_value
         end
       end
 
@@ -328,7 +365,16 @@ describe Weka::Classifiers::Utils do
 
   describe '#distribution_for' do
     let(:instance)            { instances.first }
-    let(:values)              { [:overcast, 83, 86, :FALSE, '?'] }
+    let(:values_array)        { [:overcast, 83, 86, :FALSE, '?'] }
+    let(:values_hash) do
+      {
+        outlook: :overcast,
+        temperature: 83,
+        humidity: 86,
+        windy: :FALSE,
+        play: '?'
+      }
+    end
     let(:distributions)       { [0.543684388757196, 0.4563156112428039] }
     let(:class_distributions) { { 'yes' => distributions[0], 'no' => distributions[1] } }
 
@@ -348,7 +394,7 @@ describe Weka::Classifiers::Utils do
           subject.distribution_for(instance)
         end
 
-        it 'returns the predicted class distributions of the instance' do
+        it 'returns the predicted class distributions' do
           expect(subject.distribution_for(instance)).to eq class_distributions
         end
       end
@@ -359,11 +405,26 @@ describe Weka::Classifiers::Utils do
             .to receive(:distribution_for_instance).once
             .with(an_instance_of(Weka::Core::DenseInstance))
 
-          subject.distribution_for(values)
+          subject.distribution_for(values_array)
         end
 
-        it 'returns the predicted class distributions of the instance' do
-          expect(subject.distribution_for(values)).to eq class_distributions
+        it 'returns the predicted class distributions' do
+          expect(subject.distribution_for(values_array)).to eq class_distributions
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values_hash)
+        end
+
+        it 'returns the predicted class distributions' do
+          expect(subject.distribution_for(values_hash))
+            .to eq class_distributions
         end
       end
 
@@ -400,7 +461,7 @@ describe Weka::Classifiers::Utils do
           subject.distribution_for(instance)
         end
 
-        it 'returns the predicted class distributions of the instance' do
+        it 'returns the predicted class distributions' do
           expect(subject.distribution_for(instance)).to eq class_distributions
         end
       end
@@ -411,11 +472,26 @@ describe Weka::Classifiers::Utils do
             .to receive(:distribution_for_instance).once
             .with(an_instance_of(Weka::Core::DenseInstance))
 
-          subject.distribution_for(values)
+          subject.distribution_for(values_array)
         end
 
-        it 'returns the predicted class distributions of the instance' do
-          expect(subject.distribution_for(values)).to eq class_distributions
+        it 'returns the predicted class distributions' do
+          expect(subject.distribution_for(values_array)).to eq class_distributions
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values_hash)
+        end
+
+        it 'returns the predicted class distributions' do
+          expect(subject.distribution_for(values_hash))
+            .to eq class_distributions
         end
       end
 

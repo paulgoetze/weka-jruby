@@ -227,8 +227,17 @@ describe Weka::Clusterers::Utils do
   end
 
   describe '#cluster' do
-    let(:instance) { instances.first }
-    let(:values)   { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:instance)     { instances.first }
+    let(:values_array) { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:values_hash) do
+      {
+        outlook: :overcast,
+        temperature: 83,
+        humidity: 86,
+        windy: :FALSE,
+        play: :yes
+      }
+    end
     let(:cluster)  { 1 }
 
     context 'for a newly built clusterer' do
@@ -245,7 +254,7 @@ describe Weka::Clusterers::Utils do
           subject.cluster(instance)
         end
 
-        it 'returns the predicted class value of the instance' do
+        it 'returns the predicted class value' do
           expect(subject.cluster(instance)).to eq cluster
         end
       end
@@ -256,11 +265,25 @@ describe Weka::Clusterers::Utils do
             .to receive(:cluster_instance).once
             .with(an_instance_of(Weka::Core::DenseInstance))
 
-          subject.cluster(values)
+          subject.cluster(values_array)
         end
 
-        it 'returns the predicted class value of the instance' do
-          expect(subject.cluster(values)).to eq cluster
+        it 'returns the predicted class value' do
+          expect(subject.cluster(values_array)).to eq cluster
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #cluster_instance' do
+          expect(subject)
+            .to receive(:cluster_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.cluster(values_hash)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.cluster(values_hash)).to eq cluster
         end
       end
 
@@ -297,7 +320,7 @@ describe Weka::Clusterers::Utils do
           subject.cluster(instance)
         end
 
-        it 'returns the predicted class value of the instance' do
+        it 'returns the predicted class value' do
           expect(subject.cluster(instance)).to eq cluster
         end
       end
@@ -308,11 +331,25 @@ describe Weka::Clusterers::Utils do
             .to receive(:cluster_instance).once
             .with(an_instance_of(Weka::Core::DenseInstance))
 
-          subject.cluster(values)
+          subject.cluster(values_array)
         end
 
-        it 'returns the predicted class value of the instance' do
-          expect(subject.cluster(values)).to eq cluster
+        it 'returns the predicted class value' do
+          expect(subject.cluster(values_array)).to eq cluster
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #cluster_instance' do
+          expect(subject)
+            .to receive(:cluster_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.cluster(values_hash)
+        end
+
+        it 'returns the predicted class value' do
+          expect(subject.cluster(values_hash)).to eq cluster
         end
       end
 
@@ -328,8 +365,17 @@ describe Weka::Clusterers::Utils do
   end
 
   describe '#distribution_for' do
-    let(:instance)      { instances.first }
-    let(:values)        { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:instance)     { instances.first }
+    let(:values_array) { [:overcast, 83, 86, :FALSE, :yes] }
+    let(:values_hash) do
+      {
+        outlook: :overcast,
+        temperature: 83,
+        humidity: 86,
+        windy: :FALSE,
+        play: :yes
+      }
+    end
     let(:distributions) { [0.543684388757196, 0.4563156112428039] }
 
     context 'for a newly built clusterer' do
@@ -348,7 +394,7 @@ describe Weka::Clusterers::Utils do
           subject.distribution_for(instance)
         end
 
-        it 'returns the predicted cluster distributions of the instance' do
+        it 'returns the predicted cluster distributions' do
           expect(subject.distribution_for(instance)).to eq distributions
         end
       end
@@ -359,11 +405,25 @@ describe Weka::Clusterers::Utils do
             .to receive(:distribution_for_instance).once
             .with(an_instance_of(Weka::Core::DenseInstance))
 
-          subject.distribution_for(values)
+          subject.distribution_for(values_array)
         end
 
-        it 'returns the predicted cluster distributions of the instance' do
-          expect(subject.distribution_for(values)).to eq distributions
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(values_array)).to eq distributions
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values_hash)
+        end
+
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(values_hash)).to eq distributions
         end
       end
 
@@ -402,7 +462,7 @@ describe Weka::Clusterers::Utils do
           subject.distribution_for(instance)
         end
 
-        it 'returns the predicted cluster distributions of the instance' do
+        it 'returns the predicted cluster distributions' do
           expect(subject.distribution_for(instance)).to eq distributions
         end
       end
@@ -413,11 +473,25 @@ describe Weka::Clusterers::Utils do
             .to receive(:distribution_for_instance).once
             .with(an_instance_of(Weka::Core::DenseInstance))
 
-          subject.distribution_for(values)
+          subject.distribution_for(values_array)
         end
 
-        it 'returns the predicted cluster distributions of the instance' do
-          expect(subject.distribution_for(values)).to eq distributions
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(values_array)).to eq distributions
+        end
+      end
+
+      context 'with a given hash of values' do
+        it 'calls Java’s #distribution_for_instance' do
+          expect(subject)
+            .to receive(:distribution_for_instance).once
+            .with(an_instance_of(Weka::Core::DenseInstance))
+
+          subject.distribution_for(values_hash)
+        end
+
+        it 'returns the predicted cluster distributions' do
+          expect(subject.distribution_for(values_hash)).to eq distributions
         end
       end
 
