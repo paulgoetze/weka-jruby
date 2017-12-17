@@ -25,7 +25,9 @@ module Weka
         end
 
         define_method(:write) do |filename, object|
-          if object.respond_to?(:instances_structure) && object.instances_structure
+          structure_needed = object.respond_to?(:instances_structure)
+
+          if structure_needed && object.instances_structure
             structure_filename = structure_file(filename)
             structure = object.instances_structure
             original_write.bind(self).call(structure_filename, structure)

@@ -364,8 +364,8 @@ describe Weka::Classifiers::Utils do
   end
 
   describe '#distribution_for' do
-    let(:instance)            { instances.first }
-    let(:values_array)        { [:overcast, 83, 86, :FALSE, '?'] }
+    let(:instance)     { instances.first }
+    let(:values_array) { [:overcast, 83, 86, :FALSE, '?'] }
     let(:values_hash) do
       {
         outlook: :overcast,
@@ -375,8 +375,13 @@ describe Weka::Classifiers::Utils do
         play: '?'
       }
     end
-    let(:distributions)       { [0.543684388757196, 0.4563156112428039] }
-    let(:class_distributions) { { 'yes' => distributions[0], 'no' => distributions[1] } }
+    let(:distributions) { [0.543684388757196, 0.4563156112428039] }
+    let(:class_distributions) do
+      {
+        'yes' => distributions[0],
+        'no' => distributions[1]
+      }
+    end
 
     before do
       allow(subject)
@@ -409,7 +414,8 @@ describe Weka::Classifiers::Utils do
         end
 
         it 'returns the predicted class distributions' do
-          expect(subject.distribution_for(values_array)).to eq class_distributions
+          expect(subject.distribution_for(values_array))
+            .to eq class_distributions
         end
       end
 
@@ -476,7 +482,8 @@ describe Weka::Classifiers::Utils do
         end
 
         it 'returns the predicted class distributions' do
-          expect(subject.distribution_for(values_array)).to eq class_distributions
+          expect(subject.distribution_for(values_array))
+            .to eq class_distributions
         end
       end
 

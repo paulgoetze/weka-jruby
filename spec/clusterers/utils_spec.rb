@@ -288,7 +288,9 @@ describe Weka::Clusterers::Utils do
       end
 
       context 'without an available instances structure' do
-        before { allow(subject).to receive(:instances_structure).and_return(nil) }
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
 
         it 'raises an MissingInstancesStructureError' do
           expect { subject.cluster(instance) }
@@ -354,7 +356,9 @@ describe Weka::Clusterers::Utils do
       end
 
       context 'without an available instances structure' do
-        before { allow(subject).to receive(:instances_structure).and_return(nil) }
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
 
         it 'raises an MissingInstancesStructureError' do
           expect { subject.cluster(instance) }
@@ -428,7 +432,9 @@ describe Weka::Clusterers::Utils do
       end
 
       context 'without an available instances structure' do
-        before { allow(subject).to receive(:instances_structure).and_return(nil) }
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
 
         it 'raises a MissingInstancesStructureError' do
           expect { subject.distribution_for(instance) }
@@ -496,7 +502,9 @@ describe Weka::Clusterers::Utils do
       end
 
       context 'without an available instances structure' do
-        before { allow(subject).to receive(:instances_structure).and_return(nil) }
+        before do
+          allow(subject).to receive(:instances_structure).and_return(nil)
+        end
 
         it 'raises a MissingInstancesStructureError' do
           expect { subject.distribution_for(instance) }
