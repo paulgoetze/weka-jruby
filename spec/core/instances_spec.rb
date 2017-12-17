@@ -15,6 +15,7 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :to_arff }
   it { is_expected.to respond_to :to_csv }
   it { is_expected.to respond_to :to_json }
+  it { is_expected.to respond_to :to_c45 }
 
   it { is_expected.to respond_to :numeric }
   it { is_expected.to respond_to :nominal }
@@ -37,6 +38,7 @@ describe Weka::Core::Instances do
   it { is_expected.to respond_to :serialize }
   it { is_expected.to respond_to :to_m }
   it { is_expected.to respond_to :copy }
+  it { is_expected.to respond_to :instance_from }
 
   describe 'aliases:' do
     let(:instances) { described_class.new }
@@ -840,6 +842,86 @@ describe Weka::Core::Instances do
 
       expect { instances.add_instance(subject.instances.first) }
         .not_to(change { subject.size })
+    end
+  end
+
+  describe '#instance_from' do
+    let(:instance_values) { [1.0, 83.0, 86.0, 1.0, 0.0] }
+    let(:result_values)   { ['overcast', 83.0, 86.0, 'FALSE', 'yes'] }
+    let(:default_weight)  { 1.0 }
+    let(:weight)          { 0.5 }
+
+    context 'with a given array of values' do
+      let(:values) { [:overcast, 83, 86, :FALSE, :yes] }
+
+      it 'returns an instance holding the given values' do
+        instance = subject.instance_from(values)
+
+        expect(instance).to be_kind_of Java::WekaCore::Instance
+        expect(instance.weight).to eq default_weight
+        expect(instance.values).to eq result_values
+      end
+
+      context 'when passing a weight' do
+        it 'returns an instance with the given weight' do
+          instance = subject.instance_from(values, weight: weight)
+
+          expect(instance).to be_kind_of Java::WekaCore::Instance
+          expect(instance.weight).to eq weight
+        end
+      end
+    end
+
+    context 'with a given hash of values' do
+      let(:values) do
+        {
+          outlook: :overcast,
+          temperature: 83,
+          humidity: 86,
+          windy: :FALSE,
+          play: :yes
+        }
+      end
+
+      it 'returns an instance holding the given values' do
+        instance = subject.instance_from(values)
+
+        expect(instance).to be_kind_of Java::WekaCore::Instance
+        expect(instance.weight).to eq default_weight
+        expect(instance.values).to eq result_values
+      end
+
+      context 'when passing a weight' do
+        it 'returns an instance with the given weight' do
+          instance = subject.instance_from(values, weight: weight)
+
+          expect(instance).to be_kind_of Java::WekaCore::Instance
+          expect(instance.weight).to eq weight
+          expect(instance.values).to eq result_values
+        end
+      end
+    end
+
+    context 'with a given instance' do
+      let(:dense_instance) { Weka::Core::DenseInstance.new(instance_values) }
+
+      it 'returns a new instance with the same values' do
+        instance = subject.instance_from(dense_instance)
+
+        expect(instance).to be_kind_of Java::WekaCore::Instance
+        expect(instance.weight).to eq default_weight
+        expect(instance.values).to eq result_values
+      end
+
+      context 'when passing a weight' do
+        it 'returns an instance with the given weight' do
+          instance = subject.instance_from(dense_instance, weight: weight)
+
+          expect(instance).to be_kind_of Java::WekaCore::Instance
+          expect(instance.weight).to eq weight
+          expect(instance.values).to eq result_values
+        end
+      end
     end
   end
 end

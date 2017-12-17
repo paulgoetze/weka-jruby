@@ -272,6 +272,33 @@ module Weka
         Matrix[*instances.map(&:values)]
       end
 
+      # Wrap the attribute values for the instance to be added with
+      #   an Instance object, if needed. The Instance object is
+      #   assigned with the given weight.
+      #
+      # @param [Instance, Array, Hash] instance_or_values either the
+      #   instance object to be added or the attribute values for it.
+      #   For the latter case, it accepts an array or a hash.
+      #
+      # @param [Float] weight the weight for the Instance to be added
+      #
+      # @return [Instance] the object that contains the given
+      #   attribute values.
+      def instance_from(instance_or_values, weight: 1.0)
+        dataset = string_free_structure
+
+        if instance_or_values.is_a?(Java::WekaCore::Instance)
+          instance = instance_or_values
+          instance.weight = weight
+        else
+          data = instance_data(instance_or_values)
+          instance = DenseInstance.new(data, weight: weight)
+        end
+
+        dataset.add(instance)
+        dataset.first
+      end
+
       private
 
       def add_attribute(attribute)
@@ -296,40 +323,16 @@ module Weka
         end
       end
 
-      # Wrap the attribute values for the instance to be added with
-      #   an Instance object, if needed. The Instance object is
-      #   assigned with the given weight.
-      #
-      # @param [Instance, Array, Hash] instance_or_values either the
-      #   instance object to be added or the attribute values for it.
-      #   For the latter case, it accepts an array or a hash.
-      #
-      # @param [Float] weight the weight for the Instance to be added
-      #
-      # @return [Instance] the object that contains the given
-      #   attribute values.
-      def instance_from(instance_or_values, weight:)
-        if instance_or_values.is_a?(Java::WekaCore::Instance)
-          instance_or_values.weight = weight
-          instance_or_values
-        else
-          if instance_or_values.is_a?(Hash)
-            instance_or_values = attribute_values_from_hash(instance_or_values)
-          end
-
-          data = internal_values_of(instance_or_values)
-
-          if has_string_attribute?
-            data = check_string_attributes(data, instance_or_values)
-          end
-
-          DenseInstance.new(data, weight: weight)
-        end
-      end
-
       def map_attribute_type(type)
         return -1 unless Attribute::TYPES.include?(type.downcase.to_sym)
         Attribute.const_get(type.upcase)
+      end
+
+      def instance_data(values)
+        values = attribute_values_from_hash(values) if values.is_a?(Hash)
+        data = internal_values_of(values)
+        data = check_string_attributes(data, values) if has_string_attribute?
+        data
       end
 
       # Convert a hash whose keys are attribute names and values are attribute
