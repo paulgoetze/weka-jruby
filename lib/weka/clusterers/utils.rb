@@ -63,16 +63,6 @@ module Weka
         end
       end
 
-      module Transformers
-        private
-
-        def clusterable_instance_from(instance_or_values)
-          instances = instances_structure.copy
-          instances.add_instance(instance_or_values)
-          instances.first
-        end
-      end
-
       module Buildable
         include Checks
 
@@ -121,12 +111,11 @@ module Weka
 
       module Clusterable
         include Checks
-        include Transformers
 
         def cluster(instance_or_values)
           ensure_instances_structure_available!
 
-          instance = clusterable_instance_from(instance_or_values)
+          instance = instances_structure.instance_from(instance_or_values)
           cluster_instance(instance)
         end
       end
@@ -148,12 +137,11 @@ module Weka
 
       module Distributable
         include Checks
-        include Transformers
 
         def distribution_for(instance_or_values)
           ensure_instances_structure_available!
 
-          instance = clusterable_instance_from(instance_or_values)
+          instance = instances_structure.instance_from(instance_or_values)
           distribution_for_instance(instance).to_a
         end
       end

@@ -69,10 +69,9 @@ module Weka
         private
 
         def classifiable_instance_from(instance_or_values)
-          instances = instances_structure.copy
-          instances.add_instance(instance_or_values)
+          ensure_instances_structure_available!
 
-          instance = instances.first
+          instance = instances_structure.instance_from(instance_or_values)
           instance.set_class_missing
           instance
         end
@@ -132,8 +131,6 @@ module Weka
         include Transformers
 
         def classify(instance_or_values)
-          ensure_instances_structure_available!
-
           instance = classifiable_instance_from(instance_or_values)
           index    = classify_instance(instance)
 
@@ -167,8 +164,6 @@ module Weka
         include Transformers
 
         def distribution_for(instance_or_values)
-          ensure_instances_structure_available!
-
           instance      = classifiable_instance_from(instance_or_values)
           distributions = distribution_for_instance(instance)
 
