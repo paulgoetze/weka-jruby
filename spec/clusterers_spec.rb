@@ -8,7 +8,9 @@ describe Weka::Clusterers do
     Canopy
     EM
     FarthestFirst
+    FilteredClusterer
     HierarchicalClusterer
+    MakeDensityBasedClusterer
     SimpleKMeans
   ].each do |class_name|
     it "defines a class #{class_name}" do

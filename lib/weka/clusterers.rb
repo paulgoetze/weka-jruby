@@ -10,7 +10,9 @@ module Weka
                   :Cobweb,
                   :EM,
                   :FarthestFirst,
+                  :FilteredClusterer,
                   :HierarchicalClusterer,
+                  :MakeDensityBasedClusterer,
                   :SimpleKMeans
   end
 end
