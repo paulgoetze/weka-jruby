@@ -13,13 +13,16 @@ describe Weka::Filters::Unsupervised::Attribute do
     AddUserFields
     AddUserFieldsBeanInfo
     AddValues
+    CartesianProduct
     Center
     ChangeDateFormat
     ClassAssigner
     ClusterMembership
     Copy
+    DateToNumeric
     Discretize
     FirstOrder
+    FixedDictionaryStringToWordVector
     InterquartileRange
     KernelFilter
     MakeIndicator
@@ -32,9 +35,11 @@ describe Weka::Filters::Unsupervised::Attribute do
     Normalize
     NumericCleaner
     NumericToBinary
+    NumericToDate
     NumericToNominal
     NumericTransform
     Obfuscate
+    OrdinalToNumeric
     PartitionedMultiFilter
     PKIDiscretize
     PotentialClassIgnorer

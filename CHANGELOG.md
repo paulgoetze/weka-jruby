@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- Add new unsupervised attribute filters added in weka-dev v3.9.2
+- Make classes from weka.filters module available
+- Make WeightedInstancesHandlerWrapper available in Weka::Classifiers::Meta
+- Make FilteredClusterer & MakeDensityBasedClusterer available in Weka::Clusterers
+
+### Changed
+- Update Weka Jar dependency to weka-dev v3.9.2
+
 ## [0.6.0] – 2017-12-17
 ### Added
 - #copy method for Weka::Core::Instances

@@ -23,7 +23,8 @@ module Weka
                     :RandomSubSpace,
                     :RegressionByDiscretization,
                     :Stacking,
-                    :Vote
+                    :Vote,
+                    :WeightedInstancesHandlerWrapper
     end
   end
 end
