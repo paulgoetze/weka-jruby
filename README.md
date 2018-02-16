@@ -3,6 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/weka.svg)](http://badge.fury.io/rb/weka)
 [![Travis Build](https://travis-ci.org/paulgoetze/weka-jruby.svg)](https://travis-ci.org/paulgoetze/weka-jruby)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9634a6709ef545198e079a8daddff100)](https://www.codacy.com/app/paul-christoph-goetze/weka-jruby?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paulgoetze/weka-jruby&amp;utm_campaign=Badge_Grade)
+[![Open Source Helpers](https://www.codetriage.com/paulgoetze/weka-jruby/badges/users.svg)](https://www.codetriage.com/paulgoetze/weka-jruby)
 
 Machine Learning & Data Mining with JRuby based on the [Weka](http://www.cs.waikato.ac.nz/~ml/weka/index.html) Java library.
 
