@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Update Weka Jar dependency to weka-dev v3.9.3
+- Update rake to \~>12.0, jar-dependencies to \~>0.4
+
+### Fixed
+- Float::NAN check in Weka::Core::Attributes#internal_value_of
 
 ## [0.7.0] – 2018-01-01
 ### Added
