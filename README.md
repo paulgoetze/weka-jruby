@@ -41,7 +41,7 @@ detailed information about how to use weka with JRuby and some examplary code sn
 ## Development
 
 1. Check out the repo with `git clone git@github.com:paulgoetze/weka-jruby.git`.
-2. Set a local environment variable `export JARS_VENDOR=false`.  
+2. Set a local environment variable `export JARS_VENDOR=false`.
    This will prevent
    compiling the jars into your repo’s /lib directory and will load them from your local maven repository instead.
    See the  [jar-dependencies README](https://github.com/mkristian/jar-dependencies#for-development-you-do-not-need-to-vendor-the-jars-at-all) for more information.
@@ -51,19 +51,19 @@ Then, run `rake spec` to run the tests. You can also run `bin/console` or `rake 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/paulgoetze/weka-jruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant code of conduct](http://contributor-covenant.org/version/1/2/0).
+Bug reports and pull requests are welcome on GitHub at https://github.com/paulgoetze/weka-jruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant Code of Conduct](https://github.com/paulgoetze/weka-jruby/blob/master/CODE_OF_CONDUCT.md).
 
 For development we use the [git branching model](http://nvie.com/posts/a-successful-git-branching-model/) described by [nvie](https://github.com/nvie).
 
 Here’s how to contribute:
 
-1. Fork it ( https://github.com/paulgoetze/weka-jruby/fork )
+1. Fork it (https://github.com/paulgoetze/weka-jruby/fork)
 2. Create your feature branch (`git checkout -b feature/my-new-feature develop`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin feature/my-new-feature`)
 5. Create a new Pull Request
 
-Please try to add RSpec tests along with your new features. This will ensure that your code does not break existing functionality and that your feature is working as expected.
+Please try to add RSpec tests along with your new feature. This will ensure that your code does not break existing functionality and that your feature is working as expected.
 
 We use [Rubocop](https://github.com/bbatsov/rubocop) for code style recommendations.
 Please make sure your contributions comply with the project’s Rubocop config.
@@ -74,4 +74,4 @@ The original ideas for wrapping Weka in JRuby come from [@arrigonialberto86](htt
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+The gem is available as open source under the terms of the [MIT License](https://github.com/paulgoetze/weka-jruby/blob/master/MIT-LICENSE.txt).
