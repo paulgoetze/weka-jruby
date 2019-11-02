@@ -1,7 +1,9 @@
 language: ruby
 
+jdk:
+  - oraclejdk13
+  - openjdk13
+
 rvm:
-  - jruby-9.0.1.0
-  - jruby-9.1.0.0
-  - jruby-9.2.0.0
+  - jruby-9.2.9.0
   - jruby-head
