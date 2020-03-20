@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.platform               = 'java'
   spec.required_ruby_version  = '~> 2.0'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.files         = Dir['**/{.*,*}'].reject { |f| f.match(%r{^((spec|jars|pkg)/|.*\.lock|lib/.*_jars\.rb)}) || File.directory?(f) }
   spec.bindir        = 'bin'
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
