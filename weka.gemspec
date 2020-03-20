@@ -29,5 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'shoulda-matchers', '~> 4.0'
 
   spec.add_runtime_dependency 'jar-dependencies', '~> 0.4'
-  spec.requirements << 'jar nz.ac.waikato.cms.weka, weka-dev, 3.9.3'
+  spec.requirements << 'jar nz.ac.waikato.cms.weka, weka-dev, 3.9.4'
 end
