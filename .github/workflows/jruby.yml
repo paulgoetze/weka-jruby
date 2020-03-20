@@ -3,14 +3,18 @@ name: JRuby CI
 on: [push]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-    container:
-      image: jruby:9
-
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        ruby: [ jruby-9.2.9.0, jruby-9.2.10.0, jruby-9.2.11.0, jruby-head ]
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
     - name: Install dependencies
       run: |
         gem install bundler
