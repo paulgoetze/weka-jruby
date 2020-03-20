@@ -26,7 +26,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler',          '~> 2.0'
   spec.add_development_dependency 'rake',             '~> 13.0'
   spec.add_development_dependency 'rspec',            '~> 3.0'
-  spec.add_development_dependency 'shoulda-matchers', '~> 4.0'
 
   spec.add_runtime_dependency 'jar-dependencies', '~> 0.4'
   spec.requirements << 'jar nz.ac.waikato.cms.weka, weka-dev, 3.9.4'
