@@ -88,6 +88,7 @@ module Weka
 
       def include_utils
         return unless utils_defined?
+
         "include #{utils}"
       end
 
@@ -116,6 +117,7 @@ module Weka
 
       def downcase_first_char(string)
         return if string.nil? || string.empty?
+
         string[0].downcase + string[1..-1]
       end
     end

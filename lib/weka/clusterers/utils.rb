@@ -66,8 +66,7 @@ module Weka
       module Buildable
         include Checks
 
-        attr_reader :training_instances
-        attr_reader :instances_structure
+        attr_reader :training_instances, :instances_structure
 
         def train_with_instances(instances)
           @training_instances = instances

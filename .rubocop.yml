@@ -14,7 +14,10 @@ Style/Documentation:
   Enabled: false
 
 Metrics/LineLength:
-  Max: 80
+  Max: 105
+
+Metrics/ClassLength:
+  Max: 250
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
@@ -29,3 +32,28 @@ Metrics/ModuleLength:
 Metrics/BlockLength:
   Exclude:
     - "**/*_spec.rb"
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - "**/*_spec.rb"
+
+Layout/EmptyLineBetweenDefs:
+  Enabled: false
+
+Layout/HashAlignment:
+  Enabled: false
+
+Lint/BooleanSymbol:
+  Enabled: false
+
+Style/HashEachMethods:
+  Exclude:
+    - lib/weka/core/instances.rb
+    - spec/classifiers/evaluation_spec.rb
+
+Naming/PredicateName:
+  Exclude:
+    - lib/weka/core/instances.rb
+
+Metrics/CyclomaticComplexity:
+  Max: 8

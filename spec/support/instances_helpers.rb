@@ -1,4 +1,4 @@
-require_relative "file_helpers"
+require_relative 'file_helpers'
 
 module InstancesHelpers
   include FileHelpers

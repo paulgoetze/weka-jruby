@@ -1,6 +1,6 @@
 module FileHelpers
   def temp_dir
-    directory = File.expand_path('../../tmp/', __FILE__)
+    directory = File.expand_path('../tmp', __dir__)
     FileUtils.mkdir(directory) unless Dir.exist?(directory)
     directory
   end
@@ -14,7 +14,7 @@ module FileHelpers
   end
 
   def resources_file(filename)
-    path = File.expand_path('../resources/', __FILE__)
+    path = File.expand_path('resources', __dir__)
     File.join(path, filename)
   end
 end

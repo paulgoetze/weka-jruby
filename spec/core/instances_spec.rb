@@ -44,14 +44,14 @@ describe Weka::Core::Instances do
     let(:instances) { described_class.new }
 
     {
-      numeric:                :add_numeric_attribute,
-      string:                 :add_string_attribute,
-      nominal:                :add_nominal_attribute,
-      date:                   :add_date_attribute,
-      add_attributes:         :with_attributes,
-      instances_count:        :num_instances,
-      attributes_count:       :num_attributes,
-      has_string_attribute?:  :check_for_string_attributes
+      numeric:               :add_numeric_attribute,
+      string:                :add_string_attribute,
+      nominal:               :add_nominal_attribute,
+      date:                  :add_date_attribute,
+      add_attributes:        :with_attributes,
+      instances_count:       :num_instances,
+      attributes_count:      :num_attributes,
+      has_string_attribute?: :check_for_string_attributes
     }.each do |method, alias_method|
       it "defines the alias ##{alias_method} for ##{method}" do
         expect(instances.method(method)).to eq instances.method(alias_method)

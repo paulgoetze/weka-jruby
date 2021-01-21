@@ -81,8 +81,7 @@ module Weka
         java_import 'java.util.Random'
         include Checks
 
-        attr_reader :training_instances
-        attr_reader :instances_structure
+        attr_reader :training_instances, :instances_structure
 
         def train_with_instances(instances)
           ensure_class_attribute_assigned!(instances)

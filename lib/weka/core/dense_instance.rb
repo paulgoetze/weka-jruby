@@ -18,17 +18,19 @@ module Weka
         enumerate_attributes.to_a
       end
 
-      def each_attribute
+      def each_attribute(&block)
         if block_given?
-          enumerate_attributes.each { |attribute| yield(attribute) }
+          enumerate_attributes.each(&block)
         else
           enumerate_attributes
         end
       end
 
-      def each_attribute_with_index
-        enumerate_attributes.each_with_index do |attribute, index|
-          yield(attribute, index) if block_given?
+      def each_attribute_with_index(&block)
+        if block_given?
+          enumerate_attributes.each_with_index(&block)
+        else
+          enumerate_attributes
         end
       end
 

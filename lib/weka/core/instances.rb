@@ -59,9 +59,8 @@ module Weka
       def attributes(include_class_attribute: false)
         attrs = enumerate_attributes.to_a
 
-        if include_class_attribute && class_attribute_defined?
-          attrs.insert(class_index, class_attribute)
-        end
+        class_available = include_class_attribute && class_attribute_defined?
+        attrs.insert(class_index, class_attribute) if class_available
 
         attrs
       end
@@ -99,31 +98,35 @@ module Weka
         check_for_attribute_type(type)
       end
 
-      def each
+      def each(&block)
         if block_given?
-          enumerate_instances.each { |instance| yield(instance) }
+          enumerate_instances.each(&block)
         else
           enumerate_instances
         end
       end
 
-      def each_with_index
-        enumerate_instances.each_with_index do |instance, index|
-          yield(instance, index) if block_given?
+      def each_with_index(&block)
+        if block_given?
+          enumerate_instances.each_with_index(&block)
+        else
+          enumerate_instances
         end
       end
 
-      def each_attribute
+      def each_attribute(&block)
         if block_given?
-          enumerate_attributes.each { |attribute| yield(attribute) }
+          enumerate_attributes.each(&block)
         else
           enumerate_attributes
         end
       end
 
-      def each_attribute_with_index
-        enumerate_attributes.each_with_index do |attribute, index|
-          yield(attribute, index) if block_given?
+      def each_attribute_with_index(&block)
+        if block_given?
+          enumerate_attributes.each_with_index(&block)
+        else
+          enumerate_attributes
         end
       end
 
@@ -306,9 +309,7 @@ module Weka
       end
 
       def ensure_attribute_defined!(name)
-        if attribute_names(include_class_attribute: true).include?(name.to_s)
-          return
-        end
+        return if attribute_names(include_class_attribute: true).include?(name.to_s)
 
         error   = "\"#{name}\" is not defined."
         hint    = 'Only defined attributes can be used as class attribute!'
@@ -325,6 +326,7 @@ module Weka
 
       def map_attribute_type(type)
         return -1 unless Attribute::TYPES.include?(type.downcase.to_sym)
+
         Attribute.const_get(type.upcase)
       end
 
