@@ -1,3 +1,5 @@
+require_relative "file_helpers"
+
 module InstancesHelpers
   include FileHelpers
 

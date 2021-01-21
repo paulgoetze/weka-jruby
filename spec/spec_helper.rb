@@ -4,8 +4,8 @@ require 'weka'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
-  config.include InstancesHelpers
   config.include FileHelpers
+  config.include InstancesHelpers
 
   config.after(:all) { remove_temp_dir }
 end
