@@ -51,7 +51,7 @@ Then, run `rake spec` to run the tests. You can also run `bin/console` or `rake 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/paulgoetze/weka-jruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant Code of Conduct](https://github.com/paulgoetze/weka-jruby/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/paulgoetze/weka-jruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant Code of Conduct](https://github.com/paulgoetze/weka-jruby/blob/main/CODE_OF_CONDUCT.md).
 
 For development we use the [git branching model](http://nvie.com/posts/a-successful-git-branching-model/) described by [nvie](https://github.com/nvie).
 
@@ -74,4 +74,4 @@ The original ideas for wrapping Weka in JRuby come from [@arrigonialberto86](htt
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://github.com/paulgoetze/weka-jruby/blob/master/MIT-LICENSE.txt).
+The gem is available as open source under the terms of the [MIT License](https://github.com/paulgoetze/weka-jruby/blob/main/MIT-LICENSE.txt).
