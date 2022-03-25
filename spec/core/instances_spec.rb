@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'fileutils'
 require 'matrix'
 
 describe Weka::Core::Instances do

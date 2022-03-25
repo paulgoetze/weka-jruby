@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module FileHelpers
   def temp_dir
     directory = File.expand_path('../tmp', __dir__)
