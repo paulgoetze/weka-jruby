@@ -29,9 +29,9 @@ module Weka
 
         private
 
-        def join_options(*single_options, **hash_options)
+        def join_options(single_options, hash_options)
           [
-            join_single_options(*single_options),
+            join_single_options(single_options),
             join_hash_options(hash_options)
           ].reject(&:empty?).join(' ')
         end
