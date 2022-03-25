@@ -1,8 +1,7 @@
 # Weka
 
-[![Gem Version](https://badge.fury.io/rb/weka.svg)](http://badge.fury.io/rb/weka)
 [![Build Status](https://github.com/paulgoetze/weka-jruby/workflows/JRuby%20CI/badge.svg)](https://github.com/paulgoetze/weka-jruby/workflows/JRuby%20CI/badge.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/337e80b922704230818d6c770384ee1b)](https://www.codacy.com/gh/paulgoetze/weka-jruby/dashboard?utm_source=github.com&utm_medium=referral&utm_content=paulgoetze/weka-jruby&utm_campaign=Badge_Grade)
+[![Gem Version](https://badge.fury.io/rb/weka.svg)](http://badge.fury.io/rb/weka)
 
 Machine Learning & Data Mining with JRuby based on the
 [Weka](http://www.cs.waikato.ac.nz/~ml/weka/index.html) Java library.
