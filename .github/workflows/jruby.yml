@@ -12,16 +12,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        ruby: [ jruby-9.1.17.0, jruby-9.2.20.1, jruby-9.3.4.0 ]
+        ruby: [ jruby-9.3.13.0, jruby-9.4.5.0 ]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Install dependencies
       run: |
+        gem update --system
         gem install bundler
         bundle install --jobs 4 --retry 3
     - name: Run Tests
-      run: bundle exec rake default
+      run: rspec

@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.license       = 'MIT'
 
   spec.platform               = 'java'
-  spec.required_ruby_version  = '~> 2.0'
+  spec.required_ruby_version  = '>= 2.0', '< 4.0'
 
   spec.files         = Dir['**/{.*,*}'].reject { |f| f.match(%r{^((spec|jars|pkg)/|.*\.lock|lib/.*_jars\.rb)}) || File.directory?(f) }
   spec.bindir        = 'bin'
@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler',          '~> 2.0'
   spec.add_development_dependency 'rake',             '~> 13.0'
-  spec.add_development_dependency 'rspec',            '~> 3.11'
+  spec.add_development_dependency 'rspec',            '~> 3.12'
 
   spec.add_runtime_dependency 'jar-dependencies', '~> 0.4.1'
   spec.requirements << 'jar nz.ac.waikato.cms.weka, weka-dev, 3.9.6'
