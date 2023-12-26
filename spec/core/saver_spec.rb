@@ -5,9 +5,7 @@ describe Weka::Core::Saver do
 
   after { remove_temp_dir }
 
-  CLASS_METHODS = %i[save_arff save_csv save_json save_c45].freeze
-
-  CLASS_METHODS.each do |method|
+  %i[save_arff save_csv save_json save_c45].each do |method|
     it "responds to .#{method}" do
       expect(described_class).to respond_to method
     end

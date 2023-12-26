@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe Weka::Core::Loader do
-  CLASS_METHODS = %i[load_arff load_csv load_json load_c45].freeze
-
-  CLASS_METHODS.each do |method|
+  %i[load_arff load_csv load_json load_c45].each do |method|
     it "responds to .#{method}" do
       expect(described_class).to respond_to method
     end
