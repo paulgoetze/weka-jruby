@@ -17,7 +17,7 @@ module Weka
 
       alias summary                 to_summary_string
       alias class_details           to_class_details_string
-      alias confusion_matrix        to_matrix_string
+      alias matrix_string           to_matrix_string
 
       alias instance_count          num_instances
       alias correct_count           correct
