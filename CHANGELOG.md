@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.8.0] – 2023-12-26
+
+### Changed
+- Support JRuby 9.4.0.0+ (Ruby v3 compatibility)
+
 ## [0.7.4] – 2022-03-25
 
 ### Changed
@@ -127,7 +132,8 @@ and this project adheres to
 
 Initial release
 
-[unreleased]: https://github.com/paulgoetze/weka-jruby/compare/v0.7.4...HEAD
+[unreleased]: https://github.com/paulgoetze/weka-jruby/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/paulgoetze/weka-jruby/compare/v0.7.4...v0.8.0
 [0.7.4]: https://github.com/paulgoetze/weka-jruby/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/paulgoetze/weka-jruby/compare/v0.7.2...v0.7.3
 [0.7.2]: https://github.com/paulgoetze/weka-jruby/compare/v0.7.1...v0.7.2
