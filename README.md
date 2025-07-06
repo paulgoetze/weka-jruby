@@ -4,7 +4,7 @@
 [![Build Status](https://github.com/paulgoetze/weka-jruby/workflows/Tests/badge.svg)](https://github.com/paulgoetze/weka-jruby/workflows/Tests/badge.svg)
 
 Machine Learning & Data Mining with JRuby based on the
-[Weka](http://www.cs.waikato.ac.nz/~ml/weka/index.html) Java library.
+[Weka](https://ml.cms.waikato.ac.nz/weka/) Java library.
 
 ## Installation
 
