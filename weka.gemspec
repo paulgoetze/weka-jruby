@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['paul.christoph.goetze@gmail.com']
 
   spec.summary       = 'Machine Learning & Data Mining with JRuby.'
-  spec.description   = 'A JRuby wrapper for the Weka library (http://www.cs.waikato.ac.nz/ml/weka/)'
+  spec.description   = 'A JRuby wrapper for the Weka library (https://ml.cms.waikato.ac.nz/weka/)'
   spec.homepage      = 'https://github.com/paulgoetze/weka-jruby'
   spec.license       = 'MIT'
 
