@@ -8,6 +8,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.9.0] – 2025-07-06
+
+### Changed
+
+- Update dependencies:
+  - use rspec ~>13.3
+  - use jar-dependencies ~>0.5.5
+
 ## [0.8.0] – 2023-12-26
 
 ### Changed
