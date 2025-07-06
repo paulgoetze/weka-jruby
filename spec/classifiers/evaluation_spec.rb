@@ -30,7 +30,7 @@ describe Weka::Classifiers::Evaluation do
       unclassified_count:             :unclassified,
       unclassified_percentage:        :pct_unclassified,
       weighted_f_measure:             :weighted_fmeasure,
-      cumulative_margin_distribution: :toCumulativeMarginDistributionString,
+      cumulative_margin_distribution: :toCumulativeMarginDistributionString
     }.each do |alias_method, method|
       it "defines the alias ##{alias_method} for ##{method}" do
         expect(subject.method(method)).to eq subject.method(alias_method)

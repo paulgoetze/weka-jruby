@@ -3,7 +3,7 @@ require 'fileutils'
 module FileHelpers
   def temp_dir
     directory = File.expand_path('../tmp', __dir__)
-    FileUtils.mkdir(directory) unless Dir.exist?(directory)
+    FileUtils.mkdir_p(directory)
     directory
   end
 

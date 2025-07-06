@@ -71,11 +71,12 @@ module Weka
       # The order of the if statements is important here, because a date is also
       # a numeric.
       def internal_value_of(value)
-        return value                      if value.respond_to?(:nan?) && value.nan?
-        return Float::NAN                 if [nil, '?'].include?(value)
-        return parse_date(value.to_s)     if date?
-        return value.to_f                 if numeric?
-        return index_of_value(value.to_s) if nominal? || string?
+        return value                  if value.respond_to?(:nan?) && value.nan?
+        return Float::NAN             if [nil, '?'].include?(value)
+        return parse_date(value.to_s) if date?
+        return value.to_f             if numeric?
+
+        index_of_value(value.to_s) if nominal? || string?
       end
     end
   end

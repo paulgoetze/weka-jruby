@@ -61,7 +61,8 @@ module Weka
 
         return format_date(value, attribute.date_format) if attribute.date?
         return value if attribute.numeric?
-        return attribute.value(value) if attribute.nominal? || attribute.string?
+
+        attribute.value(value) if attribute.nominal? || attribute.string?
       end
 
       def attribute_at(index)

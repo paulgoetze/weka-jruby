@@ -1,5 +1,6 @@
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 3
+  NewCops: enable
   Exclude:
     - 'bin/**/*'
     - '*.gemspec'
@@ -13,17 +14,20 @@ Style/Copyright:
 Style/Documentation:
   Enabled: false
 
-Metrics/LineLength:
-  Max: 105
-
-Metrics/ClassLength:
-  Max: 250
+Style/DocumentDynamicEvalDefinition:
+  Enabled: false
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+Metrics/ClassLength:
+  Max: 250
+
+Metrics/CyclomaticComplexity:
+  Max: 8
 
 Metrics/ModuleLength:
   Exclude:
@@ -37,23 +41,26 @@ Lint/ConstantDefinitionInBlock:
   Exclude:
     - "**/*_spec.rb"
 
+Lint/BooleanSymbol:
+  Enabled: false
+
+Lint/EmptyClass:
+  Enabled: false
+
 Layout/EmptyLineBetweenDefs:
   Enabled: false
 
 Layout/HashAlignment:
   Enabled: false
 
-Lint/BooleanSymbol:
-  Enabled: false
+Layout/LineLength:
+  Max: 105
 
 Style/HashEachMethods:
   Exclude:
     - lib/weka/core/instances.rb
     - spec/classifiers/evaluation_spec.rb
 
-Naming/PredicateName:
+Naming/PredicatePrefix:
   Exclude:
     - lib/weka/core/instances.rb
-
-Metrics/CyclomaticComplexity:
-  Max: 8
