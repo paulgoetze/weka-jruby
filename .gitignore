@@ -10,3 +10,6 @@ tmp
 jars
 lib/*_jars.rb
 .tool-versions
+
+.vscode
+.ruby-lsp
